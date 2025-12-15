@@ -119,7 +119,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 'Income',
                                 style: GoogleFonts.poppins(
                                   color: Colors.white70,
-                                  fontSize: 12,
+                                  fontSize: 13,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -140,7 +140,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                                 'Expenses',
                                 style: GoogleFonts.poppins(
                                   color: Colors.white70,
-                                  fontSize: 12,
+                                  fontSize: 13,
                                 ),
                               ),
                               const SizedBox(height: 4),

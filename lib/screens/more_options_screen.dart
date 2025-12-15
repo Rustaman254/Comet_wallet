@@ -5,6 +5,7 @@ import 'buy_airtime_screen.dart';
 import 'pay_bills_screen.dart';
 import 'statistics_screen.dart';
 import 'request_money_screen.dart';
+import 'ecitizen_services_screen.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
   const MoreOptionsScreen({super.key});
@@ -104,11 +105,14 @@ class MoreOptionsScreen extends StatelessWidget {
                 },
               ),
               _buildCircularOption(
-                Icons.account_balance_outlined,
-                'Bank',
+                Icons.public,
+                'E-Citizen',
                 () {
-                  Navigator.pop(context);
-                  // Navigate to bank screen
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ECitizenServicesScreen(),
+                    ),
+                  );
                 },
               ),
             ],
@@ -144,7 +148,7 @@ class MoreOptionsScreen extends StatelessWidget {
               label,
               style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: FontWeight.w400,
               ),
               textAlign: TextAlign.center,
