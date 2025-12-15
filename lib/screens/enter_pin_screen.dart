@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../services/vibration_service.dart';
 
 class EnterPinScreen extends StatefulWidget {
   final String recipientName;
@@ -48,6 +49,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
 
   void _onNumberPressed(String number) {
     if (_pin.length < 4) {
+      VibrationService.lightImpact();
       setState(() {
         _pin += number;
       });
@@ -115,7 +117,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 'sent to ${widget.recipientName}',
                 style: GoogleFonts.poppins(
-                  color: Colors.white70,
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                 ),
               ),
@@ -159,7 +161,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -201,7 +203,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                   child: Text(
                     widget.recipientName[0].toUpperCase(),
                     style: GoogleFonts.poppins(
-                      color: Colors.white,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
@@ -213,7 +215,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 'Sending to',
                 style: GoogleFonts.poppins(
-                  color: Colors.white70,
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
@@ -222,7 +224,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 widget.recipientName,
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -232,7 +234,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 'Enter your PIN',
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
@@ -298,9 +300,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           children: [
             _buildKeypadButton(
               onPressed: _onBackspace,
-              child: const Icon(
+              child: Icon(
                 Icons.backspace_outlined,
-                color: Colors.white,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 size: 24,
               ),
             ),
@@ -309,7 +311,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               child: Text(
                 '0',
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
                 ),
@@ -317,9 +319,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             ),
             _buildKeypadButton(
               onPressed: () {},
-              child: const Icon(
+              child: Icon(
                 Icons.fingerprint,
-                color: Colors.white,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 size: 28,
               ),
             ),
@@ -338,7 +340,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           child: Text(
             number,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 24,
               fontWeight: FontWeight.w500,
             ),
@@ -358,7 +360,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         width: 70,
         height: 70,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
           shape: BoxShape.circle,
         ),
         child: Center(child: child),

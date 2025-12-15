@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../main.dart'; // Import main.dart to access MyApp
 import 'home_screen.dart';
 import 'profile_screen.dart';
+import '../services/vibration_service.dart';
+import 'sign_in_screen.dart';
+import '../services/vibration_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,14 +16,27 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  int _currentIndex = 3;
-  bool _notificationsEnabled = true;
+  bool _vibrationEnabled = true;
   bool _biometricsEnabled = false;
+  int _currentIndex = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final vibrationEnabled = await VibrationService.isEnabled();
+    setState(() {
+      _vibrationEnabled = vibrationEnabled;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -32,269 +49,118 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Settings',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                            Icons.arrow_back_ios_new,
+                            color: Colors.white,
+                            size: 20
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Profile Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: cardBackground,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: cardBorder, width: 1),
+                    Text(
+                    'Settings',
+                    style: GoogleFonts.poppins(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
+                    ),
+                     GestureDetector(
+                        onTap: () => _showLogoutDialog(),
+                        child: Container(
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
-                            border: Border.all(color: buttonGreen, width: 2),
-                            color: Colors.grey[800],
                           ),
                           child: const Icon(
-                            Icons.person_outline,
-                            color: Colors.white,
-                            size: 30,
+                              Icons.logout,
+                              color: Colors.white,
+                              size: 20
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Tanya Myroniuk',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'tanya@example.com',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white70,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: buttonGreen,
-                          size: 20,
-                        ),
-                      ],
-                    ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              // General Section
+               _buildSectionHeader('General'),
+              _buildSimpleListTile(
+                  'Language',
+                  trailing: Text(
+                      'English',
+                      style: GoogleFonts.poppins(
+                          color: Colors.white70,
+                          fontSize: 14,
+                      ),
                   ),
-                ),
+                  onTap: () {}
               ),
+              _buildDivider(),
+              _buildSimpleListTile('My Profile', onTap: () {
+                   Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+              }),
+              _buildDivider(),
+              _buildSimpleListTile('Contact Us', onTap: () {}),
+
               const SizedBox(height: 32),
-              // Account Settings
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Account',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildSettingItem(
-                      Icons.person_outline,
-                      'Personal Information',
-                      () {},
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.account_balance_wallet_outlined,
-                      'Payment Methods',
-                      () {},
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.history_outlined,
-                      'Transaction History',
-                      () {},
-                    ),
-                  ],
-                ),
-              ),
+
+              // Security Section
+               _buildSectionHeader('Security'),
+              _buildSimpleListTile('Change Password', onTap: () {}),
+               _buildDivider(),
+              _buildSimpleListTile('Privacy Policy', onTap: () {}),
+
               const SizedBox(height: 32),
-              // Security Settings
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Security',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildSettingItem(
-                      Icons.lock_outline,
-                      'Change PIN',
-                      () {},
-                    ),
-                    const SizedBox(height: 12),
-                    _buildToggleItem(
-                      Icons.fingerprint_outlined,
-                      'Biometric Authentication',
-                      _biometricsEnabled,
-                      (value) {
-                        setState(() {
-                          _biometricsEnabled = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.security_outlined,
-                      'Two-Factor Authentication',
-                      () {},
-                    ),
-                  ],
-                ),
+
+              // Data/Preferences (Simulated from "Choose what data you share with us" in image context)
+              _buildSectionHeader('Choose what data you share with us'),
+              _buildSwitchTile(
+                  'Dark Mode',
+                  MyApp.themeNotifier.value == ThemeMode.dark,
+                  (val) async {
+                    VibrationService.selectionClick();
+                    MyApp.themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+                    setState(() {}); // specific rebuild for this switch visual
+                  },
               ),
-              const SizedBox(height: 32),
-              // Preferences
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Preferences',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildToggleItem(
-                      Icons.notifications_outlined,
-                      'Notifications',
-                      _notificationsEnabled,
-                      (value) {
-                        setState(() {
-                          _notificationsEnabled = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.language_outlined,
-                      'Language',
-                      () {},
-                      trailing: 'English',
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.attach_money_outlined,
-                      'Currency',
-                      () {},
-                      trailing: 'USD',
-                    ),
-                  ],
-                ),
+              const Divider(color: Colors.white10),
+              _buildSwitchTile(
+                  'Biometric',
+                  _biometricsEnabled,
+                  (val) {
+                      VibrationService.selectionClick();
+                      setState(() {
+                          _biometricsEnabled = val;
+                      });
+                  }
               ),
-              const SizedBox(height: 32),
-              // Support
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Support',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildSettingItem(
-                      Icons.help_outline,
-                      'Help Center',
-                      () {},
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.info_outline,
-                      'About',
-                      () {},
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSettingItem(
-                      Icons.privacy_tip_outlined,
-                      'Privacy Policy',
-                      () {},
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Logout Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showLogoutDialog();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.withValues(alpha: 0.1),
-                      foregroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(color: Colors.red, width: 1),
-                      ),
-                    ),
-                    child: Text(
-                      'Logout',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+               _buildDivider(),
+                _buildSwitchTile(
+                  'Vibration',
+                  _vibrationEnabled,
+                  (val) async {
+                      await VibrationService.selectionClick();
+                      await VibrationService.setEnabled(val);
+                      setState(() {
+                          _vibrationEnabled = val;
+                      });
+                  }
+               ),
+
               const SizedBox(height: 100),
             ],
           ),
@@ -304,108 +170,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSettingItem(
-    IconData icon,
-    String title,
-    VoidCallback onTap, {
-    String? trailing,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardBackground,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: cardBorder, width: 1),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: Colors.white, size: 20),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
+  Widget _buildSectionHeader(String title) {
+      return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+          child: Align(
+              alignment: Alignment.centerLeft,
               child: Text(
-                title,
-                style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
+                  title,
+                  style: GoogleFonts.poppins(
+                      color: Colors.white70,
+                      fontSize: 14,
+                  ),
               ),
-            ),
-            if (trailing != null)
-              Text(
-                trailing,
-                style: GoogleFonts.poppins(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
-              ),
-            const SizedBox(width: 8),
-            const Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white70,
-              size: 16,
-            ),
-          ],
+          ),
+      );
+  }
+
+  Widget _buildSimpleListTile(String title, {Widget? trailing, VoidCallback? onTap}) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1) ?? Colors.grey.withOpacity(0.1),
+            width: 1,
+          ),
+        ),
+      ),
+      child: ListTile(
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+        title: Text(
+          title,
+          style: GoogleFonts.poppins(
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+            fontSize: 14, // Requested size
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: trailing ?? Icon(
+          Icons.arrow_forward_ios,
+          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+          size: 14, // Slightly smaller to match text
         ),
       ),
     );
   }
 
-  Widget _buildToggleItem(
-    IconData icon,
-    String title,
-    bool value,
-    Function(bool) onChanged,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: cardBorder, width: 1),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
+  Widget _buildSwitchTile(String title, bool value, Function(bool) onChanged) {
+       return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
+          title: Text(
               title,
               style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
               ),
-            ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: buttonGreen,
-            activeTrackColor: buttonGreen.withValues(alpha: 0.5),
+          trailing: Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: buttonGreen, // Visible in both
+              activeTrackColor: buttonGreen.withOpacity(0.3),
+              inactiveThumbColor: Colors.grey,
+              inactiveTrackColor: Colors.grey.withOpacity(0.3),
           ),
-        ],
-      ),
-    );
+      );
   }
+
+  Widget _buildDivider() {
+      return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Divider(
+            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1) ?? Colors.grey.withOpacity(0.1),
+          ),
+      );
+  }
+
+
 
   void _showLogoutDialog() {
     showDialog(
@@ -461,7 +303,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -483,7 +325,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         selectedItemColor: buttonGreen,
-        unselectedItemColor: Colors.white70,
+        unselectedItemColor: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
         elevation: 0,
         selectedLabelStyle: GoogleFonts.poppins(
           fontSize: 13,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../services/vibration_service.dart';
 import 'home_screen.dart';
 
 class VerifyPinScreen extends StatefulWidget {
@@ -40,6 +41,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
 
   void _onNumberPressed(String number) {
     if (_pin.length < 4) {
+      VibrationService.lightImpact();
       setState(() {
         _pin += number;
       });
@@ -87,7 +89,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -103,9 +105,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                   border: Border.all(color: buttonGreen, width: 3),
                   color: Colors.grey[800],
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.person_outline,
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   size: 40,
                 ),
               ),
@@ -114,7 +116,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               Text(
                 'Welcome back,',
                 style: GoogleFonts.poppins(
-                  color: Colors.white70,
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
@@ -123,7 +125,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               Text(
                 'Tanya Myroniuk',
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -133,7 +135,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               Text(
                 'Enter your PIN',
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
@@ -214,9 +216,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           children: [
             _buildKeypadButton(
               onPressed: _onBackspace,
-              child: const Icon(
+              child: Icon(
                 Icons.backspace_outlined,
-                color: Colors.white,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 size: 24,
               ),
             ),
@@ -225,7 +227,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               child: Text(
                 '0',
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
                 ),
@@ -233,9 +235,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
             ),
             _buildKeypadButton(
               onPressed: _onBiometric,
-              child: const Icon(
+              child: Icon(
                 Icons.fingerprint,
-                color: Colors.white,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 size: 28,
               ),
             ),
@@ -254,7 +256,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           child: Text(
             number,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 24,
               fontWeight: FontWeight.w500,
             ),
@@ -274,7 +276,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
         width: 70,
         height: 70,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
           shape: BoxShape.circle,
         ),
         child: Center(child: child),

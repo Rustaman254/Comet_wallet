@@ -43,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           controller: _scrollController,
@@ -79,7 +79,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Text(
                       'Sign Up',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
@@ -90,7 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Full Name',
                     style: GoogleFonts.poppins(
-                      color: Colors.white70,
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -99,14 +99,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextFormField(
                     controller: _nameController,
                     style: GoogleFonts.poppins(
-                      color: Colors.white,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
+                      context: context,
                       label: '',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.person_outline,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                     ),
                     validator: (value) {
@@ -121,7 +122,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Phone Number',
                     style: GoogleFonts.poppins(
-                      color: Colors.white70,
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -135,10 +136,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     keyboardType: TextInputType.phone,
                     decoration: buildUnderlineInputDecoration(
+                      context: context,
                       label: '',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.phone_outlined,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                     ),
                     validator: (value) {
@@ -153,7 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Email Address',
                     style: GoogleFonts.poppins(
-                      color: Colors.white70,
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -166,10 +168,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
+                      context: context,
                       label: '',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.email_outlined,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                     ),
                     validator: (value) {
@@ -184,7 +187,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Password',
                     style: GoogleFonts.poppins(
-                      color: Colors.white70,
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -198,17 +201,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
+                      context: context,
                       label: '',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                         onPressed: () {
                           setState(() {
@@ -261,7 +265,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: RichText(
                         text: TextSpan(
                           style: GoogleFonts.poppins(
-                            color: Colors.white70,
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                           ),

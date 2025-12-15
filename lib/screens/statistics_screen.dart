@@ -17,7 +17,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -33,7 +33,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     Text(
                       'Statistics',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -170,7 +170,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     Text(
                       'Spending by Category',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -216,7 +216,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     Text(
                       'Top Merchants',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -266,7 +266,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? buttonGreen : cardBackground,
+            color: isSelected ? buttonGreen : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? buttonGreen : cardBorder,
@@ -276,7 +276,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           child: Text(
             period,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.w400,
             ),
@@ -296,7 +296,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: cardBorder, width: 1),
       ),
@@ -319,7 +319,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   Text(
                     category,
                     style: GoogleFonts.poppins(
-                      color: Colors.white,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -329,7 +329,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               Text(
                 amount,
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
@@ -360,7 +360,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: cardBorder, width: 1),
       ),
@@ -380,7 +380,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             child: Text(
               name,
               style: GoogleFonts.poppins(
-                color: Colors.white,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -389,7 +389,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           Text(
             amount,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -402,7 +402,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),

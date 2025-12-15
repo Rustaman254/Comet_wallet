@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../services/vibration_service.dart';
 import 'my_cards_screen.dart';
 import 'send_options_screen.dart';
 import 'qr_scan_screen.dart';
@@ -20,10 +21,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final ScrollController _scrollController = ScrollController();
-  final PageController _balancePageController = PageController();
-  final PageController _cardsPageController = PageController();
-  int _currentBalancePage = 0;
-  int _currentCardPage = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   final List<Map<String, String>> _balances = [
     {
@@ -47,42 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _balancePageController.addListener(_onBalancePageChanged);
-    _cardsPageController.addListener(_onCardPageChanged);
-  }
-
-  @override
   void dispose() {
     _scrollController.dispose();
-    _balancePageController.dispose();
-    _cardsPageController.dispose();
-    _balancePageController.removeListener(_onBalancePageChanged);
-    _cardsPageController.removeListener(_onCardPageChanged);
     super.dispose();
-  }
-
-  void _onBalancePageChanged() {
-    if (_balancePageController.page != null) {
-      setState(() {
-        _currentBalancePage = _balancePageController.page!.round();
-      });
-    }
-  }
-
-  void _onCardPageChanged() {
-    if (_cardsPageController.page != null) {
-      setState(() {
-        _currentCardPage = _cardsPageController.page!.round();
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         top: true,
         bottom: false,
@@ -98,20 +72,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       // Profile picture
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          color: Colors.grey[800],
-                        ),
-                        child: const Icon(
-                          Icons.person_outline,
-                          color: Colors.white,
-                          size: 30,
-                        ),
+                      // Profile picture with notification
+                      Stack(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.red, // Notification border
+                                width: 2
+                              ),
+                              color: Colors.grey[800],
+                            ),
+                            child: Icon(
+                              Icons.person_outline,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                              size: 30,
+                            ),
+                          ),
+                          Positioned(
+                            top: 0,
+                            right: 2,
+                            child: Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Theme.of(context).scaffoldBackgroundColor, // Gap effect
+                                  width: 2
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+
                       const SizedBox(width: 12),
                       // Welcome text
                       Expanded(
@@ -121,16 +120,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               'Welcome back,',
                               style: GoogleFonts.poppins(
-                                color: Colors.white70,
+                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
                             Text(
-                              'Tanya Myroniuk',
+                              'Anwar Sadatt',
                               style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 23,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                fontSize: 21,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -145,9 +144,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.search_outlined,
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                           size: 20,
                         ),
                       ),
@@ -168,9 +167,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.qr_code,
-                            color: Colors.white,
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
                             size: 20,
                           ),
                         ),
@@ -237,180 +236,163 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Total Balance Card - Scrollable
                     SizedBox(
                       height: 200,
-                      child: PageView(
-                        controller: _balancePageController,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentBalancePage = index;
-                          });
-                        },
-                        children: _balances.map((balance) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24.0,
-                            ),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    darkGreen,
-                                    darkGreen.withValues(alpha: 0.8),
-                                    lightGreen.withValues(alpha: 0.3),
-                                  ],
-                                ),
-                                border: Border.all(color: cardBorder, width: 1),
-                                borderRadius: BorderRadius.circular(20),
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        itemCount: _balances.length,
+                        separatorBuilder: (context, index) => const SizedBox(width: 16),
+                        itemBuilder: (context, index) {
+                          final balance = _balances[index];
+                          return Container(
+                            width: MediaQuery.of(context).size.width - 48, // Full width minus padding
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  darkGreen,
+                                  darkGreen.withValues(alpha: 0.8),
+                                  lightGreen.withValues(alpha: 0.3),
+                                ],
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Total Balance',
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white70,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w400,
+                              border: Border.all(color: cardBorder, width: 1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Total Balance',
+                                      style: GoogleFonts.poppins(
+                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(
+                                          20,
                                         ),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.2),
-                                          borderRadius: BorderRadius.circular(
-                                            20,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          balance['currency']!,
-                                          style: GoogleFonts.poppins(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
+                                      child: Text(
                                         balance['currency']!,
                                         style: GoogleFonts.poppins(
-                                          color: Colors.white70,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        balance['amount']!,
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 35,
+                                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      balance['currency']!,
+                                      style: GoogleFonts.poppins(
+                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      balance['amount']!,
+                                      style: GoogleFonts.poppins(
+                                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                                        fontSize: 35,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Date',
+                                            style: GoogleFonts.poppins(
+                                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            balance['date']!,
+                                            style: GoogleFonts.poppins(
+                                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            balance['change']!,
+                                            style: GoogleFonts.poppins(
+                                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            Icons.trending_up_outlined,
+                                            color: buttonGreen,
+                                            size: 20,
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
-                                  const Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 6),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Date',
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white70,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              balance['date']!,
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              balance['change']!,
-                                              style: GoogleFonts.poppins(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Icon(
-                                              Icons.trending_up_outlined,
-                                              color: buttonGreen,
-                                              size: 20,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           );
-                        }).toList(),
+                        },
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Page indicators for balance
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(_balances.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          child: _buildPageIndicator(
-                            index == _currentBalancePage,
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 24),
+                    // Removed Page indicators, visual cue via ListView spacing is enough for "smooth scroll" request
+                    const SizedBox(height: 16),
                     // Info Cards - Scrollable with 4 cards
+                    // Info Cards - Scrollable with ListView
                     SizedBox(
                       height: 120,
-                      child: PageView.builder(
-                        controller: _cardsPageController,
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentCardPage = index;
-                          });
-                        },
-                        itemCount: 2,
-                        itemBuilder: (context, pageIndex) {
-                          final cards = [
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        itemCount: 4,
+                        separatorBuilder: (context, index) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                           final cards = [
                             {
                               'icon': Icons.account_balance_wallet_outlined,
                               'title': 'Today You Spent',
@@ -432,51 +414,20 @@ class _HomeScreenState extends State<HomeScreen> {
                               'value': '3 Cards',
                             },
                           ];
-
-                          int startIndex = pageIndex * 2;
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.only(right: 4),
-                                    padding: const EdgeInsets.all(4),
-                                    child: _buildInfoCard(
-                                      cards[startIndex]['icon'] as IconData,
-                                      cards[startIndex]['title'] as String,
-                                      cards[startIndex]['value'] as String,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.only(left: 4),
-                                    padding: const EdgeInsets.all(4),
-                                    child: _buildInfoCard(
-                                      cards[startIndex + 1]['icon'] as IconData,
-                                      cards[startIndex + 1]['title'] as String,
-                                      cards[startIndex + 1]['value'] as String,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          
+                          return SizedBox(
+                              width: 160, // Fixed width for comfortable reading
+                              child: _buildInfoCard(
+                                cards[index]['icon'] as IconData,
+                                cards[index]['title'] as String,
+                                cards[index]['value'] as String,
+                              ),
                           );
-                        },
+                        }
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Page indicators for cards
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(2, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          child: _buildPageIndicator(index == _currentCardPage),
-                        );
-                      }),
-                    ),
+                    // Removed indicators to match smooth scroll aesthetic
                     const SizedBox(height: 24),
                     // Transaction section
                     Padding(
@@ -487,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             'Transaction',
                             style: GoogleFonts.poppins(
-                              color: Colors.white,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -558,7 +509,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildActionButton(IconData icon, String label, VoidCallback onTap) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        VibrationService.selectionClick();
+        onTap();
+      },
       child: Column(
         children: [
           Container(
@@ -568,13 +522,13 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 28),
           ),
           const SizedBox(height: 8),
           Text(
             label,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
               fontWeight: FontWeight.w400,
             ),
@@ -589,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -599,16 +553,16 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.white, size: 20),
+            child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
           ),
           const SizedBox(height: 8),
           Text(
             title,
             style: GoogleFonts.poppins(
-              color: Colors.white70,
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
               fontSize: 10,
               fontWeight: FontWeight.w400,
             ),
@@ -620,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             value,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -643,9 +597,9 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.grey[800],
             shape: BoxShape.circle,
           ),
-          child: const Icon(
+          child: Icon(
             Icons.person_outline,
-            color: Colors.white,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
             size: 24,
           ),
         ),
@@ -657,7 +611,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 phone,
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -666,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 date,
                 style: GoogleFonts.poppins(
-                  color: Colors.white70,
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),
@@ -677,7 +631,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           amount,
           style: GoogleFonts.poppins(
-            color: Colors.white,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -686,21 +640,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPageIndicator(bool isActive) {
-    return Container(
-      width: isActive ? 24 : 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
-      ),
-    );
-  }
+
 
   Widget _buildBottomNav() {
     return Container(
       decoration: BoxDecoration(
-        color: cardBackground,
+        color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -709,6 +654,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
+          VibrationService.lightImpact();
           setState(() {
             _currentIndex = index;
           });
@@ -729,7 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.transparent,
         selectedItemColor: buttonGreen,
-        unselectedItemColor: Colors.white70,
+        unselectedItemColor: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
         elevation: 0,
         selectedLabelStyle: GoogleFonts.poppins(
           fontSize: 13,

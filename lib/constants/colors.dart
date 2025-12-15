@@ -12,3 +12,10 @@ const Color darkBackground = Color(0xFF122022); // System background
 const Color buttonGreen = Color(0xFF39CA4D); // Button color
 const Color cardBackground = Color(0xFF0B160F); // Cards and bottom nav background
 const Color cardBorder = Color(0xFF2A2C3C); // Card border/stroke
+
+// Light Theme Colors
+const Color lightBackground = Color(0xFFF5F7FA);
+const Color lightCardBackground = Color(0xFFFFFFFF);
+const Color lightTextPrimary = Color(0xFF122022);
+const Color lightTextSecondary = Color(0xFF6B7280);
+const Color lightBorder = Color(0xFFE5E7EB);

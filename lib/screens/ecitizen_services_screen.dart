@@ -99,7 +99,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -132,7 +132,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                         'E-Citizen Services',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.poppins(
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -153,7 +153,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     Text(
                       'Reference Number',
                       style: GoogleFonts.poppins(
-                        color: Colors.white70,
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -162,14 +162,15 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     TextField(
                       controller: _referenceController,
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 16,
                       ),
                       decoration: buildUnderlineInputDecoration(
+                        context: context,
                         label: '',
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.numbers_outlined,
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ),
@@ -177,7 +178,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     Text(
                       'Currency',
                       style: GoogleFonts.poppins(
-                        color: Colors.white70,
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -187,29 +188,32 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                       onTap: _showCurrencyDialog,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           border: Border(
-                            bottom: BorderSide(color: Colors.white, width: 1),
+                            bottom: BorderSide(
+                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3) ?? Colors.transparent, 
+                              width: 1
+                            ),
                           ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.monetization_on_outlined,
-                              color: Colors.white,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
                             ),
                             const SizedBox(width: 12),
                             Text(
                               selectedCurrency,
                               style: GoogleFonts.poppins(
-                                color: Colors.white,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
                                 fontSize: 16,
                               ),
                             ),
                             const Spacer(),
-                            const Icon(
+                            Icon(
                               Icons.keyboard_arrow_down,
-                              color: Colors.white70,
+                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                             ),
                           ],
                         ),

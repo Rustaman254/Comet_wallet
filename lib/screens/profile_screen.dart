@@ -11,7 +11,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -30,12 +30,12 @@ class ProfileScreen extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_back,
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                           size: 20,
                         ),
                       ),
@@ -43,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                     Text(
                       'Profile',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -52,12 +52,12 @@ class ProfileScreen extends StatelessWidget {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.person_add_outlined,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         size: 20,
                       ),
                     ),
@@ -85,10 +85,10 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Tanya Myroniuk',
+                      'Anwar Sadatt',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 20,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                        fontSize: 21,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -188,27 +188,26 @@ class ProfileScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        color: Colors.transparent, // Hit test
+        margin: const EdgeInsets.only(bottom: 0), // Removed margin to collapse borders
+        padding: const EdgeInsets.symmetric(vertical: 16), // Increased padding for comfort
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1) ?? Colors.white10,
+              width: 1,
+            ),
+          ),
+        ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: Colors.white70, size: 20),
-            ),
+            Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7), size: 22),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
                 style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 15,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  fontSize: 14, // Requested size
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -230,10 +229,10 @@ class ProfileScreen extends StatelessWidget {
                 ),
               )
             else
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios,
-                color: Colors.white30,
-                size: 16,
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
+                size: 14,
               ),
           ],
         ),
