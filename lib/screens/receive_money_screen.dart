@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../services/toast_service.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
   const ReceiveMoneyScreen({super.key});
@@ -132,15 +133,9 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                             Clipboard.setData(
                               ClipboardData(text: walletAddress),
                             );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Copied to clipboard',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                backgroundColor: buttonGreen,
-                                duration: const Duration(seconds: 2),
-                              ),
+                            ToastService().showSuccess(
+                              context,
+                              'Wallet address copied to clipboard!',
                             );
                           },
                           child: Icon(

@@ -116,12 +116,25 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     
     final prefs = await SharedPreferences.getInstance();
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    final isSignedUp = prefs.getBool('isSignedUp') ?? false;
     
     if (mounted) {
-      setState(() {
-        _isFirstTime = isFirstTime;
-        _isLoading = false;
-      });
+      if (isFirstTime) {
+        setState(() {
+          _isFirstTime = true;
+          _isLoading = false;
+        });
+      } else if (!isSignedUp) {
+         // User has seen onboarding but not signed up -> Go to Sign In
+         Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const SignInScreen()),
+        );
+      } else {
+        // User is signed up -> Go to Verify Pin
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
+        );
+      }
     }
   }
 

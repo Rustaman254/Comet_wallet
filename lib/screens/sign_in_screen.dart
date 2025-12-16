@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
+import '../services/toast_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_up_screen.dart';
 import 'verify_pin_screen.dart';
@@ -28,13 +30,32 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
-  void _handleSignIn() {
+  Future<void> _handleSignIn() async {
     VibrationService.selectionClick();
     if (_formKey.currentState!.validate()) {
-      Navigator.of(
-        context,
-      ).pushReplacement(
-          MaterialPageRoute(builder: (_) => const VerifyPinScreen()));
+      final email = _emailController.text.trim();
+      final password = _passwordController.text;
+      
+      if (email.isNotEmpty && password.isNotEmpty) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isSignedUp', true);
+        await prefs.setBool('isFirstTime', false);
+
+        if (mounted) {
+          ToastService().showSuccess(context, "Login successful! Welcome back!");
+          VibrationService.lightImpact();
+          Navigator.of(
+            context,
+          ).pushReplacement(
+              MaterialPageRoute(builder: (_) => const VerifyPinScreen()));
+        }
+      } else {
+        VibrationService.heavyImpact();
+        ToastService().showError(context, "Invalid email or password");
+      }
+    } else {
+      VibrationService.heavyImpact();
+      ToastService().showError(context, "Please check your inputs");
     }
   }
 

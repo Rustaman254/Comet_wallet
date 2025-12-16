@@ -10,6 +10,7 @@ import 'receive_money_screen.dart';
 import 'withdraw_money_screen.dart';
 import 'statistics_screen.dart';
 import 'settings_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,9 +22,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   final ScrollController _scrollController = ScrollController();
+  late PageController _balancePageController;
+  int _currentBalancePage = 0;
+  
   @override
   void initState() {
     super.initState();
+    _balancePageController = PageController();
+    _balancePageController.addListener(_onBalancePageChanged);
+  }
+  
+  void _onBalancePageChanged() {
+    if (_balancePageController.page != null) {
+      final page = _balancePageController.page!.round();
+      setState(() {
+        _currentBalancePage = page;
+      });
+    }
   }
 
   final List<Map<String, String>> _balances = [
@@ -50,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _balancePageController.dispose();
     super.dispose();
   }
 
@@ -71,49 +87,66 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Row(
                     children: [
-                      // Profile picture
-                      // Profile picture with notification
-                      Stack(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.red, // Notification border
-                                width: 2
-                              ),
-                              color: Colors.grey[800],
+                      // Profile picture - clickable
+                      GestureDetector(
+                        onTap: () {
+                          VibrationService.lightImpact();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileScreen(),
                             ),
-                            child: Icon(
-                              Icons.person_outline,
-                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                              size: 30,
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 2,
-                            child: Container(
-                              width: 12,
-                              height: 12,
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
                               decoration: BoxDecoration(
-                                color: Colors.red,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Theme.of(context).scaffoldBackgroundColor, // Gap effect
+                                  color: Colors.red,
                                   width: 2
+                                ),
+                                color: Colors.grey[800],
+                              ),
+                              child: Icon(
+                                Icons.person_outline,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                size: 30,
+                              ),
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 2,
+                              child: Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    width: 2
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
 
                       const SizedBox(width: 12),
-                      // Welcome text
-                      Expanded(
+                      // Welcome text - clickable
+                      GestureDetector(
+                        onTap: () {
+                          VibrationService.lightImpact();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileScreen(),
+                            ),
+                          );
+                        },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -136,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
+                      const Spacer(),
                       // Search button
                       Container(
                         width: 40,
@@ -233,154 +267,160 @@ class _HomeScreenState extends State<HomeScreen> {
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
-                    // Total Balance Card - Scrollable
+                    // Total Balance Card - Scrollable with PageView
                     SizedBox(
                       height: 200,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        itemCount: _balances.length,
-                        separatorBuilder: (context, index) => const SizedBox(width: 16),
-                        itemBuilder: (context, index) {
-                          final balance = _balances[index];
-                          return Container(
-                            width: MediaQuery.of(context).size.width - 48, // Full width minus padding
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  darkGreen,
-                                  darkGreen.withValues(alpha: 0.8),
-                                  lightGreen.withValues(alpha: 0.3),
-                                ],
+                      child: PageView(
+                        controller: _balancePageController,
+                        children: _balances.map((balance) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    darkGreen,
+                                    darkGreen.withValues(alpha: 0.8),
+                                    lightGreen.withValues(alpha: 0.3),
+                                  ],
+                                ),
+                                border: Border.all(color: cardBorder, width: 1),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              border: Border.all(color: cardBorder, width: 1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Total Balance',
-                                      style: GoogleFonts.poppins(
-                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withValues(alpha: 0.2),
-                                        borderRadius: BorderRadius.circular(
-                                          20,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        balance['currency']!,
-                                        style: GoogleFonts.poppins(
-                                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      balance['currency']!,
-                                      style: GoogleFonts.poppins(
-                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      balance['amount']!,
-                                      style: GoogleFonts.poppins(
-                                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                                        fontSize: 35,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Spacer(),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 6),
-                                  child: Row(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Date',
-                                            style: GoogleFonts.poppins(
-                                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            balance['date']!,
-                                            style: GoogleFonts.poppins(
-                                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        'Total Balance',
+                                        style: GoogleFonts.poppins(
+                                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                        ),
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            balance['change']!,
-                                            style: GoogleFonts.poppins(
-                                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(
+                                            20,
                                           ),
-                                          const SizedBox(width: 4),
-                                          Icon(
-                                            Icons.trending_up_outlined,
-                                            color: buttonGreen,
-                                            size: 20,
+                                        ),
+                                        child: Text(
+                                          balance['currency']!,
+                                          style: GoogleFonts.poppins(
+                                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                        ],
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        balance['currency']!,
+                                        style: GoogleFonts.poppins(
+                                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        balance['amount']!,
+                                        style: GoogleFonts.poppins(
+                                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                                          fontSize: 35,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Date',
+                                              style: GoogleFonts.poppins(
+                                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              balance['date']!,
+                                              style: GoogleFonts.poppins(
+                                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              balance['change']!,
+                                              style: GoogleFonts.poppins(
+                                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Icon(
+                                              Icons.trending_up_outlined,
+                                              color: buttonGreen,
+                                              size: 20,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
-                        },
+                        }).toList(),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // Removed Page indicators, visual cue via ListView spacing is enough for "smooth scroll" request
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+                    // Page indicators for balance cards
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(_balances.length, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3),
+                          child: _buildPageIndicator(index == _currentBalancePage),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 24),
                     // Info Cards - Scrollable with 4 cards
                     // Info Cards - Scrollable with ListView
                     SizedBox(
@@ -504,6 +544,17 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (context) => const MoreOptionsScreen(),
+    );
+  }
+
+  Widget _buildPageIndicator(bool isActive) {
+    return Container(
+      width: isActive ? 24 : 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: isActive ? buttonGreen : Colors.grey[600],
+        borderRadius: BorderRadius.circular(4),
+      ),
     );
   }
 

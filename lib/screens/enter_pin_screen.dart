@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
+import '../services/toast_service.dart';
 
 class EnterPinScreen extends StatefulWidget {
   final String recipientName;
@@ -62,6 +63,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
 
   void _onBackspace() {
     if (_pin.isNotEmpty) {
+      VibrationService.lightImpact();
       setState(() {
         _pin = _pin.substring(0, _pin.length - 1);
       });
@@ -126,6 +128,10 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    ToastService().showSuccess(
+                      context,
+                      'Transaction completed successfully!',
+                    );
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   },
                   style: ElevatedButton.styleFrom(
@@ -149,12 +155,20 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         ),
       );
     } else {
+      VibrationService.heavyImpact();
       _shakeController.forward().then((_) {
         _shakeController.reverse();
         setState(() {
           _pin = '';
         });
       });
+      
+      if (mounted) {
+        ToastService().showError(
+          context,
+          'Incorrect PIN. Please try again.',
+        );
+      }
     }
   }
 

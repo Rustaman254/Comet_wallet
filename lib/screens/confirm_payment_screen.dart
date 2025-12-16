@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../services/toast_service.dart';
 import 'home_screen.dart';
 
 class ConfirmPaymentScreen extends StatelessWidget {
@@ -51,10 +52,18 @@ class ConfirmPaymentScreen extends StatelessWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => const HomeScreen()),
-                          (route) => false,
+                        ToastService().showSuccess(
+                          context,
+                          'Money sent successfully!',
                         );
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          if (context.mounted) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) => const HomeScreen()),
+                              (route) => false,
+                            );
+                          }
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonGreen,

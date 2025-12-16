@@ -39,4 +39,10 @@ class VibrationService {
       await HapticFeedback.selectionClick();
     }
   }
+
+  static Future<void> heavyImpact() async {
+    if (await isEnabled()) {
+      await HapticFeedback.heavyImpact();
+    }
+  }
 }

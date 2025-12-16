@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../services/toast_service.dart';
 import 'enter_pin_screen.dart';
 
 class WithdrawMoneyScreen extends StatefulWidget {
@@ -289,6 +290,19 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
+                      if (_amountController.text.isEmpty || _amountController.text == '0.00') {
+                        ToastService().showError(
+                          context,
+                          'Please enter a valid amount',
+                        );
+                        return;
+                      }
+                      
+                      ToastService().showInfo(
+                        context,
+                        'Withdrawal request initiated...',
+                      );
+                      
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => EnterPinScreen(

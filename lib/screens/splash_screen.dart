@@ -44,12 +44,21 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     
     final prefs = await SharedPreferences.getInstance();
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    final isSignedUp = prefs.getBool('isSignedUp') ?? false;
 
     if (mounted) {
+      Widget nextScreen;
+      if (isFirstTime) {
+        nextScreen = OnboardingPageView(onComplete: _completeOnboarding);
+      } else if (!isSignedUp) {
+        nextScreen = const SignInScreen();
+      } else {
+        nextScreen = const VerifyPinScreen(); // Or HomeScreen/VerifyPinScreen depending on session
+      }
+
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => 
-            isFirstTime ? OnboardingPageView(onComplete: _completeOnboarding) : const SignInScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
