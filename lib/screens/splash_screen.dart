@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
+import '../services/token_service.dart';
 import 'onboarding_page_view.dart';
 import 'sign_in_screen.dart';
+import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,16 +46,25 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     
     final prefs = await SharedPreferences.getInstance();
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    final isSignedUp = prefs.getBool('isSignedUp') ?? false;
+    
+    // Check if user is authenticated (has a valid token)
+    final isAuthenticated = await TokenService.isAuthenticated();
 
     if (mounted) {
       Widget nextScreen;
+      
+      // Navigation logic:
+      // 1. If first time: show onboarding
+      // 2. If not first time and authenticated: show home
+      // 3. Otherwise: show sign in
       if (isFirstTime) {
         nextScreen = OnboardingPageView(onComplete: _completeOnboarding);
-      } else if (!isSignedUp) {
-        nextScreen = const SignInScreen();
+      } else if (isAuthenticated) {
+        // User is logged in, go to home screen
+        nextScreen = const HomeScreen();
       } else {
-        nextScreen = const VerifyPinScreen(); // Or HomeScreen/VerifyPinScreen depending on session
+        // User is not logged in, go to sign in screen
+        nextScreen = const SignInScreen();
       }
 
       Navigator.of(context).pushReplacement(
@@ -73,8 +84,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     await prefs.setBool('isFirstTime', false);
     
     if (mounted) {
+      // After onboarding completes, check if user is authenticated
+      final isAuthenticated = await TokenService.isAuthenticated();
+      final nextScreen = isAuthenticated ? const HomeScreen() : const SignInScreen();
+      
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const SignInScreen()),
+        MaterialPageRoute(builder: (_) => nextScreen),
       );
     }
   }

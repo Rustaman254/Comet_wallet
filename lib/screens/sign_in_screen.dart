@@ -7,6 +7,9 @@ import '../services/toast_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_up_screen.dart';
 import 'verify_pin_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../constants/api_constants.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -17,8 +20,8 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: 'aimalnaseem@gmail.com');
-  final _passwordController = TextEditingController(text: '********');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   final ScrollController _scrollController = ScrollController();
 
@@ -33,25 +36,64 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _handleSignIn() async {
     VibrationService.selectionClick();
     if (_formKey.currentState!.validate()) {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
-      
-      if (email.isNotEmpty && password.isNotEmpty) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isSignedUp', true);
-        await prefs.setBool('isFirstTime', false);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
 
-        if (mounted) {
-          ToastService().showSuccess(context, "Login successful! Welcome back!");
-          VibrationService.lightImpact();
-          Navigator.of(
-            context,
-          ).pushReplacement(
-              MaterialPageRoute(builder: (_) => const VerifyPinScreen()));
+      final url = Uri.parse(ApiConstants.loginEndpoint);
+      final body = jsonEncode({
+        "user": {
+          "email": _emailController.text.trim(),
+          "password": _passwordController.text,
         }
-      } else {
-        VibrationService.heavyImpact();
-        ToastService().showError(context, "Invalid email or password");
+      });
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: body,
+        );
+
+        if (mounted) Navigator.pop(context);
+
+        if (response.statusCode == 200) {
+           final prefs = await SharedPreferences.getInstance();
+           // You might want to save token here if returned
+           await prefs.setBool('isSignedUp', true);
+           await prefs.setBool('isFirstTime', false);
+           
+           if (mounted) {
+             ToastService().showSuccess(context, "Login successful! Welcome back!");
+             VibrationService.lightImpact();
+             Navigator.of(context).pushReplacement(
+               MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
+             );
+           }
+        } else {
+          String errorMessage = "Login failed";
+          try {
+            final responseData = jsonDecode(response.body);
+             if (responseData['message'] != null) {
+              errorMessage = responseData['message'];
+            } else if (responseData['error'] != null) {
+              errorMessage = responseData['error'];
+            }
+          } catch (_) {}
+          
+          if (mounted) {
+             VibrationService.heavyImpact();
+             ToastService().showError(context, errorMessage);
+          }
+        }
+      } catch (e) {
+         if (mounted) {
+            Navigator.pop(context);
+            VibrationService.heavyImpact();
+            ToastService().showError(context, "Network error: ${e.toString()}");
+         }
       }
     } else {
       VibrationService.heavyImpact();
@@ -122,6 +164,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
+                      hintText: 'Enter your email address',
                       prefixIcon: Icon(
                         Icons.email_outlined,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -155,6 +198,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
+                      hintText: 'Enter your password',
                       prefixIcon: Icon(
                         Icons.lock_outline,
                         color: Theme.of(context).textTheme.bodyMedium?.color,

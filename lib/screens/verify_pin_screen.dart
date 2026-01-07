@@ -5,7 +5,8 @@ import '../services/vibration_service.dart';
 import 'home_screen.dart';
 
 class VerifyPinScreen extends StatefulWidget {
-  const VerifyPinScreen({super.key});
+  final Widget? nextScreen;
+  const VerifyPinScreen({super.key, this.nextScreen});
 
   @override
   State<VerifyPinScreen> createState() => _VerifyPinScreenState();
@@ -14,7 +15,7 @@ class VerifyPinScreen extends StatefulWidget {
 class _VerifyPinScreenState extends State<VerifyPinScreen>
     with SingleTickerProviderStateMixin {
   String _pin = '';
-  final String _correctPin = '1234'; // In production, this would be stored securely
+  final String _correctPin = '1234'; 
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
 
@@ -63,12 +64,11 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
 
   void _verifyPin() {
     if (_pin == _correctPin) {
-      // Correct PIN - navigate to home
+      // Correct PIN - navigate to next screen or home
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => widget.nextScreen ?? const HomeScreen()),
       );
     } else {
-      // Wrong PIN - shake animation and clear
       _shakeController.forward().then((_) {
         _shakeController.reverse();
         setState(() {
@@ -79,8 +79,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   }
 
   void _onBiometric() {
-    // Implement biometric authentication
-    // For now, just navigate to home
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const HomeScreen()),
     );
@@ -123,7 +121,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Tanya Myroniuk',
+                'Anwar Magara',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24,
@@ -141,7 +139,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 ),
               ),
               const SizedBox(height: 30),
-              // PIN dots with shake animation
               AnimatedBuilder(
                 animation: _shakeAnimation,
                 builder: (context, child) {
@@ -177,10 +174,8 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 ),
               ),
               const Spacer(),
-              // Numeric keypad
               _buildKeypad(),
               const SizedBox(height: 20),
-              // Forgot PIN
               TextButton(
                 onPressed: () {
                   // Handle forgot PIN

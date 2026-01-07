@@ -6,6 +6,8 @@ import 'constants/colors.dart';
 import 'screens/onboarding_page_view.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/verify_pin_screen.dart';
+import 'screens/home_screen.dart';
+import 'services/token_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -116,7 +118,9 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     
     final prefs = await SharedPreferences.getInstance();
     final isFirstTime = prefs.getBool('isFirstTime') ?? true;
-    final isSignedUp = prefs.getBool('isSignedUp') ?? false;
+    
+    // Check if user is authenticated (has a valid token)
+    final isAuthenticated = await TokenService.isAuthenticated();
     
     if (mounted) {
       if (isFirstTime) {
@@ -124,15 +128,15 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
           _isFirstTime = true;
           _isLoading = false;
         });
-      } else if (!isSignedUp) {
-         // User has seen onboarding but not signed up -> Go to Sign In
-         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const SignInScreen()),
+      } else if (isAuthenticated) {
+        // User is logged in, go to home screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       } else {
-        // User is signed up -> Go to Verify Pin
+        // User is not logged in, go to sign in screen
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
+          MaterialPageRoute(builder: (_) => const SignInScreen()),
         );
       }
     }
@@ -143,8 +147,12 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     await prefs.setBool('isFirstTime', false);
     
     if (mounted) {
+      // After onboarding completes, check if user is authenticated
+      final isAuthenticated = await TokenService.isAuthenticated();
+      final nextScreen = isAuthenticated ? const HomeScreen() : const SignInScreen();
+      
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const SignInScreen()),
+        MaterialPageRoute(builder: (_) => nextScreen),
       );
     }
   }
@@ -233,9 +241,6 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     if (_isFirstTime) {
       return OnboardingPageView(onComplete: _completeOnboarding);
     } else {
-      // Direct navigation to VerifyPinScreen or SignInScreen based on logic
-      // The original code went to VerifyPinScreen, let's keep that but maybe wrap it 
-      // or just return it. 
       return const VerifyPinScreen();
     }
   }

@@ -6,6 +6,10 @@ import '../services/toast_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
 import 'verify_pin_screen.dart';
+import 'kyc/kyc_intro_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../constants/api_constants.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,10 +20,11 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController(text: 'Aimal Naseem');
-  final _phoneController = TextEditingController(text: '+000 00 00 000');
-  final _emailController = TextEditingController(text: 'aimalnaseem@gmail.com');
-  final _passwordController = TextEditingController(text: '********');
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _locationController = TextEditingController();
   bool _obscurePassword = true;
   final ScrollController _scrollController = ScrollController();
 
@@ -29,22 +34,80 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _locationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isSignedUp', true);
-      await prefs.setBool('isFirstTime', false);
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
 
-      if (mounted) {
-        ToastService().showSuccess(context, "Account created successfully!");
-        Navigator.of(
-          context,
-        ).pushReplacement(
-            MaterialPageRoute(builder: (_) => const VerifyPinScreen()));
+      final url = Uri.parse(ApiConstants.registerEndpoint);
+      final body = jsonEncode({
+        "user": {
+          "name": _nameController.text.trim(),
+          "email": _emailController.text.trim(),
+          "phone": _phoneController.text.trim(),
+          "password": _passwordController.text, // Don't trim password? Usually safe to trim whitespace around it but let's keep it raw if user intended spaces. Actually trim is safer for trailing spaces.
+          "role": 8,
+          "status": "active",
+          "location": _locationController.text.trim(),
+        }
+      });
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {'Content-Type': 'application/json'},
+          body: body,
+        );
+        
+        // Pop loading dialog
+        if (mounted) Navigator.pop(context);
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('isSignedUp', true);
+          await prefs.setBool('isFirstTime', false);
+
+          if (mounted) {
+            ToastService().showSuccess(context, "Account created successfully! Please log in.");
+            
+            // Redirect to login screen
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => const SignInScreen(),
+              ),
+            );
+          }
+        } else {
+          // Try to parse error message
+          String errorMessage = "Registration failed";
+          try {
+            final responseData = jsonDecode(response.body);
+            // Adjust based on actual API error structure if known, otherwise generic fallback
+            if (responseData['message'] != null) {
+              errorMessage = responseData['message'];
+            } else if (responseData['error'] != null) {
+              errorMessage = responseData['error'];
+            }
+          } catch (_) {}
+          
+          if (mounted) {
+            ToastService().showError(context, errorMessage);
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.pop(context); // Pop loading if error occurs
+          ToastService().showError(context, "Network error: ${e.toString()}");
+        }
       }
     } else {
       ToastService().showError(context, "Please fill in all fields correctly");
@@ -181,6 +244,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
+                      hintText: 'Enter your email address',
                       prefixIcon: Icon(
                         Icons.email_outlined,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -189,6 +253,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  // Location field
+                  Text(
+                    'Location',
+                    style: GoogleFonts.poppins(
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _locationController,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: buildUnderlineInputDecoration(
+                      context: context,
+                      label: '',
+                      hintText: 'Enter your location',
+                      prefixIcon: Icon(
+                        Icons.location_on_outlined,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your location';
                       }
                       return null;
                     },
@@ -214,6 +311,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
+                      hintText: 'Enter your password',
                       prefixIcon: Icon(
                         Icons.lock_outline,
                         color: Theme.of(context).textTheme.bodyMedium?.color,

@@ -11,6 +11,7 @@ import 'withdraw_money_screen.dart';
 import 'statistics_screen.dart';
 import 'settings_screen.dart';
 import 'profile_screen.dart';
+import 'wallet_topup_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -212,11 +213,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Action buttons - FIXED
-                Padding(
+                // Action buttons - FIXED - Scrollable
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildActionButton(
                         Icons.arrow_upward_outlined,
@@ -225,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _showSendOptions(context);
                         },
                       ),
+                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.arrow_downward_outlined,
                         'Receive',
@@ -236,6 +238,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       ),
+                      const SizedBox(width: 20),
+                      _buildActionButton(
+                        Icons.add_circle_outline,
+                        'Top-up',
+                        () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const WalletTopupScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.monetization_on_outlined,
                         'Withdraw',
@@ -247,6 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       ),
+                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.more_horiz,
                         'More',

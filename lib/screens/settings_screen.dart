@@ -5,8 +5,9 @@ import '../main.dart'; // Import main.dart to access MyApp
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import '../services/vibration_service.dart';
+import '../services/token_service.dart';
 import 'sign_in_screen.dart';
-import '../services/vibration_service.dart';
+import '../services/logger_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -283,9 +284,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // Handle logout
+              
+              // Logout: clear all stored data
+              await TokenService.logout();
+              
+              AppLogger.info(
+                LogTags.auth,
+                'User logged out',
+              );
+              
+              // Navigate to SignInScreen
+              if (mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const SignInScreen()),
+                  (route) => false,
+                );
+              }
             },
             child: Text(
               'Logout',
