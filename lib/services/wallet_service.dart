@@ -16,7 +16,26 @@ class WalletService {
     try {
       // Get authentication token
       final token = await TokenService.getToken();
+      
+      AppLogger.debug(
+        LogTags.payment,
+        'Token retrieval for wallet top-up',
+        data: {
+          'token_exists': token != null,
+          'token_empty': token?.isEmpty ?? true,
+          'token_length': token?.length ?? 0,
+        },
+      );
+      
       if (token == null || token.isEmpty) {
+        AppLogger.error(
+          LogTags.payment,
+          'No authentication token available',
+          data: {
+            'token_null': token == null,
+            'token_empty': token?.isEmpty ?? true,
+          },
+        );
         throw Exception('User not authenticated. Please login first.');
       }
 

@@ -99,4 +99,16 @@ class TokenService {
       'phone_number': phoneNumber,
     };
   }
+
+  /// Debug method to verify stored data
+  static Future<Map<String, dynamic>> debugTokenData() async {
+    final token = await getToken();
+    return {
+      'token_exists': token != null,
+      'token_not_empty': token?.isNotEmpty ?? false,
+      'token_length': token?.length ?? 0,
+      'token_preview': token != null ? '${token.substring(0, 20)}...' : 'null',
+      'is_authenticated': await isAuthenticated(),
+    };
+  }
 }

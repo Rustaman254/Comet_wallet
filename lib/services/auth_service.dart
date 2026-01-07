@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../constants/api_constants.dart';
 import 'logger_service.dart';
 import 'token_service.dart';
+import '../utils/debug_utils.dart';
 
 class AuthService {
   /// User registration
@@ -134,21 +135,52 @@ class AuthService {
         );
 
         // Save authentication token and user data
+        // Token is at root level in response: response['token']
+        // User data is in response['user']
         final token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
         final userId = jsonResponse['user']?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
+        final phone = jsonResponse['user']?['phone'] ?? jsonResponse['phone'] ?? '';
+        
+        AppLogger.debug(
+          LogTags.auth,
+          'Token extraction from response',
+          data: {
+            'token_exists': token.isNotEmpty,
+            'token_length': token.length,
+            'user_id': userId,
+            'phone': phone,
+          },
+        );
         
         if (token.isNotEmpty) {
           await TokenService.saveUserData(
             token: token,
             userId: userId,
             email: email,
-            phoneNumber: jsonResponse['user']?['phone'] ?? jsonResponse['phone'] ?? '',
+            phoneNumber: phone,
           );
 
           AppLogger.debug(
             LogTags.auth,
-            'Authentication token saved',
-            data: {'user_id': userId},
+            'Authentication token saved to TokenService',
+            data: {'user_id': userId, 'phone': phone},
+          );
+          
+          // Verify token was saved
+          final savedToken = await TokenService.getToken();
+          AppLogger.debug(
+            LogTags.auth,
+            'Token verification after save',
+            data: {
+              'token_saved': savedToken != null && savedToken.isNotEmpty,
+              'token_match': savedToken == token,
+            },
+          );
+        } else {
+          AppLogger.error(
+            LogTags.auth,
+            'Token not found in login response',
+            data: {'response_keys': jsonResponse.keys.toList()},
           );
         }
 
@@ -160,6 +192,9 @@ class AuthService {
             'timestamp': DateTime.now().toIso8601String(),
           },
         );
+
+        // Run diagnostics after successful login
+        await DebugUtils.runFullDiagnostics();
 
         return jsonResponse;
       } else {

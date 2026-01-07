@@ -5,6 +5,7 @@ import '../../services/wallet_service.dart';
 import '../../services/logger_service.dart';
 import '../../services/toast_service.dart';
 import '../../services/token_service.dart';
+import '../../utils/input_decoration.dart';
 
 class WalletTopupScreen extends StatefulWidget {
   const WalletTopupScreen({super.key});
@@ -184,8 +185,9 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               Text(
                 'Phone Number',
                 style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               const SizedBox(height: 8),
@@ -193,11 +195,17 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 readOnly: _userPhoneNumber != null,
-                decoration: InputDecoration(
+                style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  fontSize: 16,
+                ),
+                decoration: buildUnderlineInputDecoration(
+                  context: context,
+                  label: '',
                   hintText: 'Enter phone number',
-                  prefixIcon: const Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  prefixIcon: Icon(
+                    Icons.phone_outlined,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                 ),
                 validator: (value) {
@@ -216,19 +224,26 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               Text(
                 'Amount',
                 style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
+                style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  fontSize: 16,
+                ),
+                decoration: buildUnderlineInputDecoration(
+                  context: context,
+                  label: '',
                   hintText: 'Enter amount',
-                  prefixIcon: const Icon(Icons.money),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  prefixIcon: Icon(
+                    Icons.money_outlined,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
                 ),
                 validator: (value) {
@@ -255,25 +270,62 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               Text(
                 'Currency',
                 style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(12),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3) ?? Colors.grey,
+                      width: 1,
+                    ),
+                  ),
                 ),
                 child: DropdownButton<String>(
                   isExpanded: true,
                   underline: Container(),
                   value: _selectedCurrency,
-                  items: const [
-                    DropdownMenuItem(value: 'KES', child: Text('KES (Kenyan Shilling)')),
-                    DropdownMenuItem(value: 'USD', child: Text('USD (US Dollar)')),
-                    DropdownMenuItem(value: 'EUR', child: Text('EUR (Euro)')),
+                  dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                  style: GoogleFonts.poppins(
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                    fontSize: 16,
+                  ),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'KES',
+                      child: Text(
+                        'KES (Kenyan Shilling)',
+                        style: GoogleFonts.poppins(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'USD',
+                      child: Text(
+                        'USD (US Dollar)',
+                        style: GoogleFonts.poppins(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'EUR',
+                      child: Text(
+                        'EUR (Euro)',
+                        style: GoogleFonts.poppins(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ],
                   onChanged: (value) {
                     if (value != null) {
