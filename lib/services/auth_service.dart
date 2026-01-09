@@ -4,25 +4,30 @@ import '../constants/api_constants.dart';
 import 'logger_service.dart';
 import 'token_service.dart';
 import '../utils/debug_utils.dart';
+import '../models/user_profile.dart';
 
 class AuthService {
   /// User registration
   static Future<Map<String, dynamic>> register({
     required String email,
     required String password,
-    required String firstName,
-    required String lastName,
+    required String name,
     required String phoneNumber,
+    required String location,
   }) async {
     final startTime = DateTime.now();
 
     try {
       final requestBody = {
-        'email': email,
-        'password': password,
-        'firstName': firstName,
-        'lastName': lastName,
-        'phoneNumber': phoneNumber,
+        'user': {
+          'email': email,
+          'password': password,
+          'name': name,
+          'phone': phoneNumber,
+          'role': 8,
+          'status': 'active',
+          'location': location,
+        }
       };
 
       AppLogger.logAPIRequest(
@@ -53,16 +58,24 @@ class AuthService {
           response: jsonResponse,
         );
 
-        // Log user registration
-        final registrationData = {
-          'email': email,
-          'first_name': firstName,
-          'last_name': lastName,
-          'phone_number': phoneNumber,
-          'timestamp': DateTime.now().toIso8601String(),
-        };
-
-        AppLogger.logUserRegistration(registrationData);
+        if (jsonResponse['token'] != null || jsonResponse['access_token'] != null) {
+          final token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
+          final userObj = jsonResponse['user'];
+          final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
+          final userEmail = userObj?['email'] ?? email ?? '';
+          final phone = userObj?['phone'] ?? jsonResponse['phone'] ?? '';
+          final userName = userObj?['name'] ?? name ?? '';
+          
+          if (token.isNotEmpty) {
+            await TokenService.saveUserData(
+              token: token,
+              userId: userId,
+              email: userEmail,
+              phoneNumber: phone,
+              name: userName,
+            );
+          }
+        }
 
         return jsonResponse;
       } else {
@@ -102,8 +115,10 @@ class AuthService {
 
     try {
       final requestBody = {
-        'email': email,
-        'password': password,
+        'user': {
+          'email': email,
+          'password': password,
+        }
       };
 
       AppLogger.logAPIRequest(
@@ -138,8 +153,11 @@ class AuthService {
         // Token is at root level in response: response['token']
         // User data is in response['user']
         final token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
-        final userId = jsonResponse['user']?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
-        final phone = jsonResponse['user']?['phone'] ?? jsonResponse['phone'] ?? '';
+        final userObj = jsonResponse['user'];
+        final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
+        final userEmail = userObj?['email'] ?? email ?? '';
+        final phone = userObj?['phone'] ?? jsonResponse['phone'] ?? '';
+        final name = userObj?['name'] ?? '';
         
         AppLogger.debug(
           LogTags.auth,
@@ -148,6 +166,7 @@ class AuthService {
             'token_exists': token.isNotEmpty,
             'token_length': token.length,
             'user_id': userId,
+            'email': userEmail,
             'phone': phone,
           },
         );
@@ -156,8 +175,9 @@ class AuthService {
           await TokenService.saveUserData(
             token: token,
             userId: userId,
-            email: email,
+            email: userEmail,
             phoneNumber: phone,
+            name: name,
           );
 
           AppLogger.debug(
@@ -245,6 +265,73 @@ class AuthService {
         'Failed to load user profile',
         data: {'error': e.toString()},
       );
+    }
+  }
+
+  /// Get user profile
+  static Future<UserProfile?> getUserProfile() async {
+    final startTime = DateTime.now();
+    final token = await TokenService.getToken();
+
+    if (token == null || token.isEmpty) {
+      AppLogger.warning(LogTags.auth, 'No token found when fetching profile');
+      return null;
+    }
+
+    try {
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.userProfileEndpoint,
+        method: 'GET',
+      );
+
+      final response = await http.get(
+        Uri.parse(ApiConstants.userProfileEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.userProfileEndpoint,
+          method: 'GET',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: jsonResponse,
+        );
+
+        if (jsonResponse['user'] != null) {
+          return UserProfile.fromJson(jsonResponse['user']);
+        }
+        return null;
+      } else {
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.userProfileEndpoint,
+          method: 'GET',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: {'error': response.body},
+        );
+        return null;
+      }
+    } catch (e) {
+      final duration = DateTime.now().difference(startTime);
+      AppLogger.error(
+        LogTags.auth,
+        'Get user profile error',
+        data: {
+          'error': e.toString(),
+          'duration_ms': duration.inMilliseconds,
+        },
+      );
+      // Return null instead of throwing to allow fallback to hardcoded data
+      return null;
     }
   }
 }

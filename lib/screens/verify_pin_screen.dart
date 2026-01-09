@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
 import 'home_screen.dart';
+import '../services/token_service.dart';
 
 class VerifyPinScreen extends StatefulWidget {
   final Widget? nextScreen;
@@ -16,12 +17,14 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     with SingleTickerProviderStateMixin {
   String _pin = '';
   final String _correctPin = '1234'; 
+  String _userName = 'User'; // Default value
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
     _shakeController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -32,6 +35,15 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
         curve: Curves.elasticIn,
       ),
     );
+  }
+
+  Future<void> _loadUserData() async {
+    final name = await TokenService.getUserName();
+    if (name != null && name.isNotEmpty && mounted) {
+      setState(() {
+        _userName = name;
+      });
+    }
   }
 
   @override
@@ -121,7 +133,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Anwar Magara',
+                _userName,
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24,

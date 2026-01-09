@@ -1,10 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer';
 
 class TokenService {
   static const String _tokenKey = 'auth_token';
   static const String _userIdKey = 'user_id';
   static const String _userEmailKey = 'user_email';
   static const String _phoneNumberKey = 'phone_number';
+  static const String _userNameKey = 'user_name';
 
   /// Save authentication token
   static Future<void> saveToken(String token) async {
@@ -15,6 +17,7 @@ class TokenService {
   /// Get authentication token
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
+    log('token: ${prefs.getString(_tokenKey)}');
     return prefs.getString(_tokenKey);
   }
 
@@ -54,6 +57,18 @@ class TokenService {
     return prefs.getString(_phoneNumberKey);
   }
 
+  /// Save user name
+  static Future<void> saveUserName(String name) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userNameKey, name);
+  }
+
+  /// Get user name
+  static Future<String?> getUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userNameKey);
+  }
+
   /// Check if user is authenticated
   static Future<bool> isAuthenticated() async {
     final token = await getToken();
@@ -67,6 +82,7 @@ class TokenService {
     await prefs.remove(_userIdKey);
     await prefs.remove(_userEmailKey);
     await prefs.remove(_phoneNumberKey);
+    await prefs.remove(_userNameKey);
   }
 
   /// Save all user data at once
@@ -75,14 +91,19 @@ class TokenService {
     required String userId,
     required String email,
     required String phoneNumber,
+    String? name,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    await Future.wait([
+    List<Future<bool>> futures = [
       prefs.setString(_tokenKey, token),
       prefs.setString(_userIdKey, userId),
       prefs.setString(_userEmailKey, email),
       prefs.setString(_phoneNumberKey, phoneNumber),
-    ]);
+    ];
+    if (name != null) {
+      futures.add(prefs.setString(_userNameKey, name));
+    }
+    await Future.wait(futures);
   }
 
   /// Get all user data

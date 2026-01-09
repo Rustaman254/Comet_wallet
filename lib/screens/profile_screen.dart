@@ -5,8 +5,34 @@ import 'edit_profile_screen.dart';
 import 'my_cards_screen.dart';
 import 'settings_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+import '../services/token_service.dart';
+
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  String _userName = 'User';
+  String _userRole = 'Standard User';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final name = await TokenService.getUserName();
+    if (name != null && name.isNotEmpty && mounted) {
+      setState(() {
+        _userName = name;
+      });
+    }
+    // We could also fetch user profile via AuthService for more current details
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +111,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Anwar Sadatt',
+                      _userName,
                       style: GoogleFonts.poppins(
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 21,
@@ -94,7 +120,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Senior Designer',
+                      _userRole,
                       style: GoogleFonts.poppins(
                         color: Colors.white70,
                         fontSize: 13,

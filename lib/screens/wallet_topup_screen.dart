@@ -19,24 +19,46 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
   final _amountController = TextEditingController();
   final _phoneController = TextEditingController();
   String _selectedCurrency = 'KES';
+  String _selectedCountryCode = '+254';
   bool _isLoading = false;
   String? _userPhoneNumber;
+
+  final List<Map<String, String>> _countryCodes = [
+    {'code': '+254', 'country': 'Kenya'},
+    {'code': '+255', 'country': 'Tanzania'},
+    {'code': '+256', 'country': 'Uganda'},
+    {'code': '+250', 'country': 'Rwanda'},
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadUserPhone();
+    _amountController.addListener(() => setState(() {}));
   }
 
   Future<void> _loadUserPhone() async {
     try {
       final phone = await TokenService.getPhoneNumber();
-      if (mounted) {
+      if (phone != null && mounted) {
         setState(() {
           _userPhoneNumber = phone;
-          if (phone != null) {
-            _phoneController.text = phone;
+          for (var country in _countryCodes) {
+            final codeWithPlus = country['code']!;
+            final codeWithoutPlus = codeWithPlus.substring(1);
+            if (phone.startsWith(codeWithPlus)) {
+              _selectedCountryCode = codeWithPlus;
+              _phoneController.text = phone.substring(codeWithPlus.length).trim();
+              return;
+            } else if (phone.startsWith(codeWithoutPlus)) {
+              _selectedCountryCode = codeWithPlus;
+              _phoneController.text = phone.substring(codeWithoutPlus.length).trim();
+              return;
+            }
           }
+          // Fallback if no matching code found: just strip + and leading digits if needed, 
+          // but for simplicity we'll just put the whole thing in if it's long
+          _phoneController.text = phone;
         });
       }
     } catch (e) {
@@ -54,17 +76,9 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
 
       try {
         final amount = double.parse(_amountController.text);
-        final phoneNumber = _phoneController.text.trim();
-
-        AppLogger.info(
-          LogTags.payment,
-          'Initiating wallet top-up',
-          data: {
-            'phone_number': phoneNumber,
-            'amount': amount,
-            'currency': _selectedCurrency,
-          },
-        );
+        final rawNumber = _phoneController.text.trim();
+        // Format as MSISDN without spaces for API, but use the selection
+        final phoneNumber = '$_selectedCountryCode$rawNumber'.replaceAll(RegExp(r'\s+'), '');
 
         final response = await WalletService.topupWallet(
           phoneNumber: phoneNumber,
@@ -73,11 +87,8 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         );
 
         if (mounted) {
-          ToastService().showSuccess(
-            context,
-            'Top-up of $_selectedCurrency $amount successful!',
-          );
-
+          _showSuccessSheet(response);
+          
           AppLogger.success(
             LogTags.payment,
             'Wallet top-up completed',
@@ -87,23 +98,10 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               'response': response,
             },
           );
-
-          // Clear form and go back
-          Future.delayed(const Duration(seconds: 1), () {
-            if (mounted) {
-              Navigator.of(context).pop(true);
-            }
-          });
         }
       } catch (e) {
         if (mounted) {
           ToastService().showError(context, 'Top-up failed: ${e.toString()}');
-
-          AppLogger.error(
-            LogTags.payment,
-            'Wallet top-up failed',
-            data: {'error': e.toString()},
-          );
         }
       } finally {
         if (mounted) {
@@ -113,6 +111,99 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
     } else {
       ToastService().showError(context, 'Please fill in all fields correctly');
     }
+  }
+
+  void _showSuccessSheet(Map<String, dynamic> response) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: buttonGreen.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.check_circle_outline, color: buttonGreen, size: 40),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              response['message'] ?? 'Top-up successful!',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildDetailRow('Transaction ID', response['transaction_id'] ?? 'N/A'),
+            _buildDetailRow('Amount', '${response['currency'] ?? _selectedCurrency} ${response['amount']}'),
+            _buildDetailRow('Phone', response['phone_number'] ?? _phoneController.text),
+            _buildDetailRow('Status', response['status'] ?? 'Success'),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close sheet
+                  Navigator.pop(context, true); // Go back home
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonGreen,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'Back to Home',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
+          ),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -191,32 +282,72 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                readOnly: _userPhoneNumber != null,
-                style: GoogleFonts.poppins(
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 16,
-                ),
-                decoration: buildUnderlineInputDecoration(
-                  context: context,
-                  label: '',
-                  hintText: 'Enter phone number',
-                  prefixIcon: Icon(
-                    Icons.phone_outlined,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Country Code Dropdown
+                  Container(
+                    width: 100,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3) ?? Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedCountryCode,
+                        dropdownColor: cardBackground,
+                        icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
+                        isExpanded: true,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        onChanged: (String? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              _selectedCountryCode = newValue;
+                            });
+                          }
+                        },
+                        items: _countryCodes.map<DropdownMenuItem<String>>((Map<String, String> country) {
+                          return DropdownMenuItem<String>(
+                            value: country['code'],
+                            child: Text(country['code']!),
+                          );
+                        }).toList(),
+                      ),
+                    ),
                   ),
-                ),
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Phone number is required';
-                  }
-                  if (value!.length < 10) {
-                    return 'Please enter a valid phone number';
-                  }
-                  return null;
-                },
+                  const SizedBox(width: 12),
+                  // Number Field
+                  Expanded(
+                    child: TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      decoration: buildUnderlineInputDecoration(
+                        context: context,
+                        label: '',
+                        hintText: '7XX XXX XXX',
+                      ),
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return 'Required';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
 

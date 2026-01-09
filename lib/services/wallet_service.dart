@@ -24,16 +24,20 @@ class WalletService {
           'token_exists': token != null,
           'token_empty': token?.isEmpty ?? true,
           'token_length': token?.length ?? 0,
+          'token_first_50_chars': token != null 
+              ? token.substring(0, (token.length > 50 ? 50 : token.length)) 
+              : 'N/A',
         },
       );
       
       if (token == null || token.isEmpty) {
         AppLogger.error(
           LogTags.payment,
-          'No authentication token available',
+          'No authentication token available - User not logged in',
           data: {
             'token_null': token == null,
             'token_empty': token?.isEmpty ?? true,
+            'timestamp': DateTime.now().toIso8601String(),
           },
         );
         throw Exception('User not authenticated. Please login first.');
@@ -61,12 +65,25 @@ class WalletService {
         body: requestBody,
       );
 
+      // Prepare authorization header
+      // Try with Bearer prefix first (standard JWT format)
+      final authorizationHeader = 'Bearer $token';
+      AppLogger.debug(
+        LogTags.payment,
+        'Preparing authorization header for Top Up',
+        data: {
+          'token_prefix': 'Bearer',
+          'token_present': token.isNotEmpty,
+          'token_length': token.length,
+        },
+      );
+
       final response = await http.post(
         Uri.parse(ApiConstants.walletTopupEndpoint),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
+          'Authorization': authorizationHeader, // Consuming the Bearer token here
         },
         body: jsonEncode(requestBody),
       );
@@ -76,14 +93,6 @@ class WalletService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonResponse = jsonDecode(response.body);
 
-        AppLogger.logAPIResponse(
-          endpoint: ApiConstants.walletTopupEndpoint,
-          method: 'POST',
-          statusCode: response.statusCode,
-          duration: duration,
-          response: jsonResponse,
-        );
-
         AppLogger.success(
           LogTags.payment,
           'Wallet top-up completed successfully',
@@ -91,24 +100,58 @@ class WalletService {
             'phone_number': phoneNumber,
             'amount': amount,
             'currency': currency,
+            'transaction_id': jsonResponse['transaction_id'],
+            'status': jsonResponse['status'],
+            'message': jsonResponse['message'],
             'duration_ms': duration.inMilliseconds,
           },
         );
 
         return jsonResponse;
       } else {
-        final errorResponse = jsonDecode(response.body);
+        // Try to parse error response, handle both JSON and plain text
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body, 'raw_body': true};
+        }
 
-        AppLogger.logAPIResponse(
-          endpoint: ApiConstants.walletTopupEndpoint,
-          method: 'POST',
-          statusCode: response.statusCode,
-          duration: duration,
-          response: errorResponse,
-        );
+        // Log specific error based on status code
+        if (response.statusCode == 401) {
+          AppLogger.error(
+            LogTags.payment,
+            'Authentication failed - Token invalid or expired',
+            data: {
+              'status_code': response.statusCode,
+              'error_response': errorResponse,
+              'token_length': token.length,
+              'duration_ms': duration.inMilliseconds,
+            },
+          );
+        } else if (response.statusCode == 403) {
+          AppLogger.error(
+            LogTags.payment,
+            'Authorization failed - User not permitted',
+            data: {
+              'status_code': response.statusCode,
+              'error_response': errorResponse,
+              'duration_ms': duration.inMilliseconds,
+            },
+          );
+        } else {
+          AppLogger.logAPIResponse(
+            endpoint: ApiConstants.walletTopupEndpoint,
+            method: 'POST',
+            statusCode: response.statusCode,
+            duration: duration,
+            response: errorResponse,
+          );
+        }
 
         throw Exception(
           errorResponse['message'] ?? 
+          errorResponse['error'] ??
           'Top-up failed with status code: ${response.statusCode}'
         );
       }
@@ -145,7 +188,7 @@ class WalletService {
       );
 
       final response = await http.get(
-        Uri.parse('${ApiConstants.baseUrl}/wallet/balance'),
+        Uri.parse(ApiConstants.walletBalanceEndpoint),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -193,7 +236,7 @@ class WalletService {
       );
 
       final response = await http.get(
-        Uri.parse('${ApiConstants.baseUrl}/wallet/transactions'),
+        Uri.parse(ApiConstants.walletTransactionsEndpoint),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -224,6 +267,94 @@ class WalletService {
         data: {'error': e.toString()},
       );
       throw Exception('Transaction history fetch error: $e');
+    }
+  }
+  /// Transfer funds to another wallet
+  static Future<Map<String, dynamic>> transferWallet({
+    required String toEmail,
+    required double amount,
+    required String currency,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final requestBody = {
+        'to_email': toEmail,
+        'amount': amount,
+        'currency': currency,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.walletTransferEndpoint,
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await http.post(
+        Uri.parse(ApiConstants.walletTransferEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Wallet transfer completed successfully',
+          data: {
+            'to_email': toEmail,
+            'amount': amount,
+            'currency': currency,
+            'status': jsonResponse['status'],
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.walletTransferEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Transfer failed with status code: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Wallet transfer error',
+        data: {
+          'to_email': toEmail,
+          'amount': amount,
+          'error': e.toString(),
+        },
+      );
+      throw Exception('Transfer error: $e');
     }
   }
 }

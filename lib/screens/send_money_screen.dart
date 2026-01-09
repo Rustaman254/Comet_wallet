@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
-import 'confirm_payment_screen.dart';
 import 'add_contact_screen.dart';
+import '../services/wallet_service.dart';
+import '../services/token_service.dart';
+import '../services/logger_service.dart';
+import '../services/toast_service.dart';
+import '../utils/input_decoration.dart';
 
 class SendMoneyScreen extends StatefulWidget {
   const SendMoneyScreen({super.key});
@@ -14,11 +18,19 @@ class SendMoneyScreen extends StatefulWidget {
 class _SendMoneyScreenState extends State<SendMoneyScreen> {
   final ScrollController _scrollController = ScrollController();
   final PageController _balancePageController = PageController();
-  final TextEditingController _amountController = TextEditingController(
-    text: '0.00',
-  );
-  String selectedCurrency = 'USD';
-  int _currentBalancePage = 0;
+  final TextEditingController _amountController = TextEditingController(text: '0.00');
+  final TextEditingController _emailController = TextEditingController();
+  final FocusNode _amountFocusNode = FocusNode();
+
+  String selectedCurrency = 'KES';
+  int _currentBalancePage = 1; 
+  bool _isAmountFocused = false;
+  bool _isLoading = false;
+
+  final List<String> _favorites = [
+    'yeshbloger@gmail.com',
+    'support@antigravity.ai',
+  ];
 
   final List<Map<String, dynamic>> _balances = [
     {
@@ -45,6 +57,32 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   void initState() {
     super.initState();
     _balancePageController.addListener(_onBalancePageChanged);
+    _amountFocusNode.addListener(_onAmountFocusChange);
+    
+    // Set initial page to KES if it's there
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _balancePageController.jumpToPage(1);
+    });
+  }
+
+  void _onAmountFocusChange() {
+    setState(() {
+      _isAmountFocused = _amountFocusNode.hasFocus;
+    });
+    
+    if (_amountFocusNode.hasFocus && _amountController.text == '0.00') {
+      // Don't clear immediately, just let the next type clear it
+    }
+  }
+
+  void _onAmountChanged(String value) {
+    if (value.startsWith('0.00') && value.length > 4) {
+      _amountController.text = value.substring(4);
+      _amountController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _amountController.text.length),
+      );
+    }
+    setState(() {});
   }
 
   @override
@@ -52,18 +90,138 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     _scrollController.dispose();
     _balancePageController.dispose();
     _amountController.dispose();
-    _balancePageController.removeListener(_onBalancePageChanged);
+    _emailController.dispose();
+    _amountFocusNode.dispose();
     super.dispose();
   }
 
   void _onBalancePageChanged() {
-    if (_balancePageController.page != null) {
+    if (_balancePageController.hasClients && _balancePageController.page != null) {
       final page = _balancePageController.page!.round();
-      setState(() {
-        _currentBalancePage = page;
-        selectedCurrency = _balances[page]['currency'];
-      });
+      if (_currentBalancePage != page) {
+        setState(() {
+          _currentBalancePage = page;
+          selectedCurrency = _balances[page]['currency'];
+        });
+      }
     }
+  }
+
+  Future<void> _handleTransfer() async {
+    final email = _emailController.text.trim();
+    final amountText = _amountController.text.trim();
+    
+    if (email.isEmpty) {
+      ToastService().showError(context, 'Please enter recipient email');
+      return;
+    }
+    
+    final amount = double.tryParse(amountText) ?? 0.0;
+    if (amount <= 0) {
+      ToastService().showError(context, 'Please enter a valid amount');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await WalletService.transferWallet(
+        toEmail: email,
+        amount: amount,
+        currency: selectedCurrency,
+      );
+
+      if (mounted) {
+        _showSuccessSheet(response);
+      }
+    } catch (e) {
+      if (mounted) {
+        ToastService().showError(context, e.toString().replaceAll('Exception:', '').trim());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _showSuccessSheet(Map<String, dynamic> response) {
+    final transfer = response['transfer'] ?? {};
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: darkBackground,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: buttonGreen.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.check_circle_outline, color: buttonGreen, size: 50),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              response['message'] ?? 'Transfer Successful',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildDetailRow('To', transfer['to_user_name'] ?? transfer['to_user_email'] ?? 'N/A'),
+            _buildDetailRow('Amount', '${transfer['amount']} ${transfer['currency']}'),
+            _buildDetailRow('From', transfer['from_user_email'] ?? 'N/A'),
+            _buildDetailRow('Status', response['status']?.toUpperCase() ?? 'SUCCESS'),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close sheet
+                  Navigator.pop(context); // Go back to Home
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonGreen,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text('Done', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14)),
+          Text(value, style: GoogleFonts.poppins(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
   }
 
   void _showCurrencyDialog() {
@@ -109,60 +267,57 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     return Scaffold(
       backgroundColor: darkBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_outlined,
-                          color: Colors.white,
-                          size: 20,
-                        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            // Fixed Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_outlined,
+                        color: Colors.white,
+                        size: 20,
                       ),
                     ),
-                    Expanded(
-                      child: Text(
-                        'Send Money',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'Send Money',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 40),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 40),
+                ],
               ),
-              const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 24),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
               // Total Balance Card - Scrollable
               SizedBox(
                 height: 200,
                 child: PageView(
                   controller: _balancePageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentBalancePage = index;
-                      selectedCurrency = _balances[index]['currency'];
-                    });
-                  },
                   children: _balances.map((balance) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -175,8 +330,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                             end: Alignment.bottomRight,
                             colors: [
                               darkGreen,
-                              darkGreen.withValues(alpha: 0.8),
-                              lightGreen.withValues(alpha: 0.3),
+                              darkGreen.withOpacity(0.8),
+                              lightGreen.withOpacity(0.3),
                             ],
                           ),
                           border: Border.all(color: cardBorder, width: 1),
@@ -204,7 +359,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                       vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
+                                      color: Colors.white.withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
@@ -314,35 +469,103 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Send to',
+                      'Recipient Email',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 100,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          _buildAddContactButton(),
-                          const SizedBox(width: 16),
-                          _buildContactAvatar('Yamilet'),
-                          const SizedBox(width: 16),
-                          _buildContactAvatar('Alexa'),
-                          const SizedBox(width: 16),
-                          _buildContactAvatar('Yakub'),
-                          const SizedBox(width: 16),
-                          _buildContactAvatar('Krishna'),
-                        ],
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _emailController,
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                      decoration: buildUnderlineInputDecoration(
+                        context: context,
+                        label: '',
+                        hintText: 'Enter recipient email address',
+                        prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _favorites.contains(_emailController.text.trim())
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: buttonGreen,
+                          ),
+                          onPressed: () {
+                            final email = _emailController.text.trim();
+                            if (email.isNotEmpty && email.contains('@')) {
+                              setState(() {
+                                if (_favorites.contains(email)) {
+                                  _favorites.remove(email);
+                                  ToastService().showInfo(context, 'Removed from favorites');
+                                } else {
+                                  _favorites.add(email);
+                                  ToastService().showSuccess(context, 'Added to favorites');
+                                }
+                              });
+                            } else {
+                              ToastService().showError(context, 'Enter a valid email first');
+                            }
+                          },
+                        ),
                       ),
+                      onChanged: (v) => setState(() {}),
                     ),
+                    if (_favorites.isNotEmpty) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        'Favorites',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 40,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _favorites.length,
+                          separatorBuilder: (context, index) => const SizedBox(width: 8),
+                          itemBuilder: (context, index) {
+                            final favorite = _favorites[index];
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _emailController.text = favorite;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: _emailController.text == favorite
+                                        ? buttonGreen
+                                        : Colors.white24,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  favorite,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               // Enter Amount section
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -382,12 +605,15 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       ),
                       const SizedBox(height: 16),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
                         children: [
                           Text(
                             selectedCurrency,
                             style: GoogleFonts.poppins(
-                              color: Colors.white,
+                              color: (_isAmountFocused && _amountController.text == '0.00') 
+                                  ? Colors.grey 
+                                  : Colors.white,
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                             ),
@@ -396,16 +622,22 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                           Expanded(
                             child: TextField(
                               controller: _amountController,
+                              focusNode: _amountFocusNode,
+                              onChanged: _onAmountChanged,
                               style: GoogleFonts.poppins(
-                                color: Colors.white,
+                                color: (_isAmountFocused && _amountController.text == '0.00') 
+                                    ? Colors.grey 
+                                    : Colors.white,
                                 fontSize: 35,
                                 fontWeight: FontWeight.bold,
                               ),
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
+                                hintText: '0.00',
+                                hintStyle: GoogleFonts.poppins(color: Colors.grey),
                               ),
                             ),
                           ),
@@ -422,13 +654,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const ConfirmPaymentScreen(),
-                        ),
-                      );
-                    },
+                    onPressed: _isLoading ? null : _handleTransfer,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonGreen,
                       foregroundColor: Colors.white,
@@ -437,19 +663,28 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text(
-                      'Send Money',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : Text(
+                            'Send Money',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
               ),
               const SizedBox(height: 40),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -468,10 +703,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
+              color: Colors.white.withOpacity(0.1),
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withValues(alpha: 0.3),
+                color: Colors.white.withOpacity(0.3),
                 width: 2,
               ),
             ),

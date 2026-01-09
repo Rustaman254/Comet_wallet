@@ -7,9 +7,7 @@ import '../services/toast_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_up_screen.dart';
 import 'verify_pin_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../constants/api_constants.dart';
+import '../services/auth_service.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -42,58 +40,28 @@ class _SignInScreenState extends State<SignInScreen> {
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      final url = Uri.parse(ApiConstants.loginEndpoint);
-      final body = jsonEncode({
-        "user": {
-          "email": _emailController.text.trim(),
-          "password": _passwordController.text,
-        }
-      });
-
       try {
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: body,
+        await AuthService.login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
         );
 
         if (mounted) Navigator.pop(context);
 
-        if (response.statusCode == 200) {
-           final prefs = await SharedPreferences.getInstance();
-           // You might want to save token here if returned
-           await prefs.setBool('isSignedUp', true);
-           await prefs.setBool('isFirstTime', false);
-           
-           if (mounted) {
-             ToastService().showSuccess(context, "Login successful! Welcome back!");
-             VibrationService.lightImpact();
-             Navigator.of(context).pushReplacement(
-               MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
-             );
-           }
-        } else {
-          String errorMessage = "Login failed";
-          try {
-            final responseData = jsonDecode(response.body);
-             if (responseData['message'] != null) {
-              errorMessage = responseData['message'];
-            } else if (responseData['error'] != null) {
-              errorMessage = responseData['error'];
-            }
-          } catch (_) {}
-          
-          if (mounted) {
-             VibrationService.heavyImpact();
-             ToastService().showError(context, errorMessage);
-          }
+        if (mounted) {
+          ToastService().showSuccess(context, "Login successful! Welcome back!");
+          VibrationService.lightImpact();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
+          );
         }
       } catch (e) {
-         if (mounted) {
-            Navigator.pop(context);
-            VibrationService.heavyImpact();
-            ToastService().showError(context, "Network error: ${e.toString()}");
-         }
+        if (mounted) {
+          Navigator.pop(context);
+          VibrationService.heavyImpact();
+          String errorMessage = e.toString().replaceFirst('Exception: ', '');
+          ToastService().showError(context, errorMessage);
+        }
       }
     } else {
       VibrationService.heavyImpact();

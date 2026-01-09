@@ -7,9 +7,8 @@ import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
 import 'verify_pin_screen.dart';
 import 'kyc/kyc_intro_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../constants/api_constants.dart';
+import '../services/auth_service.dart';
+import '../services/token_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -41,72 +40,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
-      // Show loading indicator
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      final url = Uri.parse(ApiConstants.registerEndpoint);
-      final body = jsonEncode({
-        "user": {
-          "name": _nameController.text.trim(),
-          "email": _emailController.text.trim(),
-          "phone": _phoneController.text.trim(),
-          "password": _passwordController.text, // Don't trim password? Usually safe to trim whitespace around it but let's keep it raw if user intended spaces. Actually trim is safer for trailing spaces.
-          "role": 8,
-          "status": "active",
-          "location": _locationController.text.trim(),
-        }
-      });
-
       try {
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: body,
+        await AuthService.register(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          name: _nameController.text.trim(),
+          phoneNumber: _phoneController.text.trim(),
+          location: _locationController.text.trim(),
         );
         
-        // Pop loading dialog
         if (mounted) Navigator.pop(context);
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('isSignedUp', true);
-          await prefs.setBool('isFirstTime', false);
-
-          if (mounted) {
-            ToastService().showSuccess(context, "Account created successfully! Please log in.");
-            
-            // Redirect to login screen
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => const SignInScreen(),
-              ),
-            );
-          }
-        } else {
-          // Try to parse error message
-          String errorMessage = "Registration failed";
-          try {
-            final responseData = jsonDecode(response.body);
-            // Adjust based on actual API error structure if known, otherwise generic fallback
-            if (responseData['message'] != null) {
-              errorMessage = responseData['message'];
-            } else if (responseData['error'] != null) {
-              errorMessage = responseData['error'];
-            }
-          } catch (_) {}
+        if (mounted) {
+          ToastService().showSuccess(context, "Account created successfully!");
           
-          if (mounted) {
-            ToastService().showError(context, errorMessage);
+          final hasToken = await TokenService.getToken() != null;
+          
+          if (hasToken) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const SignInScreen()),
+            );
           }
         }
       } catch (e) {
         if (mounted) {
-          Navigator.pop(context); // Pop loading if error occurs
-          ToastService().showError(context, "Network error: ${e.toString()}");
+          Navigator.pop(context);
+          String errorMessage = e.toString().replaceFirst('Exception: ', '');
+          ToastService().showError(context, errorMessage);
         }
       }
     } else {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../constants/colors.dart';
+import '../services/token_service.dart';
+import '../utils/input_decoration.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -10,12 +13,71 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _nameController = TextEditingController(text: 'Tanya Myroniuk');
-  final TextEditingController _emailController = TextEditingController(text: 'tanya@example.com');
-  final TextEditingController _phoneController = TextEditingController(text: '+254 712 345 678');
-  final TextEditingController _dayController = TextEditingController(text: '28');
-  final TextEditingController _monthController = TextEditingController(text: 'September');
-  final TextEditingController _yearController = TextEditingController(text: '2000');
+  bool _isEditing = false;
+  DateTime _birthDate = DateTime(2000, 9, 28);
+  
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final name = await TokenService.getUserName();
+    final email = await TokenService.getUserEmail();
+    final phone = await TokenService.getPhoneNumber();
+    // In a real app, we'd fetch location and birthDate from the profile API
+    
+    if (mounted) {
+      setState(() {
+        _nameController.text = name ?? 'User';
+        _emailController.text = email ?? '';
+        _phoneController.text = phone ?? '';
+        _locationController.text = 'Nairobi, Kenya';
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _birthDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: buttonGreen,
+              onPrimary: Colors.white,
+              surface: cardBackground,
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && picked != _birthDate) {
+      setState(() {
+        _birthDate = picked;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _locationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
+                          color: Colors.white.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -50,14 +112,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     Text(
-                      'Edit Profile',
+                      _isEditing ? 'Edit Profile' : 'Personal Information',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 40), // Balance the header
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isEditing = !_isEditing;
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _isEditing 
+                              ? Colors.red.withOpacity(0.1)
+                              : buttonGreen.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          _isEditing ? Icons.close : Icons.edit_outlined,
+                          color: _isEditing ? Colors.red : buttonGreen,
+                          size: 20,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -73,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
                         image: const DecorationImage(
-                          image: AssetImage('assets/images/user_avatar.png'), // Placeholder
+                          image: AssetImage('assets/images/user_avatar.png'),
                           fit: BoxFit.cover,
                         ),
                         color: Colors.grey[800],
@@ -82,79 +165,63 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Tanya Myroniuk',
+                      _nameController.text,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Senior Designer',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 13,
-                      ),
-                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 40),
               // Fields
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
-                    _buildInputField('Full Name', _nameController, Icons.person_outline),
-                    const SizedBox(height: 20),
-                    _buildInputField('Email Address', _emailController, Icons.email_outlined),
-                    const SizedBox(height: 20),
-                    _buildInputField('Phone Number', _phoneController, Icons.phone_outlined),
-                    const SizedBox(height: 20),
-                    // Birth Date
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Birth Date',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: _buildDateInput(_dayController),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              flex: 4,
-                              child: _buildDateInput(_monthController),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              flex: 3,
-                              child: _buildDateInput(_yearController),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    _buildField('Full Name', _nameController, Icons.person_outline),
+                    const SizedBox(height: 24),
+                    _buildField('Email Address', _emailController, Icons.email_outlined),
+                    const SizedBox(height: 24),
+                    _buildField('Phone Number', _phoneController, Icons.phone_outlined),
+                    const SizedBox(height: 24),
+                    _buildField('Location', _locationController, Icons.location_on_outlined),
+                    const SizedBox(height: 24),
+                    _buildBirthDateField(),
                   ],
                 ),
               ),
               const SizedBox(height: 40),
-              Text(
-                'Joined 28 Jan 2021',
-                style: GoogleFonts.poppins(
-                  color: Colors.white30,
-                  fontSize: 13,
+              if (_isEditing)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Implement save logic here
+                        setState(() => _isEditing = false);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonGreen,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Save Changes',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
               const SizedBox(height: 20),
             ],
           ),
@@ -163,7 +230,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller, IconData icon) {
+  Widget _buildField(String label, TextEditingController controller, IconData icon) {
+    if (!_isEditing) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.white30, size: 20),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  color: Colors.white30,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                controller.text,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -174,51 +271,80 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             fontSize: 14,
           ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          decoration: BoxDecoration(
-            color: cardBackground, // Theme color
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: cardBorder, width: 1),
-          ),
-          child: TextField(
-            controller: controller,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 15,
-            ),
-            decoration: InputDecoration(
-              icon: Icon(icon, color: Colors.white70, size: 20),
-              border: InputBorder.none,
-              hintStyle: GoogleFonts.poppins(color: Colors.white30),
-            ),
+        const SizedBox(height: 4),
+        TextFormField(
+          controller: controller,
+          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+          decoration: buildUnderlineInputDecoration(
+            context: context,
+            label: '',
+            hintText: 'Enter $label',
+            prefixIcon: Icon(icon, color: Colors.white70),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildDateInput(TextEditingController controller) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: cardBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: cardBorder, width: 1),
-      ),
-      child: TextField(
-        controller: controller,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 15,
+  Widget _buildBirthDateField() {
+    final dateStr = DateFormat('dd MMM yyyy').format(_birthDate);
+    
+    if (!_isEditing) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.cake_outlined, color: Colors.white30, size: 20),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Birth Date',
+                style: GoogleFonts.poppins(
+                  color: Colors.white30,
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                dateStr,
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Birth Date',
+          style: GoogleFonts.poppins(
+            color: Colors.white70,
+            fontSize: 14,
+          ),
         ),
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintStyle: GoogleFonts.poppins(color: Colors.white30),
+        const SizedBox(height: 4),
+        GestureDetector(
+          onTap: () => _selectDate(context),
+          child: AbsorbPointer(
+            child: TextFormField(
+              decoration: buildUnderlineInputDecoration(
+                context: context,
+                label: '',
+                hintText: dateStr,
+                prefixIcon: const Icon(Icons.cake_outlined, color: Colors.white70),
+                suffixIcon: const Icon(Icons.calendar_today, color: Colors.white70, size: 18),
+              ),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
