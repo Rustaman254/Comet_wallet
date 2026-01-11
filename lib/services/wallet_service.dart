@@ -198,17 +198,38 @@ class WalletService {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
+        
+        // Extract balance from the first wallet in the list, or defaults
+        double balance = 0.0;
+        String currency = 'KES';
+        
+        final wallets = jsonResponse['wallets'] as List?;
+        if (wallets != null && wallets.isNotEmpty) {
+          final wallet = wallets[0];
+          balance = double.tryParse(wallet['balance'].toString()) ?? 0.0;
+          currency = wallet['currency'] ?? 'KES';
+        } else if (jsonResponse['balances'] != null) {
+          // Fallback to balances map if wallets list is empty/missing
+          final balances = jsonResponse['balances'] as Map<String, dynamic>;
+          if (balances.isNotEmpty) {
+            currency = balances.keys.first;
+            balance = double.tryParse(balances[currency].toString()) ?? 0.0;
+          }
+        }
 
         AppLogger.success(
           LogTags.payment,
           'Wallet balance retrieved',
           data: {
-            'balance': jsonResponse['balance'],
-            'currency': jsonResponse['currency'],
+            'balance': balance,
+            'currency': currency,
           },
         );
 
-        return jsonResponse;
+        return {
+          'balance': balance,
+          'currency': currency,
+        };
       } else {
         throw Exception('Failed to fetch wallet balance');
       }
@@ -355,6 +376,181 @@ class WalletService {
         },
       );
       throw Exception('Transfer error: $e');
+    }
+  }
+
+  /// Create a payment link for receiving money
+  static Future<Map<String, dynamic>> createPaymentLink({
+    required double amount,
+    required String currency,
+    required String description,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final requestBody = {
+        'amount': amount,
+        'currency': currency,
+        'description': description,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.paymentLinksEndpoint,
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await http.post(
+        Uri.parse(ApiConstants.paymentLinksEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Payment link created successfully',
+          data: {
+            'amount': amount,
+            'currency': currency,
+            'token': jsonResponse['token'],
+            'payment_url': jsonResponse['payment_url'],
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.paymentLinksEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Failed to create payment link: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Payment link creation error',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Payment link error: $e');
+    }
+  }
+
+  /// Send money to a mobile number (M-Pesa withdrawal)
+  static Future<Map<String, dynamic>> sendMoney({
+    required String recipientPhone,
+    required double amount,
+    required String currency,
+    required String description,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final formattedPhone = recipientPhone.startsWith('+') 
+          ? recipientPhone.substring(1) 
+          : recipientPhone;
+
+      final requestBody = {
+        'recipient_phone': formattedPhone,
+        'amount': amount,
+        'currency': currency,
+        'description': description,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.walletSendMoneyEndpoint,
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await http.post(
+        Uri.parse(ApiConstants.walletSendMoneyEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Money transfer initiated successfully',
+          data: {
+            'recipient_phone': recipientPhone,
+            'amount': amount,
+            'transaction_id': jsonResponse['transaction_id'],
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.walletSendMoneyEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Money transfer failed: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Send money error',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Send money error: $e');
     }
   }
 }

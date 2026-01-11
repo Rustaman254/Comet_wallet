@@ -59,84 +59,84 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
-              // Phone icon
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: buttonGreen.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.phone_android,
-                  color: buttonGreen,
-                  size: 40,
-                ),
+              // Center amount display
+              Column(
+                children: [
+                   Text(
+                    'Sending',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white60,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        currency,
+                        style: GoogleFonts.poppins(
+                          color: buttonGreen,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        amount,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              const SizedBox(height: 30),
-              // Payment details card
+              
+              const SizedBox(height: 60),
+
+              // Recipient Details
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                 decoration: BoxDecoration(
-                  color: cardBackground,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: cardBorder, width: 1),
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Column(
                   children: [
-                    Text(
-                      'You are sending',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                    _buildModernDetailRow(
+                      icon: Icons.person_outline,
+                      label: 'To Recipient',
+                      value: phoneNumber,
+                      isPhone: true,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '$currency $amount',
-                      style: GoogleFonts.poppins(
-                        color: buttonGreen,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
+                     const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Divider(color: Colors.white10),
                     ),
-                    const SizedBox(height: 24),
-                    Divider(color: Colors.white.withValues(alpha: 0.1)),
-                    const SizedBox(height: 24),
-                    _buildDetailRow('To', phoneNumber),
-                    const SizedBox(height: 16),
-                    _buildDetailRow('Amount', '$currency $amount'),
-                    const SizedBox(height: 16),
-                    _buildDetailRow('Transaction Fee', '$currency 0.00'),
-                    const SizedBox(height: 24),
-                    Divider(color: Colors.white.withValues(alpha: 0.1)),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Total',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '$currency $amount',
-                          style: GoogleFonts.poppins(
-                            color: buttonGreen,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    _buildModernDetailRow(
+                      icon: Icons.receipt_long_outlined,
+                      label: 'Transaction Fee',
+                      value: 'Free',
+                      valueColor: buttonGreen,
+                    ),
+                     const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Divider(color: Colors.white10),
+                    ),
+                     _buildModernDetailRow(
+                      icon: Icons.description_outlined,
+                      label: 'Description',
+                      value: 'Withdrawal to M-Pesa',
                     ),
                   ],
                 ),
               ),
+
               const Spacer(),
               // Confirm button
               SizedBox(
@@ -149,6 +149,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                           recipientName: phoneNumber,
                           amount: amount,
                           currency: currency,
+                          description: 'Withdrawal to M-Pesa',
                         ),
                       ),
                     );
@@ -156,17 +157,27 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
+                    elevation: 8,
+                    shadowColor: buttonGreen.withValues(alpha: 0.4),
                   ),
-                  child: Text(
-                    'Confirm & Enter PIN',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.fingerprint, size: 24),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Confirm & Send',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -179,16 +190,13 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.2),
-                      ),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: Text(
-                    'Cancel',
+                    'Cancel Transaction',
                     style: GoogleFonts.poppins(
-                      color: Colors.white70,
+                      color: Colors.white60,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
@@ -203,24 +211,47 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildModernDetailRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    Color? valueColor,
+    bool isPhone = false,
+  }) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.poppins(
-            color: Colors.white70,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            shape: BoxShape.circle,
           ),
+          child: Icon(icon, color: Colors.white70, size: 20),
         ),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  color: Colors.white60,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+               const SizedBox(height: 2),
+              Text(
+                value,
+                style: GoogleFonts.poppins(
+                  color: valueColor ?? Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: isPhone ? 0.5 : 0,
+                ),
+              ),
+            ],
           ),
         ),
       ],

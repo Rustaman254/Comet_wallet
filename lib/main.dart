@@ -129,9 +129,9 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
           _isLoading = false;
         });
       } else if (isAuthenticated) {
-        // User is logged in, go to home screen
+        // User is logged in, verify PIN first
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
         );
       } else {
         // User is not logged in, go to sign in screen
@@ -149,7 +149,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     if (mounted) {
       // After onboarding completes, check if user is authenticated
       final isAuthenticated = await TokenService.isAuthenticated();
-      final nextScreen = isAuthenticated ? const HomeScreen() : const SignInScreen();
+      final nextScreen = isAuthenticated ? const VerifyPinScreen() : const SignInScreen();
       
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => nextScreen),

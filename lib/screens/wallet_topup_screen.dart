@@ -80,6 +80,11 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         // Format as MSISDN without spaces for API, but use the selection
         final phoneNumber = '$_selectedCountryCode$rawNumber'.replaceAll(RegExp(r'\s+'), '');
 
+        // Show initial feedback
+        if (mounted) {
+          ToastService().showInfo(context, 'Sending STK push to your phone...');
+        }
+
         final response = await WalletService.topupWallet(
           phoneNumber: phoneNumber,
           amount: amount,
@@ -87,17 +92,25 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         );
 
         if (mounted) {
-          _showSuccessSheet(response);
+          // Show intermediate success
+          ToastService().showSuccess(context, 'Payment Processed successfully!');
           
-          AppLogger.success(
-            LogTags.payment,
-            'Wallet top-up completed',
-            data: {
-              'amount': amount,
-              'currency': _selectedCurrency,
-              'response': response,
-            },
-          );
+          // Small delay to allow STK push to appear on phone first
+          await Future.delayed(const Duration(seconds: 2));
+          
+          if (mounted) {
+            _showSuccessSheet(response);
+            
+            AppLogger.success(
+              LogTags.payment,
+              'Wallet top-up completed',
+              data: {
+                'amount': amount,
+                'currency': _selectedCurrency,
+                'response': response,
+              },
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
@@ -157,7 +170,10 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context); // Close sheet
-                  Navigator.pop(context, true); // Go back home
+                  // If we want to stay on page or go back based on success
+                  if (response['status'] == 'success' || response['status'] == 'completed') {
+                    Navigator.pop(context, true); // Go back home
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonGreen,
@@ -334,14 +350,24 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
+                      maxLength: 9,
                       decoration: buildUnderlineInputDecoration(
                         context: context,
                         label: '',
                         hintText: '7XX XXX XXX',
-                      ),
+                      ).copyWith(counterText: ''),
                       validator: (value) {
-                        if (value?.isEmpty ?? true) {
+                        if (value == null || value.isEmpty) {
                           return 'Required';
+                        }
+                        if (value.startsWith('0')) {
+                          return 'Should not start with 0';
+                        }
+                        if (!value.startsWith('7')) {
+                          return 'Must start with 7';
+                        }
+                        if (value.length != 9) {
+                          return 'Must be 9 digits';
                         }
                         return null;
                       },

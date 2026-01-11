@@ -512,7 +512,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          padding: const EdgeInsets.all(24.0),
                           itemCount: 4,
                           separatorBuilder: (context, index) => const SizedBox(width: 12),
                           itemBuilder: (context, index) {
@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ];
                             
                             return SizedBox(
-                                width: 160, // Fixed width for comfortable reading
+                                width: 260, // Increased width for Row layout
                                 child: _buildInfoCard(
                                   cards[index]['icon'] as IconData,
                                   cards[index]['title'] as String,
@@ -675,46 +675,46 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildInfoCard(IconData icon, String title, String value) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(50), // Fully rounded / pill shape
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
             child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
           ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-              fontSize: 10,
-              fontWeight: FontWeight.w400,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                    fontSize: 18, // Increased size
+                    fontWeight: FontWeight.w900, // Extra bold
+                  ),
+                ),
+              ],
             ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              color: Theme.of(context).textTheme.bodyMedium?.color,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

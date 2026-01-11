@@ -6,7 +6,9 @@ class ApiConstants {
   static const String kycCreateEndpoint = '$baseUrl/kyc/create';
   static const String walletTopupEndpoint = '$baseUrl/wallet/topup';
   static const String walletTransferEndpoint = '$baseUrl/wallet/transfer';
-  static const String walletBalanceEndpoint = '$baseUrl/wallets/balance';
+  static const String walletBalanceEndpoint = '$baseUrl/wallet/balance';
   static const String walletTransactionsEndpoint = '$baseUrl/wallets/transactions';
+  static const String paymentLinksEndpoint = '$baseUrl/payment-links';
+  static const String walletSendMoneyEndpoint = '$baseUrl/wallet/send-money';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
 }

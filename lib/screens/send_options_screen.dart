@@ -91,25 +91,21 @@ class SendOptionsScreen extends StatelessWidget {
     String title,
     VoidCallback onTap,
   ) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: cardBackground,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: cardBorder, width: 1),
-        ),
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         child: Row(
           children: [
             Container(
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: buttonGreen.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: Colors.white, size: 24),
+              child: Icon(icon, color: buttonGreen, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -122,9 +118,9 @@ class SendOptionsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
-              color: Colors.white70,
+              color: Colors.white.withValues(alpha: 0.3),
               size: 16,
             ),
           ],

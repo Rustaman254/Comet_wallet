@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
-import 'enter_pin_screen.dart';
+import '../services/wallet_service.dart';
+import 'mobile_withdraw_screen.dart';
 
 class WithdrawMoneyScreen extends StatefulWidget {
   const WithdrawMoneyScreen({super.key});
@@ -12,34 +13,55 @@ class WithdrawMoneyScreen extends StatefulWidget {
 }
 
 class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
-  final TextEditingController _amountController = TextEditingController(
-    text: '0.00',
-  );
-  String selectedMethod = 'Bank Account';
-  String selectedCurrency = 'USD';
+  String selectedMethod = 'Mobile Money';
+  String selectedCurrency = 'KES';
+  double _balance = 0.0;
+  bool _isBalanceLoading = true;
 
   final List<Map<String, dynamic>> _withdrawMethods = [
     {
-      'name': 'Bank Account',
-      'icon': Icons.account_balance_outlined,
-      'account': '**** 1234',
-    },
-    {
       'name': 'Mobile Money',
       'icon': Icons.phone_android_outlined,
-      'account': '+254 712 *** 678',
+      'account': 'M-Pesa / T-Pesa',
+      'isAvailable': true,
     },
     {
-      'name': 'ATM',
+      'name': 'Bank Account',
+      'icon': Icons.account_balance_outlined,
+      'account': 'Coming Soon',
+      'isAvailable': false,
+    },
+    {
+      'name': 'ATM Withdraw',
       'icon': Icons.atm_outlined,
-      'account': 'Generate Code',
+      'account': 'Coming Soon',
+      'isAvailable': false,
     },
   ];
 
   @override
-  void dispose() {
-    _amountController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _fetchBalance();
+  }
+
+
+  Future<void> _fetchBalance() async {
+    try {
+      final balanceData = await WalletService.getWalletBalance();
+      if (mounted) {
+        setState(() {
+          _balance = double.tryParse(balanceData['balance'].toString()) ?? 0.0;
+          selectedCurrency = balanceData['currency'] ?? 'KES';
+          _isBalanceLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isBalanceLoading = false);
+        ToastService().showError(context, 'Failed to load balance');
+      }
+    }
   }
 
   @override
@@ -89,7 +111,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Available Balance
+              // Available Balance Card (Original Style preserved)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Container(
@@ -119,14 +141,20 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'USD 4,562.00',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      _isBalanceLoading
+                          ? const SizedBox(
+                              height: 32,
+                              width: 32,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            )
+                          : Text(
+                              '$selectedCurrency ${_balance.toStringAsFixed(2)}',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ],
                   ),
                 ),
@@ -149,186 +177,82 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                     const SizedBox(height: 16),
                     ..._withdrawMethods.map((method) {
                       final isSelected = selectedMethod == method['name'];
+                      final isAvailable = method['isAvailable'] as bool;
+                      
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: isAvailable ? () {
                             setState(() {
                               selectedMethod = method['name'];
                             });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: cardBackground,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected ? buttonGreen : cardBorder,
-                                width: isSelected ? 2 : 1,
+                            
+                            if (method['name'] == 'Mobile Money') {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => MobileWithdrawScreen(
+                                      currency: selectedCurrency,
+                                      maxBalance: _balance,
+                                    ),
+                                  ),
+                                );
+                            }
+                          } : null,
+                          child: Opacity(
+                            opacity: isAvailable ? 1.0 : 0.5,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(color: Colors.white12, width: 0.5),
+                                ),
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? buttonGreen.withValues(alpha: 0.2)
-                                        : Colors.white.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    method['icon'],
-                                    color:
-                                        isSelected ? buttonGreen : Colors.white,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        method['name'],
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        method['account'],
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white70,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (isSelected)
+                              child: Row(
+                                children: [
                                   Icon(
-                                    Icons.check_circle,
-                                    color: buttonGreen,
+                                    method['icon'],
+                                    color: isSelected ? buttonGreen : Colors.white70,
                                     size: 24,
                                   ),
-                              ],
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          method['name'],
+                                          style: GoogleFonts.poppins(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          method['account'],
+                                          style: GoogleFonts.poppins(
+                                            color: isAvailable ? Colors.white54 : buttonGreen,
+                                            fontSize: 12,
+                                            fontWeight: !isAvailable ? FontWeight.bold : FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (isSelected && isAvailable)
+                                    Icon(
+                                      Icons.arrow_forward_ios, // Changed to arrow to indicate navigation
+                                      color: Colors.white54,
+                                      size: 16,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       );
                     }),
                   ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Amount Input
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: cardBackground,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Enter Amount',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            selectedCurrency,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              controller: _amountController,
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              // Withdraw Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_amountController.text.isEmpty || _amountController.text == '0.00') {
-                        ToastService().showError(
-                          context,
-                          'Please enter a valid amount',
-                        );
-                        return;
-                      }
-                      
-                      ToastService().showInfo(
-                        context,
-                        'Withdrawal request initiated...',
-                      );
-                      
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => EnterPinScreen(
-                            recipientName: selectedMethod,
-                            amount: _amountController.text,
-                            currency: selectedCurrency,
-                          ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonGreen,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      'Withdraw',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                 ),
               ),
               const SizedBox(height: 40),
