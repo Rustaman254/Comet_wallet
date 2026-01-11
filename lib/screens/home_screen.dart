@@ -30,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentBalancePage = 0;
   bool _isLoading = true;
   
+  bool _isBalanceVisible = true;
+
   @override
   void initState() {
     super.initState();
@@ -345,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       // Total Balance Card - Scrollable with PageView
                       SizedBox(
-                        height: 200,
+                        height: 220, // Slightly increased height for larger font
                         child: _isLoading 
                           ? Center(child: CircularProgressIndicator(color: buttonGreen))
                           : (_balances.isEmpty
@@ -359,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 24.0),
                                       child: Container(
-                                        padding: const EdgeInsets.all(20),
+                                        padding: const EdgeInsets.all(24), // Increased padding
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
                                             begin: Alignment.topLeft,
@@ -380,13 +382,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceBetween,
                                               children: [
-                                                Text(
-                                                  'Total Balance',
-                                                  style: GoogleFonts.poppins(
-                                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      'Total Balance',
+                                                      style: GoogleFonts.poppins(
+                                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                                        fontSize: 13,
+                                                        fontWeight: FontWeight.w400,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          _isBalanceVisible = !_isBalanceVisible;
+                                                        });
+                                                        VibrationService.lightImpact();
+                                                      },
+                                                      child: Icon(
+                                                        _isBalanceVisible 
+                                                            ? Icons.visibility_outlined 
+                                                            : Icons.visibility_off_outlined,
+                                                        color: Colors.white70,
+                                                        size: 18,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                                 Container(
                                                   padding: const EdgeInsets.symmetric(
@@ -410,33 +432,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(height: 12),
+                                            const SizedBox(height: 16),
                                             Row(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
+                                                  CrossAxisAlignment.baseline,
+                                              textBaseline: TextBaseline.alphabetic,
                                               children: [
                                                 Text(
                                                   balance['currency']!,
                                                   style: GoogleFonts.poppins(
-                                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                    fontSize: 25,
-                                                    fontWeight: FontWeight.w500,
+                                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.9),
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
                                                   ),
                                                 ),
                                                 const SizedBox(width: 8),
                                                 Text(
-                                                  balance['amount']!,
+                                                  _isBalanceVisible ? balance['amount']! : '••••••',
                                                   style: GoogleFonts.poppins(
                                                     color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                    fontSize: 35,
+                                                    fontSize: 48, // Significantly bigger font
                                                     fontWeight: FontWeight.bold,
+                                                    letterSpacing: -1,
                                                   ),
                                                 ),
                                               ],
                                             ),
                                             const Spacer(),
                                             Padding(
-                                              padding: const EdgeInsets.only(bottom: 6),
+                                              padding: const EdgeInsets.only(bottom: 0),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.spaceBetween,
@@ -449,38 +473,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         'Date',
                                                         style: GoogleFonts.poppins(
                                                           color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                          fontSize: 14,
+                                                          fontSize: 12,
                                                           fontWeight: FontWeight.w400,
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 4),
+                                                      const SizedBox(height: 2),
                                                       Text(
                                                         balance['date']!,
                                                         style: GoogleFonts.poppins(
                                                           color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                          fontSize: 16,
+                                                          fontSize: 14,
                                                           fontWeight: FontWeight.w500,
                                                         ),
                                                       ),
                                                     ],
                                                   ),
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        balance['change']!,
-                                                        style: GoogleFonts.poppins(
-                                                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                          fontSize: 16,
-                                                          fontWeight: FontWeight.bold,
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white.withValues(alpha: 0.15),
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Text(
+                                                          balance['change']!,
+                                                          style: GoogleFonts.poppins(
+                                                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(width: 4),
-                                                      Icon(
-                                                        Icons.trending_up_outlined,
-                                                        color: buttonGreen,
-                                                        size: 20,
-                                                      ),
-                                                    ],
+                                                        const SizedBox(width: 4),
+                                                        Icon(
+                                                          Icons.trending_up_outlined,
+                                                          color: buttonGreen,
+                                                          size: 16,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -505,54 +536,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         }),
                       ),
                       const SizedBox(height: 24),
-                      // Info Cards - Scrollable with 4 cards
-                      // Info Cards - Scrollable with ListView
-                      SizedBox(
-                        height: 120,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.all(24.0),
-                          itemCount: 4,
-                          separatorBuilder: (context, index) => const SizedBox(width: 12),
-                          itemBuilder: (context, index) {
-                            final cards = [
-                              {
-                                'icon': Icons.arrow_downward,
-                                'title': 'Income',
-                                'value': 'KES 0.00',
-                              },
-                              {
-                                'icon': Icons.arrow_upward,
-                                'title': 'Expense',
-                                'value': 'KES 0.00',
-                              },
-                              {
-                                'icon': Icons.pending_actions,
-                                'title': 'Pending',
-                                'value': 'KES 0.00',
-                              },
-                              {
-                                'icon': Icons.task_alt,
-                                'title': 'Completed',
-                                'value': 'KES 0.00',
-                              },
-                            ];
-                            
-                            return SizedBox(
-                                width: 260, // Increased width for Row layout
-                                child: _buildInfoCard(
-                                  cards[index]['icon'] as IconData,
-                                  cards[index]['title'] as String,
-                                  cards[index]['value'] as String,
-                                ),
-                            );
-                          }
+                      
+                      // Adaptive Summary Pills (Income, Expense, etc.)
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Row(
+                          children: [
+                            _buildInfoCard(Icons.arrow_downward, 'Income', 'KES 0.00'),
+                            const SizedBox(width: 12),
+                            _buildInfoCard(Icons.arrow_upward, 'Expense', 'KES 0.00'),
+                            const SizedBox(width: 12),
+                            _buildInfoCard(Icons.pending_actions, 'Pending', 'KES 0.00'),
+                            const SizedBox(width: 12),
+                            _buildInfoCard(Icons.task_alt, 'Completed', 'KES 0.00'),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      // Removed indicators to match smooth scroll aesthetic
-                      const SizedBox(height: 24),
+                      
+                      const SizedBox(height: 8), // Reduced spacing
+                      
                       // Transaction section
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -570,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             TextButton(
                               onPressed: () {},
                               child: Text(
-                                'Sell All',
+                                'See All',
                                 style: GoogleFonts.poppins(
                                   color: buttonGreen,
                                   fontSize: 14,
@@ -674,13 +678,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildInfoCard(IconData icon, String title, String value) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(50), // Fully rounded / pill shape
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min, // Hug content
         children: [
           Container(
             width: 40,
@@ -692,30 +696,29 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
           ),
           const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                  ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
                 ),
-                Text(
-                  value,
-                  style: GoogleFonts.poppins(
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                    fontSize: 18, // Increased size
-                    fontWeight: FontWeight.w900, // Extra bold
-                  ),
+              ),
+              Text(
+                value,
+                style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  fontSize: 18, // Increased size
+                  fontWeight: FontWeight.w900, // Extra bold
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
+          const SizedBox(width: 8),
         ],
       ),
     );
@@ -860,83 +863,95 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
   Widget _buildBottomNav() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          VibrationService.lightImpact();
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const MyCardsScreen()),
-            );
-          } else if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const StatisticsScreen()),
-            );
-          } else if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            );
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        selectedItemColor: buttonGreen,
-        unselectedItemColor: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-        elevation: 0,
-        selectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-        ),
-        unselectedLabelStyle: GoogleFonts.poppins(
-          fontSize: 13,
-          fontWeight: FontWeight.w400,
-        ),
-        items: [
-          BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                const Icon(Icons.home),
-                if (_currentIndex == 0)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: const BoxDecoration(
-                        color: buttonGreen,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+        child: Center(
+          heightFactor: 1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(40), // Pill shape
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
               ],
             ),
-            label: 'Home',
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Fit content
+              children: [
+                _buildNavItem(0, Icons.home),
+                const SizedBox(width: 8),
+                _buildNavItem(1, Icons.credit_card),
+                const SizedBox(width: 8),
+                _buildNavItem(2, Icons.pie_chart_outline),
+                const SizedBox(width: 8),
+                _buildNavItem(3, Icons.settings_outlined),
+              ],
+            ),
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.credit_card),
-            label: 'My Cards',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart_outline),
-            label: 'Statistics',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            label: 'Settings',
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon) {
+    final isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () {
+        VibrationService.lightImpact();
+        setState(() {
+          _currentIndex = index;
+        });
+        if (index == 1) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const MyCardsScreen()),
+          );
+        } else if (index == 2) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+          );
+        } else if (index == 3) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SettingsScreen()),
+          );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16), // Comfortable click space
+        decoration: BoxDecoration(
+          color: isSelected ? buttonGreen.withValues(alpha: 0.1) : Colors.transparent,
+          shape: BoxShape.circle,
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected 
+                  ? buttonGreen 
+                  : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+              size: 24,
+            ),
+            if (isSelected && index == 0) // Optional indicator for Home
+               Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(
+                      color: buttonGreen,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+          ],
+        ),
       ),
     );
   }
