@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
-import 'home_screen.dart';
+import 'main_wrapper.dart';
 import '../services/token_service.dart';
 
 class VerifyPinScreen extends StatefulWidget {
@@ -78,7 +78,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     if (_pin == _correctPin) {
       // Correct PIN - navigate to next screen or home
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => widget.nextScreen ?? const HomeScreen()),
+        MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
       );
     } else {
       _shakeController.forward().then((_) {
@@ -92,7 +92,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
 
   void _onBiometric() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
+      MaterialPageRoute(builder: (_) => const MainWrapper()),
     );
   }
 

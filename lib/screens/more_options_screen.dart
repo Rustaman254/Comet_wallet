@@ -6,6 +6,7 @@ import 'pay_bills_screen.dart';
 import 'statistics_screen.dart';
 import 'request_money_screen.dart';
 import 'ecitizen_services_screen.dart';
+import 'government_procurement_screen.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
   const MoreOptionsScreen({super.key});
@@ -115,6 +116,28 @@ class MoreOptionsScreen extends StatelessWidget {
                   );
                 },
               ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Third row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildCircularOption(
+                Icons.business_center_outlined,
+                'Procurement',
+                () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const GovernmentProcurementScreen(),
+                    ),
+                  );
+                },
+              ),
+              // Empty placeholders for alignment
+              const SizedBox(width: 60),
+              const SizedBox(width: 60),
             ],
           ),
           const SizedBox(height: 32),

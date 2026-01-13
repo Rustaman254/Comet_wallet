@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../constants/colors.dart';
+import '../services/vibration_service.dart';
 
 class QRScanScreen extends StatefulWidget {
   const QRScanScreen({super.key});
@@ -10,13 +11,43 @@ class QRScanScreen extends StatefulWidget {
   State<QRScanScreen> createState() => _QRScanScreenState();
 }
 
-class _QRScanScreenState extends State<QRScanScreen> {
+class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver {
   MobileScannerController cameraController = MobileScannerController();
   bool _isScanning = true;
   bool _torchEnabled = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!cameraController.value.isInitialized) {
+      return;
+    }
+    
+    switch (state) {
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+        // Dispose/Stop controller to release camera resources
+        // cameraController.stop(); 
+        // Note: MobileScanner usually handles this, but stopping explicitly can be safer
+        // allowing it to resume on resume.
+        break;
+      case AppLifecycleState.resumed:
+        // cameraController.start();
+        break;
+      case AppLifecycleState.inactive:
+        break;
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     cameraController.dispose();
     super.dispose();
   }
@@ -34,10 +65,14 @@ class _QRScanScreenState extends State<QRScanScreen> {
       _isScanning = false;
     });
 
-    // Stop the camera
-    cameraController.stop();
+    // Feedback
+    VibrationService.heavyImpact();
 
     // Show success dialog
+    _showSuccessDialog(qrData);
+  }
+
+  void _showSuccessDialog(String qrData) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -56,7 +91,7 @@ class _QRScanScreenState extends State<QRScanScreen> {
                 color: buttonGreen.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.check_circle_outline,
                 size: 50,
                 color: buttonGreen,
@@ -72,41 +107,71 @@ class _QRScanScreenState extends State<QRScanScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              qrData,
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
-                fontSize: 14,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
+              child: Text(
+                qrData,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontFamily: 'monospace',
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close dialog
-                  Navigator.of(context).pop(); // Close scanner
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      // Scan again
+                      Navigator.pop(context);
+                      setState(() {
+                        _isScanning = true;
+                      });
+                    },
+                    child: Text(
+                      'Scan Again',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 ),
-                child: Text(
-                  'Continue',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close dialog
+                      Navigator.of(context).pop(qrData); // Return data
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: buttonGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Use Code',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              ],
+            )
           ],
         ),
       ),
@@ -115,210 +180,234 @@ class _QRScanScreenState extends State<QRScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate scan window
+    final double scanAreaSize = 280;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    
+    // We want the scan window to be centered.
+    // Rect.fromCenter(center: center, width: width, height: height)
+    final Rect scanWindow = Rect.fromCenter(
+      center: Offset(screenWidth / 2, screenHeight / 2),
+      width: scanAreaSize,
+      height: scanAreaSize,
+    );
+
     return Scaffold(
       backgroundColor: darkBackground,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            // Camera view
-            MobileScanner(
-              controller: cameraController,
-              onDetect: _onQRCodeDetected,
-            ),
-            // Overlay with scanning frame
-            Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
+      body: Stack(
+        children: [
+          MobileScanner(
+            controller: cameraController,
+            scanWindow: scanWindow,
+            errorBuilder: (context, error) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Camera Error',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'Scan QR Code',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      error.errorCode == MobileScannerErrorCode.permissionDenied
+                          ? 'Camera permission denied. Please enable it in settings.'
+                          : 'Something went wrong: ${error.errorCode}',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontSize: 14,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 40),
-                // Scanner area
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // QR Scanner Frame
-                        Container(
-                          width: 280,
-                          height: 280,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: buttonGreen,
-                              width: 3,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Stack(
-                            children: [
-                              // Corner decorations
-                              _buildCorner(
-                                Alignment.topLeft,
-                                const BorderRadius.only(
-                                  topLeft: Radius.circular(20),
-                                ),
-                                const Border(
-                                  top: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                  left: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                ),
-                              ),
-                              _buildCorner(
-                                Alignment.topRight,
-                                const BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                ),
-                                const Border(
-                                  top: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                  right: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                ),
-                              ),
-                              _buildCorner(
-                                Alignment.bottomLeft,
-                                const BorderRadius.only(
-                                  bottomLeft: Radius.circular(20),
-                                ),
-                                const Border(
-                                  bottom: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                  left: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                ),
-                              ),
-                              _buildCorner(
-                                Alignment.bottomRight,
-                                const BorderRadius.only(
-                                  bottomRight: Radius.circular(20),
-                                ),
-                                const Border(
-                                  bottom: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                  right: BorderSide(
-                                    color: buttonGreen,
-                                    width: 5,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 40),
-                        // Instructions
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'Position the QR code within the frame',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
+              );
+            },
+            onDetect: _onQRCodeDetected,
+          ),
+          
+          // Custom Overlay
+          _buildOverlay(context, scanAreaSize),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverlay(BuildContext context, double scanAreaSize) {
+    return Column(
+      children: [
+        // Header (SafeArea included implicitly by structure or add it)
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
                 ),
-                // Bottom section
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      // Flash toggle button
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _torchEnabled = !_torchEnabled;
-                          });
-                          cameraController.toggleTorch();
-                        },
-                        child: Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            _torchEnabled ? Icons.flash_on : Icons.flash_off,
-                            color: _torchEnabled ? buttonGreen : Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Tap to toggle flash',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                    ],
+                const SizedBox(width: 16),
+                Text(
+                  'Scan QR Code',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        
+        // Expanded space to push scanner frame to center
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // QR Scanner Frame
+                Container(
+                  width: scanAreaSize,
+                  height: scanAreaSize,
+                  decoration: BoxDecoration(
+                    // Transparent center
+                    color: Colors.transparent, 
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Stack(
+                    children: [
+                      // We can draw a dim background AROUND this box using ColorFiltered or ClipPath 
+                      // but creating a simple overlay with corners is easier and cleaner.
+                      
+                      // Corner decorations
+                      _buildCorner(
+                        Alignment.topLeft,
+                        const BorderRadius.only(topLeft: Radius.circular(20)),
+                         const Border(
+                          top: BorderSide(color: buttonGreen, width: 5),
+                          left: BorderSide(color: buttonGreen, width: 5),
+                        ),
+                      ),
+                      _buildCorner(
+                        Alignment.topRight,
+                        const BorderRadius.only(topRight: Radius.circular(20)),
+                        const Border(
+                          top: BorderSide(color: buttonGreen, width: 5),
+                          right: BorderSide(color: buttonGreen, width: 5),
+                        ),
+                      ),
+                      _buildCorner(
+                        Alignment.bottomLeft,
+                        const BorderRadius.only(bottomLeft: Radius.circular(20)),
+                        const Border(
+                          bottom: BorderSide(color: buttonGreen, width: 5),
+                          left: BorderSide(color: buttonGreen, width: 5),
+                        ),
+                      ),
+                      _buildCorner(
+                        Alignment.bottomRight,
+                        const BorderRadius.only(bottomRight: Radius.circular(20)),
+                        const Border(
+                          bottom: BorderSide(color: buttonGreen, width: 5),
+                          right: BorderSide(color: buttonGreen, width: 5),
+                        ),
+                      ),
+                      
+                      // Animated scanning line could go here
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+                // Instructions
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Position the QR code within the frame',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        // Bottom controls
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              // Flash toggle button
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _torchEnabled = !_torchEnabled;
+                  });
+                  cameraController.toggleTorch();
+                },
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _torchEnabled ? Icons.flash_on : Icons.flash_off,
+                    color: _torchEnabled ? buttonGreen : Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Tap to toggle flash',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

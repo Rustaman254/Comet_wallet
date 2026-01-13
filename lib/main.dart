@@ -6,7 +6,7 @@ import 'constants/colors.dart';
 import 'screens/onboarding_page_view.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/verify_pin_screen.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
 
 void main() {

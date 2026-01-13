@@ -11,4 +11,13 @@ class ApiConstants {
   static const String paymentLinksEndpoint = '$baseUrl/payment-links';
   static const String walletSendMoneyEndpoint = '$baseUrl/wallet/send-money';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
+  
+  // Real Estate Tokenization Endpoints
+  static const String realEstatePropertiesEndpoint = '$baseUrl/real-estate/properties';
+  static const String realEstatePropertyDetailsEndpoint = '$baseUrl/real-estate/property';
+  static const String realEstateBuyTokensEndpoint = '$baseUrl/real-estate/buy-tokens';
+  static const String realEstateMyInvestmentsEndpoint = '$baseUrl/real-estate/my-investments';
+  static const String realEstateMarketplaceEndpoint = '$baseUrl/real-estate/marketplace';
+  static const String realEstateSellTokensEndpoint = '$baseUrl/real-estate/sell-tokens';
+  static const String realEstateTransactionsEndpoint = '$baseUrl/real-estate/transactions';
 }
