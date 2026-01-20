@@ -9,7 +9,14 @@ import '../services/toast_service.dart';
 import '../utils/input_decoration.dart';
 
 class SendMoneyScreen extends StatefulWidget {
-  const SendMoneyScreen({super.key});
+  final String? initialEmail;
+  final String? initialAmount;
+
+  const SendMoneyScreen({
+    super.key,
+    this.initialEmail,
+    this.initialAmount,
+  });
 
   @override
   State<SendMoneyScreen> createState() => _SendMoneyScreenState();
@@ -59,6 +66,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     _balancePageController.addListener(_onBalancePageChanged);
     _amountFocusNode.addListener(_onAmountFocusChange);
     
+    if (widget.initialEmail != null) {
+      _emailController.text = widget.initialEmail!;
+    }
+    if (widget.initialAmount != null) {
+      _amountController.text = widget.initialAmount!;
+    }
+
     // Set initial page to KES if it's there
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _balancePageController.jumpToPage(1);

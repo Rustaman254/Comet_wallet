@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
+import '../utils/responsive_utils.dart';
 import '../services/toast_service.dart';
+import '../services/vibration_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
 import 'verify_pin_screen.dart';
@@ -39,11 +41,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _handleSignUp() async {
+    VibrationService.selectionClick();
     if (_formKey.currentState!.validate()) {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+        builder: (context) => Center(child: CircularProgressIndicator()),
       );
 
       try {
@@ -75,11 +78,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       } catch (e) {
         if (mounted) {
           Navigator.pop(context);
+          VibrationService.errorVibrate();
           String errorMessage = e.toString().replaceFirst('Exception: ', '');
           ToastService().showError(context, errorMessage);
         }
       }
     } else {
+      VibrationService.errorVibrate();
       ToastService().showError(context, "Please fill in all fields correctly");
     }
   }
@@ -93,58 +98,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   // Back button
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Container(
-                      width: 40,
-                      height: 40,
+                      width: 40.r,
+                      height: 40.r,
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back,
                         color: Colors.white,
                         size: 20,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   // Title
                   Center(
                     child: Text(
                       'Sign Up',
                       style: GoogleFonts.poppins(
                         color: Theme.of(context).textTheme.bodyMedium?.color,
-                        fontSize: 32,
+                        fontSize: 32.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40.r.h),
                   // Full Name field
                   Text(
                     'Full Name',
                     style: GoogleFonts.poppins(
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   TextFormField(
                     controller: _nameController,
                     style: GoogleFonts.poppins(
                       color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -161,22 +166,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   // Phone Number field
                   Text(
                     'Phone Number',
                     style: GoogleFonts.poppins(
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   TextFormField(
                     controller: _phoneController,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     keyboardType: TextInputType.phone,
                     decoration: buildUnderlineInputDecoration(
@@ -194,22 +199,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   // Email field
                   Text(
                     'Email Address',
                     style: GoogleFonts.poppins(
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   TextFormField(
                     controller: _emailController,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -227,22 +232,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   // Location field
                   Text(
                     'Location',
                     style: GoogleFonts.poppins(
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   TextFormField(
                     controller: _locationController,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -260,23 +265,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   // Password field
                   Text(
                     'Password',
                     style: GoogleFonts.poppins(
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -307,7 +312,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40.r.h),
                   // Sign Up button
                   SizedBox(
                     width: double.infinity,
@@ -316,21 +321,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonGreen,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                       ),
                       child: Text(
                         'Sign Up',
                         style: GoogleFonts.poppins(
-                          fontSize: 18,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   // Sign In link
                   Center(
                     child: GestureDetector(
@@ -345,7 +350,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         text: TextSpan(
                           style: GoogleFonts.poppins(
                             color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
                           ),
                           children: [
@@ -362,7 +367,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40.r.h),
                 ],
               ),
             ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import '../constants/colors.dart';
+import '../utils/responsive_utils.dart';
 import '../services/vibration_service.dart';
 import '../services/auth_service.dart';
 import '../models/user_profile.dart';
@@ -11,10 +13,13 @@ import 'qr_scan_screen.dart';
 import 'more_options_screen.dart';
 import 'receive_money_screen.dart';
 import 'withdraw_money_screen.dart';
-import 'statistics_screen.dart';
 import 'settings_screen.dart';
 import 'profile_screen.dart';
 import 'wallet_topup_screen.dart';
+import 'transactions_screen.dart';
+import '../services/toast_service.dart';
+import '../models/transaction.dart';
+import '../services/wallet_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,11 +29,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   final ScrollController _scrollController = ScrollController();
   late PageController _balancePageController;
   int _currentBalancePage = 0;
   bool _isLoading = true;
+  bool _isTransactionsLoading = true;
+  List<Transaction> _allTransactions = [];
+  List<Transaction> _recentTransactions = [];
+  
+  double _totalIncome = 0.0;
+  double _totalExpense = 0.0;
+  int _pendingCount = 0;
+  int _completedCount = 0;
   
   bool _isBalanceVisible = true;
 
@@ -39,6 +51,64 @@ class _HomeScreenState extends State<HomeScreen> {
     _balancePageController.addListener(_onBalancePageChanged);
     _loadCachedUserData();
     _fetchUserProfile();
+    _fetchRecentTransactions();
+  }
+
+  Future<void> _fetchRecentTransactions() async {
+    if (!mounted) return;
+    setState(() => _isTransactionsLoading = true);
+    
+    try {
+      final transactions = await WalletService.fetchTransactionsList();
+      if (mounted) {
+        setState(() {
+          _allTransactions = transactions;
+          // Only show top 5 for the home screen
+          _recentTransactions = transactions.take(5).toList();
+          _calculateSummaries();
+          _isTransactionsLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isTransactionsLoading = false);
+      debugPrint('HomeScreen: Error fetching transactions: $e');
+    }
+  }
+
+  void _calculateSummaries() {
+    double income = 0.0;
+    double expense = 0.0;
+    int pending = 0;
+    int completed = 0;
+
+    for (var tx in _allTransactions) {
+      // Categorize by type
+      if (tx.transactionType.contains('topup') || 
+          tx.transactionType.contains('receive') ||
+          tx.transactionType.contains('deposit')) {
+        income += tx.amount;
+      } else if (tx.transactionType.contains('send') || 
+                 tx.transactionType.contains('transfer') ||
+                 tx.transactionType.contains('withdraw') ||
+                 tx.transactionType.contains('buy')) {
+        expense += tx.amount;
+      }
+
+      // Categorize by status
+      if (tx.status.toLowerCase() == 'pending') {
+        pending++;
+      } else if (tx.status.toLowerCase() == 'completed' || 
+                 tx.status.toLowerCase() == 'success') {
+        completed++;
+      }
+    }
+
+    setState(() {
+      _totalIncome = income;
+      _totalExpense = expense;
+      _pendingCount = pending;
+      _completedCount = completed;
+    });
   }
   
   void _loadCachedUserData() async {
@@ -134,16 +204,16 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         top: true,
-        bottom: false,
+        bottom: true,
         child: Column(
           children: [
             // FIXED HEADER - Does not scroll
             Column(
               children: [
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 // Header with profile, search, and QR code
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Row(
                     children: [
                       // Profile picture - clickable
@@ -159,34 +229,34 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Stack(
                           children: [
                             Container(
-                              width: 50,
-                              height: 50,
+                              width: 50.r,
+                              height: 50.r,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Colors.red,
-                                  width: 2
+                                  width: 2.w
                                 ),
                                 color: Colors.grey[800],
                               ),
                               child: Icon(
                                 Icons.person_outline,
                                 color: Theme.of(context).textTheme.bodyMedium?.color,
-                                size: 30,
+                                size: 30.r,
                               ),
                             ),
                             Positioned(
                               top: 0,
-                              right: 2,
+                              right: 2.w,
                               child: Container(
-                                width: 12,
-                                height: 12,
+                                width: 12.r,
+                                height: 12.r,
                                 decoration: BoxDecoration(
                                   color: Colors.red,
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: Theme.of(context).scaffoldBackgroundColor,
-                                    width: 2
+                                    width: 2.w
                                   ),
                                 ),
                               ),
@@ -195,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       // Welcome text - clickable
                       GestureDetector(
                         onTap: () {
@@ -213,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               'Welcome back,',
                               style: GoogleFonts.poppins(
                                 color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                fontSize: 14,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -221,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               _userProfile?.name ?? 'Anwar Sadatt',
                               style: GoogleFonts.poppins(
                                 color: Theme.of(context).textTheme.bodyMedium?.color,
-                                fontSize: 21,
+                                fontSize: 21.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -231,8 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Spacer(),
                       // Search button
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 40.r,
+                        height: 40.r,
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
@@ -240,11 +310,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Icon(
                           Icons.search_outlined,
                           color: Theme.of(context).textTheme.bodyMedium?.color,
-                          size: 20,
+                          size: 20.r,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      // QR code button
+                      SizedBox(width: 12.w),
+                      SizedBox(width: 12.w),
+                      // QR code button with Badge
                       GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(
@@ -253,38 +324,62 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.qr_code,
-                            color: Theme.of(context).textTheme.bodyMedium?.color,
-                            size: 20,
-                          ),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 40.r,
+                              height: 40.r,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.qr_code_scanner_outlined,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                size: 20.r,
+                              ),
+                            ),
+                            Positioned(
+                              top: -4,
+                              right: -4,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10.r),
+                                  border: Border.all(
+                                    color: Theme.of(context).scaffoldBackgroundColor,
+                                    width: 1.5.w,
+                                  ),
+                                ),
+                                child: Text(
+                                  'Coming Soon',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 8.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                // Action buttons - FIXED - Scrollable
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                SizedBox(height: 24.h),
+                // Action buttons - FIXED - Non-scrollable
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _buildActionButton(
                         Icons.arrow_upward_outlined,
                         'Send',
-                        () {
-                          _showSendOptions(context);
-                        },
+                        () => _showSendOptions(context),
                       ),
-                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.arrow_downward_outlined,
                         'Receive',
@@ -296,7 +391,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       ),
-                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.add_circle_outline,
                         'Top-up',
@@ -308,7 +402,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       ),
-                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.monetization_on_outlined,
                         'Withdraw',
@@ -320,23 +413,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           );
                         },
                       ),
-                      const SizedBox(width: 20),
                       _buildActionButton(
                         Icons.more_horiz,
                         'More',
-                        () {
-                          _showMoreOptions(context);
-                        },
+                        () => _showMoreOptions(context),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
               ],
             ),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: _fetchUserProfile,
+                onRefresh: () async {
+                  await Future.wait([
+                    _fetchUserProfile(),
+                    _fetchRecentTransactions(),
+                  ]);
+                },
                 color: buttonGreen,
                 child: SingleChildScrollView(
                   controller: _scrollController,
@@ -352,16 +447,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? Center(child: CircularProgressIndicator(color: buttonGreen))
                           : (_balances.isEmpty
                               ? Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                  padding: EdgeInsets.symmetric(horizontal: 24.w),
                                   child: _buildEmptyBalanceCard(),
                                 )
                               : PageView(
                                   controller: _balancePageController,
                                   children: _balances.map((balance) {
                                     return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                                       child: Container(
-                                        padding: const EdgeInsets.all(24), // Increased padding
+                                        padding: EdgeInsets.all(24.r), // Increased padding
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
                                             begin: Alignment.topLeft,
@@ -372,8 +467,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               lightGreen.withValues(alpha: 0.3),
                                             ],
                                           ),
-                                          border: Border.all(color: cardBorder, width: 1),
-                                          borderRadius: BorderRadius.circular(20),
+                                          border: Border.all(color: cardBorder, width: 1.w),
+                                          borderRadius: BorderRadius.circular(20.r),
                                         ),
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,11 +483,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       'Total Balance',
                                                       style: GoogleFonts.poppins(
                                                         color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                        fontSize: 13,
+                                                        fontSize: 13.sp,
                                                         fontWeight: FontWeight.w400,
                                                       ),
                                                     ),
-                                                    const SizedBox(width: 8),
+                                                    SizedBox(width: 8),
                                                     GestureDetector(
                                                       onTap: () {
                                                         setState(() {
@@ -405,34 +500,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ? Icons.visibility_outlined 
                                                             : Icons.visibility_off_outlined,
                                                         color: Colors.white70,
-                                                        size: 18,
+                                                        size: 18.r,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                                 Container(
-                                                  padding: const EdgeInsets.symmetric(
+                                                  padding: EdgeInsets.symmetric(
                                                     horizontal: 12,
                                                     vertical: 6,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     color: Colors.white.withValues(alpha: 0.2),
                                                     borderRadius: BorderRadius.circular(
-                                                      20,
+                                                      20.r,
                                                     ),
                                                   ),
                                                   child: Text(
                                                     balance['currency']!,
                                                     style: GoogleFonts.poppins(
                                                       color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                      fontSize: 12,
+                                                      fontSize: 12.sp,
                                                       fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(height: 16),
+                                            SizedBox(height: 16.h),
                                             Row(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.baseline,
@@ -442,16 +537,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   balance['currency']!,
                                                   style: GoogleFonts.poppins(
                                                     color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.9),
-                                                    fontSize: 20,
+                                                    fontSize: 20.sp,
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                                 ),
-                                                const SizedBox(width: 8),
+                                                SizedBox(width: 8.w),
                                                 Text(
                                                   _isBalanceVisible ? balance['amount']! : '••••••',
                                                   style: GoogleFonts.poppins(
                                                     color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                    fontSize: 48, // Significantly bigger font
+                                                    fontSize: 48.sp, // Significantly bigger font
                                                     fontWeight: FontWeight.bold,
                                                     letterSpacing: -1,
                                                   ),
@@ -460,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             const Spacer(),
                                             Padding(
-                                              padding: const EdgeInsets.only(bottom: 0),
+                                              padding: EdgeInsets.only(bottom: 0),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.spaceBetween,
@@ -473,26 +568,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         'Date',
                                                         style: GoogleFonts.poppins(
                                                           color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                          fontSize: 12,
+                                                          fontSize: 12.sp,
                                                           fontWeight: FontWeight.w400,
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 2),
+                                                      SizedBox(height: 2.h),
                                                       Text(
                                                         balance['date']!,
                                                         style: GoogleFonts.poppins(
                                                           color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                          fontSize: 14,
+                                                          fontSize: 14.sp,
                                                           fontWeight: FontWeight.w500,
                                                         ),
                                                       ),
                                                     ],
                                                   ),
                                                   Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                                     decoration: BoxDecoration(
                                                       color: Colors.white.withValues(alpha: 0.15),
-                                                      borderRadius: BorderRadius.circular(12),
+                                                      borderRadius: BorderRadius.circular(12.r),
                                                     ),
                                                     child: Row(
                                                       children: [
@@ -500,15 +595,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           balance['change']!,
                                                           style: GoogleFonts.poppins(
                                                             color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                            fontSize: 14,
+                                                            fontSize: 14.sp,
                                                             fontWeight: FontWeight.bold,
                                                           ),
                                                         ),
-                                                        const SizedBox(width: 4),
+                                                        SizedBox(width: 4.w),
                                                         Icon(
                                                           Icons.trending_up_outlined,
                                                           color: buttonGreen,
-                                                          size: 16,
+                                                          size: 16.r,
                                                         ),
                                                       ],
                                                     ),
@@ -524,42 +619,58 @@ class _HomeScreenState extends State<HomeScreen> {
                                 )
                             ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       // Page indicators for balance cards
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(_balances.length, (index) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            padding: EdgeInsets.symmetric(horizontal: 3.w),
                             child: _buildPageIndicator(index == _currentBalancePage),
                           );
                         }),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                       
                       // Adaptive Summary Pills (Income, Expense, etc.)
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Row(
                           children: [
-                            _buildInfoCard(Icons.arrow_downward, 'Income', 'KES 0.00'),
-                            const SizedBox(width: 12),
-                            _buildInfoCard(Icons.arrow_upward, 'Expense', 'KES 0.00'),
-                            const SizedBox(width: 12),
-                            _buildInfoCard(Icons.pending_actions, 'Pending', 'KES 0.00'),
-                            const SizedBox(width: 12),
-                            _buildInfoCard(Icons.task_alt, 'Completed', 'KES 0.00'),
+                            _buildInfoCard(
+                              Icons.arrow_downward, 
+                              'Income', 
+                              'KES ${NumberFormat("#,##0.00").format(_totalIncome)}'
+                            ),
+                            SizedBox(width: 12.w),
+                            _buildInfoCard(
+                              Icons.arrow_upward, 
+                              'Expense', 
+                              'KES ${NumberFormat("#,##0.00").format(_totalExpense)}'
+                            ),
+                            SizedBox(width: 12.w),
+                            _buildInfoCard(
+                              Icons.pending_actions, 
+                              'Pending', 
+                              '${_pendingCount} Txns'
+                            ),
+                            SizedBox(width: 12.w),
+                            _buildInfoCard(
+                              Icons.task_alt, 
+                              'Completed', 
+                              '${_completedCount} Txns'
+                            ),
                           ],
                         ),
                       ),
                       
-                      const SizedBox(height: 8), // Reduced spacing
+                      SizedBox(height: 8.h), // Reduced spacing
                       
                       // Transaction section
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -567,17 +678,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               'Transaction',
                               style: GoogleFonts.poppins(
                                 color: Theme.of(context).textTheme.bodyMedium?.color,
-                                fontSize: 20,
+                                fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                VibrationService.lightImpact();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const TransactionsScreen(),
+                                  ),
+                                );
+                              },
                               child: Text(
                                 'See All',
                                 style: GoogleFonts.poppins(
                                   color: buttonGreen,
-                                  fontSize: 14,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -585,25 +703,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       // Transaction list
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Column(
-                          children: [
-                            Icon(Icons.history_outlined, size: 48, color: Colors.grey[600]),
-                            const SizedBox(height: 12),
-                            Text(
-                              'No recent transactions',
-                              style: GoogleFonts.poppins(
-                                color: Colors.grey[600],
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: _buildTransactionList(),
                       ),
-                      const SizedBox(height: 100),
+                      SizedBox(height: 24.h),
                     ],
                   ),
                 ),
@@ -635,11 +741,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPageIndicator(bool isActive) {
     return Container(
-      width: isActive ? 24 : 8,
-      height: 8,
+      width: isActive ? 24.w : 8.w,
+      height: 8.h,
       decoration: BoxDecoration(
         color: isActive ? buttonGreen : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }
@@ -653,20 +759,20 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 60.r,
+            height: 60.r,
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 28),
+            child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 28.r),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             label,
             style: GoogleFonts.poppins(
               color: Theme.of(context).textTheme.bodyMedium?.color,
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -677,47 +783,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildInfoCard(IconData icon, String title, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(50), // Fully rounded / pill shape
+        borderRadius: BorderRadius.circular(50.r), // Fully rounded pill shape
+        border: Border.all(color: cardBorder, width: 1.w),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min, // Hug content
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            padding: EdgeInsets.all(6.r),
             decoration: BoxDecoration(
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
+              color: buttonGreen.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 20),
+            child: Icon(icon, color: buttonGreen, size: 16.r),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 8.w),
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
                 style: GoogleFonts.poppins(
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  fontSize: 10.sp,
                 ),
               ),
               Text(
                 value,
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 18, // Increased size
-                  fontWeight: FontWeight.w900, // Extra bold
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 8),
         ],
       ),
     );
@@ -725,7 +829,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildEmptyBalanceCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -736,8 +840,8 @@ class _HomeScreenState extends State<HomeScreen> {
             lightGreen.withValues(alpha: 0.3),
           ],
         ),
-        border: Border.all(color: cardBorder, width: 1),
-        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cardBorder, width: 1.w),
+        borderRadius: BorderRadius.circular(20.r),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -749,28 +853,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Total Balance',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                  fontSize: 13,
+                  fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(
                   'KES',
                   style: GoogleFonts.poppins(
                     color: Theme.of(context).textTheme.bodyMedium?.color,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -778,16 +882,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 'KES',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                  fontSize: 25,
+                  fontSize: 25.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8.w),
               Text(
                 '0.00',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 35,
+                  fontSize: 35.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -798,7 +902,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Top up to start transacting',
             style: GoogleFonts.poppins(
               color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-              fontSize: 14,
+              fontSize: 14.sp,
             ),
           ),
         ],
@@ -806,12 +910,161 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildTransactionList() {
+    if (_isTransactionsLoading && _recentTransactions.isEmpty) {
+      return Center(
+      child: CircularProgressIndicator(color: buttonGreen, strokeWidth: 3.w),
+    );
+  }
+
+  if (_recentTransactions.isEmpty) {
+    return Column(
+      children: [
+        Icon(Icons.history_outlined, size: 48.r, color: Colors.grey[600]),
+        SizedBox(height: 12.h),
+        Text(
+          'No recent transactions',
+          style: GoogleFonts.poppins(
+            color: Colors.grey[600],
+            fontSize: 16.sp,
+          ),
+        ),
+      ],
+    );
+  }
+
+    return Column(
+      children: _recentTransactions.map((transaction) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 16.0.h),
+          child: _buildTransactionItemFromModel(transaction),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTransactionItemFromModel(Transaction transaction) {
+    Color statusColor;
+    IconData iconData;
+    Color iconColor;
+
+    switch (transaction.status.toLowerCase()) {
+      case 'complete':
+        statusColor = buttonGreen;
+        break;
+      case 'pending':
+        statusColor = Colors.orange;
+        break;
+      case 'failed':
+      default:
+        statusColor = Colors.red;
+        break;
+    }
+
+    switch (transaction.transactionType.toLowerCase()) {
+      case 'wallet_topup':
+        iconData = Icons.add_circle_outline;
+        iconColor = Colors.blue;
+        break;
+      case 'send_money':
+        iconData = Icons.send_outlined;
+        iconColor = Colors.orange;
+        break;
+      case 'payment_link':
+        iconData = Icons.link;
+        iconColor = Colors.purple;
+        break;
+      default:
+        iconData = Icons.swap_horiz;
+        iconColor = Colors.grey;
+    }
+
+    return Row(
+      children: [
+        Container(
+          width: 50.r,
+          height: 50.r,
+          decoration: BoxDecoration(
+            color: iconColor.withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            iconData,
+            color: iconColor,
+            size: 24.r,
+          ),
+        ),
+        SizedBox(width: 16.w),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _formatTransactionType(transaction.transactionType),
+                style: GoogleFonts.poppins(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Row(
+                children: [
+                  Text(
+                    transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
+                    style: GoogleFonts.poppins(
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Container(
+                    width: 4.r,
+                    height: 4.r,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[600],
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    transaction.status.toUpperCase(),
+                    style: GoogleFonts.poppins(
+                      color: statusColor,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Text(
+          'KES ${transaction.amount.toStringAsFixed(2)}',
+          style: GoogleFonts.poppins(
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatTransactionType(String type) {
+    return type.split('_').map((word) => 
+      word[0].toUpperCase() + word.substring(1).toLowerCase()
+    ).join(' ');
+  }
+
   Widget _buildTransactionItem(String phone, String date, String amount) {
     return Row(
       children: [
         Container(
-          width: 50,
-          height: 50,
+          width: 50.r,
+          height: 50.r,
           decoration: BoxDecoration(
             color: Colors.grey[800],
             shape: BoxShape.circle,
@@ -819,10 +1072,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Icon(
             Icons.person_outline,
             color: Theme.of(context).textTheme.bodyMedium?.color,
-            size: 24,
+            size: 24.r,
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16.w),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -831,16 +1084,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 phone,
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4.h),
               Text(
                 date,
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                  fontSize: 12,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -851,7 +1104,7 @@ class _HomeScreenState extends State<HomeScreen> {
           amount,
           style: GoogleFonts.poppins(
             color: Theme.of(context).textTheme.bodyMedium?.color,
-            fontSize: 16,
+            fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),
         ),

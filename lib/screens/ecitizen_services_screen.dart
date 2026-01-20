@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import '../utils/input_decoration.dart';
+import '../services/ecitizen_service.dart';
+import '../models/ecitizen_bill.dart';
 import 'ecitizen_details_screen.dart';
 
 class ECitizenServicesScreen extends StatefulWidget {
@@ -42,22 +44,41 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
       isLoading = true;
     });
 
-    // Simulate API delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
-
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => ECitizenDetailsScreen(
-            referenceNumber: _referenceController.text,
-            currency: selectedCurrency,
-          ),
-        ),
+    try {
+      final bill = await ECitizenService.validateBill(
+        refNo: _referenceController.text.trim(),
       );
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+
+        if (bill != null) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => ECitizenDetailsScreen(
+                bill: bill,
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString().replaceAll('Exception: ', ''),
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

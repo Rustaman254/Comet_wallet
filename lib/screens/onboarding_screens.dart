@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../utils/responsive_utils.dart';
 
 class OnboardingScreen1 extends StatelessWidget {
   final VoidCallback onNext;
@@ -25,12 +26,12 @@ class OnboardingScreen1 extends StatelessWidget {
                   // White Board
                   Positioned(
                     child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: MediaQuery.of(context).size.height * 0.35,
+                      width: 320.w,
+                      height: 300.h,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: lightGreen, width: 2),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: lightGreen, width: 2.w),
                       ),
                       child: Stack(
                         children: [
@@ -42,24 +43,24 @@ class OnboardingScreen1 extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Woman figure (simplified as icon)
-                                Icon(Icons.person, size: 40, color: darkTeal),
-                                const SizedBox(height: 20),
+                                Icon(Icons.person, size: 40.r, color: darkTeal),
+                                SizedBox(height: 20.h),
                                 // Bar chart
                                 Row(
                                   children: [
-                                    _buildBar(30, lightGreen),
-                                    const SizedBox(width: 8),
-                                    _buildBar(50, lightGreen),
-                                    const SizedBox(width: 8),
-                                    _buildBar(70, buttonGreen),
-                                    const SizedBox(width: 8),
-                                    _buildBar(90, buttonGreen),
+                                    _buildBar(30.h, lightGreen),
+                                    SizedBox(width: 8.w),
+                                    _buildBar(50.h, lightGreen),
+                                    SizedBox(width: 8.w),
+                                    _buildBar(70.h, buttonGreen),
+                                    SizedBox(width: 8.w),
+                                    _buildBar(90.h, buttonGreen),
                                   ],
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: 10.h),
                                 // Line graph overlay
                                 CustomPaint(
-                                  size: const Size(100, 30),
+                                  size: Size(100.w, 30.h),
                                   painter: LineGraphPainter(),
                                 ),
                               ],
@@ -72,7 +73,7 @@ class OnboardingScreen1 extends StatelessWidget {
                             child: Column(
                               children: [
                                 _buildProgressCircle('90%', 0.9),
-                                const SizedBox(height: 20),
+                                SizedBox(height: 20.h),
                                 _buildProgressCircle('60%', 0.6),
                               ],
                             ),
@@ -93,14 +94,14 @@ class OnboardingScreen1 extends StatelessWidget {
                           height: 70,
                           decoration: BoxDecoration(
                             color: buttonGreen,
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(30),
-                              bottomRight: Radius.circular(30),
-                              topLeft: Radius.circular(15),
-                              topRight: Radius.circular(15),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(30.r),
+                              bottomRight: Radius.circular(30.r),
+                              topLeft: Radius.circular(15.r),
+                              topRight: Radius.circular(15.r),
                             ),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               '\$',
                               style: TextStyle(
@@ -122,12 +123,12 @@ class OnboardingScreen1 extends StatelessWidget {
                               color: gold,
                               shape: BoxShape.circle,
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 '\$',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 20.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -142,35 +143,35 @@ class OnboardingScreen1 extends StatelessWidget {
                     top: 20,
                     left: MediaQuery.of(context).size.width * 0.1,
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            width: 4,
-                            height: 4,
+                            width: 4.r,
+                            height: 4.r,
                             decoration: const BoxDecoration(
                               color: Colors.grey,
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4.w),
                           Container(
-                            width: 4,
-                            height: 4,
+                            width: 4.r,
+                            height: 4.r,
                             decoration: const BoxDecoration(
                               color: Colors.grey,
                               shape: BoxShape.circle,
                             ),
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4.w),
                           Container(
-                            width: 4,
-                            height: 4,
+                            width: 4.r,
+                            height: 4.r,
                             decoration: const BoxDecoration(
                               color: Colors.grey,
                               shape: BoxShape.circle,
@@ -189,43 +190,43 @@ class OnboardingScreen1 extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildLiquidPageIndicator(0, currentPage),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(1, currentPage),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(2, currentPage),
               ],
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             // Text content
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
               child: Column(
                 children: [
                   Text(
                     'Welcome to Comet Wallet',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 28,
+                      fontSize: 28.sp.sp,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Text(
                     'A secure, smart way to manage your money every day.',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             // Next button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -233,22 +234,22 @@ class OnboardingScreen1 extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   child: Text(
                     'Next',
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
           ],
         ),
       ),
@@ -257,35 +258,35 @@ class OnboardingScreen1 extends StatelessWidget {
 
   Widget _buildBar(double height, Color color) {
     return Container(
-      width: 20,
+      width: 20.w,
       height: height,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }
 
   Widget _buildProgressCircle(String text, double progress) {
     return SizedBox(
-      width: 60,
-      height: 60,
+      width: 60.r,
+      height: 60.r,
       child: Stack(
         alignment: Alignment.center,
         children: [
           SizedBox(
-            width: 60,
-            height: 60,
+            width: 60.r,
+            height: 60.r,
             child: CircularProgressIndicator(
               value: progress,
-              strokeWidth: 4,
+              strokeWidth: 4.w,
               backgroundColor: Colors.grey[300],
               valueColor: const AlwaysStoppedAnimation<Color>(buttonGreen),
             ),
           ),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: buttonGreen,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -365,7 +366,7 @@ class OnboardingScreen2 extends StatelessWidget {
                             color: gold,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               '1',
                               style: TextStyle(
@@ -376,7 +377,7 @@ class OnboardingScreen2 extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         // Figure with jacket
                         SizedBox(
                           width: 80,
@@ -393,7 +394,7 @@ class OnboardingScreen2 extends StatelessWidget {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(40),
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.person,
                                     size: 60,
                                     color: darkGreen,
@@ -408,7 +409,7 @@ class OnboardingScreen2 extends StatelessWidget {
                                   height: 50,
                                   decoration: BoxDecoration(
                                     color: buttonGreen,
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       bottomLeft: Radius.circular(40),
                                       bottomRight: Radius.circular(40),
                                     ),
@@ -449,43 +450,43 @@ class OnboardingScreen2 extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildLiquidPageIndicator(0, currentPage),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(1, currentPage),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(2, currentPage),
               ],
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             // Text content
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
               child: Column(
                 children: [
                   Text(
                     'Clarity and Control',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 28,
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Text(
                     'Track spending, set budgets, and review every movement on an immutable ledger.',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             // Next button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -493,22 +494,22 @@ class OnboardingScreen2 extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   child: Text(
                     'Next',
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
           ],
         ),
       ),
@@ -523,18 +524,18 @@ class OnboardingScreen2 extends StatelessWidget {
           width: 30,
           height: 30,
           decoration: const BoxDecoration(color: gold, shape: BoxShape.circle),
-          child: const Center(
+          child: Center(
             child: Text(
               '\$',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Container(
           width: 28,
           height: 28,
@@ -553,7 +554,7 @@ class OnboardingScreen2 extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.white, width: 1),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
           '\$',
           style: TextStyle(
@@ -608,17 +609,17 @@ class OnboardingScreen3 extends StatelessWidget {
                       height: MediaQuery.of(context).size.height * 0.3,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(color: lightGreen, width: 2),
                       ),
                       child: Column(
                         children: [
                           // Browser header
                           Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
-                              borderRadius: const BorderRadius.only(
+                              borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(10),
                                 topRight: Radius.circular(10),
                               ),
@@ -626,7 +627,7 @@ class OnboardingScreen3 extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(Icons.info, color: buttonGreen, size: 20),
-                                const SizedBox(width: 8),
+                                SizedBox(width: 8.w),
                                 Container(
                                   width: 120,
                                   height: 8,
@@ -646,7 +647,7 @@ class OnboardingScreen3 extends StatelessWidget {
                                         shape: BoxShape.circle,
                                       ),
                                     ),
-                                    const SizedBox(width: 4),
+                                    SizedBox(width: 4),
                                     Container(
                                       width: 6,
                                       height: 6,
@@ -655,7 +656,7 @@ class OnboardingScreen3 extends StatelessWidget {
                                         shape: BoxShape.circle,
                                       ),
                                     ),
-                                    const SizedBox(width: 4),
+                                    SizedBox(width: 4),
                                     Container(
                                       width: 6,
                                       height: 6,
@@ -672,7 +673,7 @@ class OnboardingScreen3 extends StatelessWidget {
                           // Pie chart segment
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.all(20),
+                              padding: EdgeInsets.all(20),
                               child: CustomPaint(
                                 size: const Size(100, 100),
                                 painter: PieChartPainter(),
@@ -698,7 +699,7 @@ class OnboardingScreen3 extends StatelessWidget {
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.person,
                             size: 40,
                             color: darkGreen,
@@ -747,7 +748,7 @@ class OnboardingScreen3 extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _buildDollarBill(),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10),
                           _buildDollarBill(),
                         ],
                       ),
@@ -760,7 +761,7 @@ class OnboardingScreen3 extends StatelessWidget {
                     child: Row(
                       children: [
                         _buildCoinStack(),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5),
                         Container(
                           width: 30,
                           height: 30,
@@ -768,12 +769,12 @@ class OnboardingScreen3 extends StatelessWidget {
                             color: gold,
                             shape: BoxShape.circle,
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               '\$',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -791,43 +792,43 @@ class OnboardingScreen3 extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildLiquidPageIndicator(0, currentPage),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(1, currentPage),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(2, currentPage),
               ],
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             // Text content
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
               child: Column(
                 children: [
                   Text(
                     'Bank-grade Security',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 28,
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Text(
                     'Your balances and transactions are protected with strong encryption and audited ledgers.',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             // Next button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -835,22 +836,22 @@ class OnboardingScreen3 extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   child: Text(
                     'Next',
                     style: GoogleFonts.poppins(
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
           ],
         ),
       ),
@@ -877,12 +878,12 @@ class OnboardingScreen3 extends StatelessWidget {
         color: buttonGreen,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
           '\$',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -898,18 +899,18 @@ class OnboardingScreen3 extends StatelessWidget {
           width: 30,
           height: 30,
           decoration: const BoxDecoration(color: gold, shape: BoxShape.circle),
-          child: const Center(
+          child: Center(
             child: Text(
               '\$',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 16.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
-        const SizedBox(height: 2),
+        SizedBox(height: 2),
         Container(
           width: 28,
           height: 28,

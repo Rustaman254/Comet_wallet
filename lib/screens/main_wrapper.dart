@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_bottom_nav.dart';
 import 'home_screen.dart';
 import 'my_cards_screen.dart';
-import 'statistics_screen.dart';
+import 'transactions_screen.dart';
 import 'settings_screen.dart';
 
 class MainWrapper extends StatefulWidget {
@@ -25,7 +25,7 @@ class MainWrapperState extends State<MainWrapper> {
   final List<Widget> _pages = [
     const HomeScreen(),
     const MyCardsScreen(),
-    const StatisticsScreen(),
+    const TransactionsScreen(),
     const SettingsScreen(),
   ];
 

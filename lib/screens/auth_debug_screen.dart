@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../constants/colors.dart';
-import '../../services/token_service.dart';
-import '../../services/logger_service.dart';
-import '../../services/wallet_service.dart';
+import '../constants/colors.dart';
+import '../services/token_service.dart';
+import '../services/logger_service.dart';
+import '../services/wallet_service.dart';
 
 class AuthDebugScreen extends StatefulWidget {
   const AuthDebugScreen({super.key});

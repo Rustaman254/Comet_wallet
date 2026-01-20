@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'constants/colors.dart';
 import 'screens/onboarding_page_view.dart';
 import 'screens/sign_in_screen.dart';
@@ -23,8 +24,13 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeNotifier,
       builder: (_, ThemeMode currentMode, __) {
-        return MaterialApp(
-          title: 'Comet Wallet',
+        return ScreenUtilInit(
+          designSize: const Size(393, 852), // iPhone 14/15/16 Pro size
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) {
+            return MaterialApp(
+              title: 'Comet Wallet',
           debugShowCheckedModeBanner: false,
           themeMode: currentMode,
           theme: ThemeData(
@@ -72,6 +78,8 @@ class MyApp extends StatelessWidget {
             ),
           ),
           home: const OnboardingWrapper(),
+            );
+          },
         );
       },
     );

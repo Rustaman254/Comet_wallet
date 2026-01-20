@@ -8,6 +8,7 @@ class ApiConstants {
   static const String walletTransferEndpoint = '$baseUrl/wallet/transfer';
   static const String walletBalanceEndpoint = '$baseUrl/wallet/balance';
   static const String walletTransactionsEndpoint = '$baseUrl/wallets/transactions';
+  static const String transactionsListEndpoint = '$baseUrl/transactions/list';
   static const String paymentLinksEndpoint = '$baseUrl/payment-links';
   static const String walletSendMoneyEndpoint = '$baseUrl/wallet/send-money';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';

@@ -5,6 +5,7 @@ import '../services/vibration_service.dart';
 import '../services/toast_service.dart';
 import '../services/wallet_service.dart';
 import '../services/token_service.dart';
+import '../utils/responsive_utils.dart';
 import 'sign_in_screen.dart';
 
 class EnterPinScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class EnterPinScreen extends StatefulWidget {
   final String amount;
   final String currency;
   final String description;
+  final Future<Map<String, dynamic>> Function()? onVerify;
   
   const EnterPinScreen({
     super.key,
@@ -19,6 +21,7 @@ class EnterPinScreen extends StatefulWidget {
     required this.amount,
     required this.currency,
     this.description = 'Money transfer',
+    this.onVerify,
   });
 
   @override
@@ -37,13 +40,19 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   void initState() {
     super.initState();
     _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    _shakeAnimation = Tween<double>(begin: 0, end: 10).animate(
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween<double>(begin: 0, end: 10), weight: 1),
+      TweenSequenceItem(tween: Tween<double>(begin: 10, end: -10), weight: 2),
+      TweenSequenceItem(tween: Tween<double>(begin: -10, end: 10), weight: 2),
+      TweenSequenceItem(tween: Tween<double>(begin: 10, end: -10), weight: 2),
+      TweenSequenceItem(tween: Tween<double>(begin: -10, end: 0), weight: 1),
+    ]).animate(
       CurvedAnimation(
         parent: _shakeController,
-        curve: Curves.elasticIn,
+        curve: Curves.easeInOut,
       ),
     );
   }
@@ -83,16 +92,21 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       });
 
       try {
-        final amount = double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
-        final response = await WalletService.sendMoney(
-          recipientPhone: widget.recipientName,
-          amount: amount,
-          currency: widget.currency,
-          description: widget.description,
-        );
+        Map<String, dynamic> response;
+        if (widget.onVerify != null) {
+          response = await widget.onVerify!();
+        } else {
+          final amount = double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
+          response = await WalletService.sendMoney(
+            recipientPhone: widget.recipientName,
+            amount: amount,
+            currency: widget.currency,
+            description: widget.description,
+          );
+        }
 
         if (mounted) {
-          _showSuccessDialog(response['transaction_id'] ?? 'N/A');
+          _showSuccessDialog(response['transaction_id'] ?? response['gateway_transaction_id'] ?? 'N/A');
         }
       } catch (e) {
         if (mounted) {
@@ -116,9 +130,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         }
       }
     } else {
-      VibrationService.heavyImpact();
-      _shakeController.forward().then((_) {
-        _shakeController.reverse();
+      VibrationService.errorVibrate();
+      _shakeController.forward(from: 0.0).then((_) {
         setState(() {
           _pin = '';
         });
@@ -140,59 +153,59 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       builder: (context) => AlertDialog(
         backgroundColor: cardBackground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 80.r,
+              height: 80.r,
               decoration: BoxDecoration(
                 color: buttonGreen.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle,
                 color: buttonGreen,
-                size: 50,
+                size: 50.r,
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Text(
               'Payment Successful!',
               style: GoogleFonts.poppins(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text(
               '${widget.currency} ${widget.amount}',
               style: GoogleFonts.poppins(
                 color: buttonGreen,
-                fontSize: 24,
+                fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 5),
+            SizedBox(height: 5.h),
             Text(
               'sent to ${widget.recipientName}',
               style: GoogleFonts.poppins(
                 color: Colors.white70,
-                fontSize: 14,
+                fontSize: 14.sp,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Text(
               'ID: $transactionId',
               style: GoogleFonts.poppins(
                 color: Colors.white38,
-                fontSize: 12,
+                fontSize: 12.sp,
               ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -201,15 +214,15 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonGreen,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
                 child: Text(
                   'Done',
                   style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -227,39 +240,39 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       backgroundColor: darkBackground,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Back button
               Row(
                 children: [
                   GestureDetector(
                     onTap: _isLoading ? null : () => Navigator.pop(context),
                     child: Container(
-                      width: 40,
-                      height: 40,
+                      width: 40.r,
+                      height: 40.r,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back,
                         color: Colors.white,
-                        size: 20,
+                        size: 20.r,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: 40.h),
               // Profile picture
               Container(
-                width: 80,
-                height: 80,
+                width: 80.r,
+                height: 80.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: buttonGreen, width: 3),
+                  border: Border.all(color: buttonGreen, width: 3.w),
                   color: Colors.grey[800],
                 ),
                 child: Center(
@@ -267,39 +280,39 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                     widget.recipientName.isNotEmpty ? widget.recipientName[0].toUpperCase() : '?',
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 32,
+                      fontSize: 32.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Recipient name
               Text(
                 'Sending to',
                 style: GoogleFonts.poppins(
                   color: Colors.white70,
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 widget.recipientName,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: 50.h),
               
               if (_isLoading) ...[
                 const CircularProgressIndicator(color: buttonGreen),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
                 Text(
                   'Processing transaction...',
-                  style: GoogleFonts.poppins(color: Colors.white70),
+                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14.sp),
                 ),
               ] else ...[
                 // Enter PIN text
@@ -307,11 +320,11 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                   'Enter your PIN',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30.h),
                 // PIN dots with shake animation
                 AnimatedBuilder(
                   animation: _shakeAnimation,
@@ -325,11 +338,11 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(4, (index) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 12.w),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          width: 16,
-                          height: 16,
+                          width: 16.r,
+                          height: 16.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: index < _pin.length
@@ -339,7 +352,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                               color: index < _pin.length
                                   ? buttonGreen
                                   : Colors.white.withValues(alpha: 0.3),
-                              width: 2,
+                              width: 2.w,
                             ),
                           ),
                         ),
@@ -351,7 +364,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               const Spacer(),
               // Numeric keypad
               if (!_isLoading) _buildKeypad(),
-              const SizedBox(height: 40),
+              SizedBox(height: 40.h),
             ],
           ),
         ),
@@ -366,17 +379,17 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: ['1', '2', '3'].map((n) => _buildKeypadButton(n)).toList(),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: ['4', '5', '6'].map((n) => _buildKeypadButton(n)).toList(),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: ['7', '8', '9'].map((n) => _buildKeypadButton(n)).toList(),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -399,8 +412,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
     return GestureDetector(
       onTap: () => _onNumberPressed(number),
       child: Container(
-        width: 70,
-        height: 70,
+        width: 70.r,
+        height: 70.r,
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.1),
           shape: BoxShape.circle,
@@ -410,7 +423,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             number,
             style: GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 24.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -426,8 +439,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 70,
-        height: 70,
+        width: 70.r,
+        height: 70.r,
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.1),
           shape: BoxShape.circle,
@@ -436,7 +449,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           child: Icon(
             icon,
             color: Colors.white,
-            size: 24,
+            size: 24.r,
           ),
         ),
       ),

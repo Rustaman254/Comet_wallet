@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
-import 'buy_airtime_screen.dart';
-import 'pay_bills_screen.dart';
-import 'statistics_screen.dart';
-import 'request_money_screen.dart';
 import 'ecitizen_services_screen.dart';
-import 'government_procurement_screen.dart';
+import '../services/toast_service.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
   const MoreOptionsScreen({super.key});
@@ -55,35 +51,32 @@ class MoreOptionsScreen extends StatelessWidget {
                 'Buy Airtime',
                 () {
                   Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const BuyAirtimeScreen()),
-                  );
+                  ToastService().showSuccess(context, 'Airtime coming soon!');
                 },
+                showComingSoon: true,
               ),
               _buildCircularOption(
                 Icons.receipt_long_outlined,
                 'Pay Bills',
                 () {
                   Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PayBillsScreen()),
-                  );
+                  ToastService().showSuccess(context, 'Bill payment coming soon!');
                 },
+                showComingSoon: true,
               ),
               _buildCircularOption(
                 Icons.request_page_outlined,
                 'Request Money',
                 () {
                   Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const RequestMoneyScreen()),
-                  );
+                  ToastService().showSuccess(context, 'Request money coming soon!');
                 },
+                showComingSoon: true,
               ),
             ],
           ),
           const SizedBox(height: 24),
-          // Second row if needed
+          // Second row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -92,23 +85,15 @@ class MoreOptionsScreen extends StatelessWidget {
                 'Savings',
                 () {
                   Navigator.pop(context);
-                  // Navigate to savings screen
+                  ToastService().showSuccess(context, 'Savings coming soon!');
                 },
-              ),
-              _buildCircularOption(
-                Icons.history_outlined,
-                'Statistics',
-                () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const StatisticsScreen()),
-                  );
-                },
+                showComingSoon: true,
               ),
               _buildCircularOption(
                 Icons.public,
                 'E-Citizen',
                 () {
+                  Navigator.pop(context);
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => const ECitizenServicesScreen(),
@@ -116,27 +101,7 @@ class MoreOptionsScreen extends StatelessWidget {
                   );
                 },
               ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          // Third row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildCircularOption(
-                Icons.business_center_outlined,
-                'Procurement',
-                () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const GovernmentProcurementScreen(),
-                    ),
-                  );
-                },
-              ),
-              // Empty placeholders for alignment
-              const SizedBox(width: 60),
+              // Empty placeholder for alignment
               const SizedBox(width: 60),
             ],
           ),
@@ -149,20 +114,50 @@ class MoreOptionsScreen extends StatelessWidget {
   Widget _buildCircularOption(
     IconData icon,
     String label,
-    VoidCallback onTap,
-  ) {
+    VoidCallback onTap, {
+    bool showComingSoon = false,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: Colors.white, size: 28),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: Colors.white, size: 28),
+              ),
+              if (showComingSoon)
+                Positioned(
+                  top: -4,
+                  right: -10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: darkBackground,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Text(
+                      'Coming Soon',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 8),
           SizedBox(

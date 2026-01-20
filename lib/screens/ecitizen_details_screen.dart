@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../models/ecitizen_bill.dart';
+import '../services/ecitizen_service.dart';
+import '../services/wallet_service.dart';
 import 'enter_pin_screen.dart';
 
 class ECitizenDetailsScreen extends StatefulWidget {
-  final String referenceNumber;
-  final String currency;
+  final ECitizenBill bill;
 
   const ECitizenDetailsScreen({
     super.key,
-    required this.referenceNumber,
-    required this.currency,
+    required this.bill,
   });
 
   @override
@@ -18,12 +19,6 @@ class ECitizenDetailsScreen extends StatefulWidget {
 }
 
 class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
-  // Mocked data
-  final String serviceName = 'Business Permit Renewal';
-  final String amount = '15,000';
-  final String status = 'Unpaid';
-  final String date = '15 Dec 2025';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,11 +87,11 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      serviceName,
+                      widget.bill.name,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.poppins(
                         color: Colors.white,
-                        fontSize: 24, // Increased font size
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -107,14 +102,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.2),
+                        color: Colors.green.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
+                        border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
                       ),
                       child: Text(
-                        status,
+                        'Unpaid',
                         style: GoogleFonts.poppins(
-                          color: Colors.red[300],
+                          color: Colors.green[300],
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -122,9 +117,9 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     ),
                     const SizedBox(height: 40),
                     
-                    _buildDetailRow('Reference', widget.referenceNumber),
+                    _buildDetailRow('Reference', widget.bill.refNo),
                     const SizedBox(height: 24),
-                    _buildDetailRow('Date', date),
+                    _buildDetailRow('Date', 'Today'),
                     const SizedBox(height: 24),
                     Divider(color: Colors.white.withValues(alpha: 0.1)),
                     const SizedBox(height: 24),
@@ -135,14 +130,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                           'Total Amount',
                           style: GoogleFonts.poppins(
                             color: Colors.white70,
-                            fontSize: 18, // Increased font size
+                            fontSize: 18,
                           ),
                         ),
                         Text(
-                          '${widget.currency} $amount',
+                          '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
                           style: GoogleFonts.poppins(
                             color: Colors.white,
-                            fontSize: 32, // Increased font size to be more prominent like Home Screen balance
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -164,9 +159,27 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => EnterPinScreen(
-                            recipientName: 'eCitizen - $serviceName',
-                            amount: amount,
-                            currency: widget.currency,
+                            recipientName: 'eCitizen - ${widget.bill.name}',
+                            amount: widget.bill.amount.toStringAsFixed(2),
+                            currency: widget.bill.currency,
+                            onVerify: () async {
+                              // 1. Perform wallet to wallet transfer
+                              final transferResponse = await WalletService.transferWallet(
+                                toEmail: 'colls@cradlevoices.com',
+                                amount: widget.bill.amount,
+                                currency: widget.bill.currency,
+                              );
+
+                              final transactionId = transferResponse['transaction_id'] ?? 'N/A';
+
+                              // 2. Confirm payment with eCitizen
+                              return await ECitizenService.confirmPayment(
+                                refNo: widget.bill.refNo,
+                                amount: widget.bill.amount,
+                                currency: widget.bill.currency,
+                                transactionId: transactionId,
+                              );
+                            },
                           ),
                         ),
                       );

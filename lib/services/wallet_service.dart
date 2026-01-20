@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../constants/api_constants.dart';
 import 'token_service.dart';
 import 'logger_service.dart';
+import '../models/transaction.dart';
 
 class WalletService {
   /// Top up wallet with authentication token
@@ -290,6 +291,60 @@ class WalletService {
       throw Exception('Transaction history fetch error: $e');
     }
   }
+
+  /// Get simplified transaction list from the new endpoint
+  static Future<List<Transaction>> fetchTransactionsList() async {
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      AppLogger.debug(
+        LogTags.payment,
+        'Fetching transactions list from new endpoint',
+      );
+
+      final response = await http.get(
+        Uri.parse(ApiConstants.transactionsListEndpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final transactionResponse = TransactionResponse.fromJson(jsonResponse);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Transactions list fetched successfully',
+          data: {'count': transactionResponse.transactions.length},
+        );
+
+        return transactionResponse.transactions;
+      } else {
+        AppLogger.error(
+          LogTags.payment,
+          'Failed to fetch transactions list',
+          data: {
+            'status_code': response.statusCode,
+            'body': response.body,
+          },
+        );
+        throw Exception('Failed to fetch transactions list: ${response.statusCode}');
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Failed to fetch transactions list',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Transactions list fetch error: $e');
+    }
+  }
   /// Transfer funds to another wallet
   static Future<Map<String, dynamic>> transferWallet({
     required String toEmail,
@@ -551,6 +606,79 @@ class WalletService {
         data: {'error': e.toString()},
       );
       throw Exception('Send money error: $e');
+    }
+  }
+
+  /// Get payment link details from a token
+  static Future<Map<String, dynamic>> getPaymentLinkDetails(String token) async {
+    final startTime = DateTime.now();
+
+    try {
+      final authToken = await TokenService.getToken();
+      if (authToken == null || authToken.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      AppLogger.debug(
+        LogTags.payment,
+        'Fetching payment link details',
+        data: {'token': token},
+      );
+
+      final response = await http.get(
+        Uri.parse('${ApiConstants.paymentLinksEndpoint}/$token'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Payment link details fetched successfully',
+          data: {
+            'token': token,
+            'amount': jsonResponse['data']?['amount'],
+            'recipient': jsonResponse['data']?['user']?['email'],
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: '${ApiConstants.paymentLinksEndpoint}/$token',
+          method: 'GET',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Failed to fetch payment link details: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Payment link details fetch error',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Payment link details error: $e');
     }
   }
 }

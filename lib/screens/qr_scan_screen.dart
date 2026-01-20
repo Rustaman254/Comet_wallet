@@ -1,8 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../constants/colors.dart';
+import '../constants/api_constants.dart';
 import '../services/vibration_service.dart';
+import '../services/wallet_service.dart';
+import '../services/toast_service.dart';
+import 'mobile_payment_confirm_screen.dart';
+import 'send_money_screen.dart';
 
 class QRScanScreen extends StatefulWidget {
   const QRScanScreen({super.key});
@@ -68,8 +74,98 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
     // Feedback
     VibrationService.heavyImpact();
 
-    // Show success dialog
+    // Attempt to parse as payment data
+    try {
+      final decodedData = jsonDecode(qrData);
+      if (decodedData is Map<String, dynamic> &&
+          (decodedData.containsKey('recipient') || decodedData.containsKey('phone')) &&
+          decodedData.containsKey('amount')) {
+        
+        final String phone = decodedData['recipient'] ?? decodedData['phone'];
+        final String amount = decodedData['amount'].toString();
+        final String currency = decodedData['currency'] ?? 'KES';
+
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => MobilePaymentConfirmScreen(
+                phoneNumber: phone,
+                amount: amount,
+                currency: currency,
+              ),
+            ),
+          );
+        }
+        return;
+      }
+    } catch (e) {
+      // Not a valid JSON, carry on...
+    }
+
+    // Attempt to parse as payment link URL
+    if (qrData.contains('/payment-links/')) {
+      final parts = qrData.split('/payment-links/');
+      if (parts.length > 1) {
+        final token = parts.last.split('?').first; // Get token, ignoring any query params
+        
+        if (mounted) {
+          _resolvePaymentLink(token);
+        }
+        return;
+      }
+    }
+
+    // Show success dialog for non-payment QR codes
     _showSuccessDialog(qrData);
+  }
+
+  Future<void> _resolvePaymentLink(String token) async {
+    setState(() {
+      _isScanning = false;
+    });
+
+    try {
+      // Show loading indicator
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(
+            child: CircularProgressIndicator(color: buttonGreen),
+          ),
+        );
+      }
+
+      final details = await WalletService.getPaymentLinkDetails(token);
+      
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading indicator
+
+        final data = details['data'];
+        if (data != null) {
+          final String email = data['user']?['email'] ?? '';
+          final String amount = data['amount']?.toString() ?? '0.00';
+
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => SendMoneyScreen(
+                initialEmail: email,
+                initialAmount: amount,
+              ),
+            ),
+          );
+        } else {
+          ToastService().showError(context, 'Invalid payment link data');
+          setState(() => _isScanning = true);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading indicator
+        ToastService().showError(context, 'Failed to resolve payment link: $e');
+        setState(() => _isScanning = true);
+      }
+    }
   }
 
   void _showSuccessDialog(String qrData) {

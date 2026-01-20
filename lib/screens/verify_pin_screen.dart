@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
+import '../utils/responsive_utils.dart';
 import '../services/vibration_service.dart';
 import 'main_wrapper.dart';
 import '../services/token_service.dart';
@@ -26,13 +27,19 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     super.initState();
     _loadUserData();
     _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    _shakeAnimation = Tween<double>(begin: 0, end: 10).animate(
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween<double>(begin: 0, end: 10), weight: 1),
+      TweenSequenceItem(tween: Tween<double>(begin: 10, end: -10), weight: 2),
+      TweenSequenceItem(tween: Tween<double>(begin: -10, end: 10), weight: 2),
+      TweenSequenceItem(tween: Tween<double>(begin: 10, end: -10), weight: 2),
+      TweenSequenceItem(tween: Tween<double>(begin: -10, end: 0), weight: 1),
+    ]).animate(
       CurvedAnimation(
         parent: _shakeController,
-        curve: Curves.elasticIn,
+        curve: Curves.easeInOut,
       ),
     );
   }
@@ -68,6 +75,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
 
   void _onBackspace() {
     if (_pin.isNotEmpty) {
+      VibrationService.lightImpact();
       setState(() {
         _pin = _pin.substring(0, _pin.length - 1);
       });
@@ -81,8 +89,8 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
         MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
       );
     } else {
-      _shakeController.forward().then((_) {
-        _shakeController.reverse();
+      VibrationService.errorVibrate();
+      _shakeController.forward(from: 0.0).then((_) {
         setState(() {
           _pin = '';
         });
@@ -102,55 +110,55 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.r),
           child: Column(
             children: [
-              const SizedBox(height: 40),
+              SizedBox(height: 40.h),
               // Profile picture
               Container(
-                width: 80,
-                height: 80,
+                width: 80.r,
+                height: 80.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: buttonGreen, width: 3),
+                  border: Border.all(color: buttonGreen, width: 3.w),
                   color: Colors.grey[800],
                 ),
                 child: Icon(
                   Icons.person_outline,
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  size: 40,
+                  size: 40.r,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               // Welcome text
               Text(
                 'Welcome back,',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                  fontSize: 16,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 _userName,
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 24,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: 50.h),
               // Enter PIN text
               Text(
                 'Enter your PIN',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 18,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h),
               AnimatedBuilder(
                 animation: _shakeAnimation,
                 builder: (context, child) {
@@ -163,11 +171,11 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(4, (index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 12.w),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: 16,
-                        height: 16,
+                        width: 16.r,
+                        height: 16.r,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: index < _pin.length
@@ -177,7 +185,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                             color: index < _pin.length
                                 ? buttonGreen
                                 : Colors.white.withValues(alpha: 0.3),
-                            width: 2,
+                            width: 2.w,
                           ),
                         ),
                       ),
@@ -187,7 +195,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               ),
               const Spacer(),
               _buildKeypad(),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               TextButton(
                 onPressed: () {
                   // Handle forgot PIN
@@ -196,12 +204,12 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                   'Forgot PIN?',
                   style: GoogleFonts.poppins(
                     color: buttonGreen,
-                    fontSize: 16,
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
             ],
           ),
         ),
@@ -213,11 +221,11 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     return Column(
       children: [
         _buildKeypadRow(['1', '2', '3']),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.r.h),
         _buildKeypadRow(['4', '5', '6']),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.r.h),
         _buildKeypadRow(['7', '8', '9']),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.r.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -226,7 +234,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               child: Icon(
                 Icons.backspace_outlined,
                 color: Theme.of(context).textTheme.bodyMedium?.color,
-                size: 24,
+                size: 24.r,
               ),
             ),
             _buildKeypadButton(
@@ -235,7 +243,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 '0',
                 style: GoogleFonts.poppins(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 24,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -245,7 +253,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               child: Icon(
                 Icons.fingerprint,
                 color: Theme.of(context).textTheme.bodyMedium?.color,
-                size: 28,
+                size: 28.r,
               ),
             ),
           ],
@@ -264,7 +272,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
             number,
             style: GoogleFonts.poppins(
               color: Theme.of(context).textTheme.bodyMedium?.color,
-              fontSize: 24,
+              fontSize: 24.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -280,8 +288,8 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 70,
-        height: 70,
+        width: 70.r,
+        height: 70.r,
         decoration: BoxDecoration(
           color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
           shape: BoxShape.circle,

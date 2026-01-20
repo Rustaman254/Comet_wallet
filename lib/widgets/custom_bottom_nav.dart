@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
+import '../utils/responsive_utils.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -16,19 +17,19 @@ class CustomBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+        padding: EdgeInsets.only(bottom: 20.h, left: 24.w, right: 24.w),
         child: Center(
           heightFactor: 1,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(40), // Pill shape
+              borderRadius: BorderRadius.circular(40.r), // Pill shape
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+                  blurRadius: 10.r,
+                  offset: Offset(0, 5.h),
                 ),
               ],
             ),
@@ -36,11 +37,11 @@ class CustomBottomNav extends StatelessWidget {
               mainAxisSize: MainAxisSize.min, // Fit content
               children: [
                 _buildNavItem(context, 0, Icons.home),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 _buildNavItem(context, 1, Icons.credit_card),
-                const SizedBox(width: 8),
-                _buildNavItem(context, 2, Icons.pie_chart_outline),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
+                _buildNavItem(context, 2, Icons.history_outlined),
+                SizedBox(width: 8.w),
                 _buildNavItem(context, 3, Icons.settings_outlined),
               ],
             ),
@@ -60,7 +61,7 @@ class CustomBottomNav extends StatelessWidget {
         }
       },
       child: Container(
-        padding: const EdgeInsets.all(16), // Comfortable click space
+        padding: EdgeInsets.all(16.r), // Comfortable click space
         decoration: BoxDecoration(
           color: isSelected ? buttonGreen.withValues(alpha: 0.1) : Colors.transparent,
           shape: BoxShape.circle,
@@ -73,15 +74,15 @@ class CustomBottomNav extends StatelessWidget {
               color: isSelected 
                   ? buttonGreen 
                   : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
-              size: 24,
+              size: 24.r,
             ),
             if (isSelected && index == 0) // Optional indicator for Home
                Positioned(
                   right: 0,
                   top: 0,
                   child: Container(
-                    width: 6,
-                    height: 6,
+                    width: 6.r,
+                    height: 6.r,
                     decoration: const BoxDecoration(
                       color: buttonGreen,
                       shape: BoxShape.circle,
