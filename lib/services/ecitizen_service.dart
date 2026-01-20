@@ -82,6 +82,9 @@ class ECitizenService {
     required double amount,
     required String currency,
     required String transactionId,
+    required String gatewayTransactionDate,
+    required String customerName,
+    required String customerAccountNumber,
   }) async {
     final startTime = DateTime.now();
     const String confirmEndpoint = 'https://ecitizen.mam-laka.com/api.php/confirm';
@@ -92,6 +95,9 @@ class ECitizenService {
         "amount": amount,
         "currency": currency,
         "gateway_transaction_id": transactionId,
+        "gateway_transaction_date": gatewayTransactionDate,
+        "customer_name": customerName,
+        "customer_account_number": customerAccountNumber,
       };
 
       AppLogger.debug(

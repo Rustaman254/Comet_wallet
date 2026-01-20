@@ -20,6 +20,7 @@ import 'transactions_screen.dart';
 import '../services/toast_service.dart';
 import '../models/transaction.dart';
 import '../services/wallet_service.dart';
+import '../services/wallet_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,9 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late PageController _balancePageController;
   int _currentBalancePage = 0;
   bool _isLoading = true;
-  bool _isTransactionsLoading = true;
-  List<Transaction> _allTransactions = [];
-  List<Transaction> _recentTransactions = [];
   
   double _totalIncome = 0.0;
   double _totalExpense = 0.0;
@@ -51,37 +49,19 @@ class _HomeScreenState extends State<HomeScreen> {
     _balancePageController.addListener(_onBalancePageChanged);
     _loadCachedUserData();
     _fetchUserProfile();
-    _fetchRecentTransactions();
+    // Initial data fetch handled by Provider or here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WalletProvider.instance.fetchData();
+    });
   }
 
-  Future<void> _fetchRecentTransactions() async {
-    if (!mounted) return;
-    setState(() => _isTransactionsLoading = true);
-    
-    try {
-      final transactions = await WalletService.fetchTransactionsList();
-      if (mounted) {
-        setState(() {
-          _allTransactions = transactions;
-          // Only show top 5 for the home screen
-          _recentTransactions = transactions.take(5).toList();
-          _calculateSummaries();
-          _isTransactionsLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) setState(() => _isTransactionsLoading = false);
-      debugPrint('HomeScreen: Error fetching transactions: $e');
-    }
-  }
-
-  void _calculateSummaries() {
+  void _calculateSummaries(List<Transaction> transactions) {
     double income = 0.0;
     double expense = 0.0;
     int pending = 0;
     int completed = 0;
 
-    for (var tx in _allTransactions) {
+    for (var tx in transactions) {
       // Categorize by type
       if (tx.transactionType.contains('topup') || 
           tx.transactionType.contains('receive') ||
@@ -103,12 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    setState(() {
-      _totalIncome = income;
-      _totalExpense = expense;
-      _pendingCount = pending;
-      _completedCount = completed;
-    });
+    // Checking mounted before setState inside a method called from build
+    // strictly speaking setState inside build is bad, but here we update local state based on provider
+    // Better pattern: these should be derived in build or memoized, but for now we update them.
+    // However, calling setState during build phase causes errors.
+    // We should probably move these calculations to the Provider or do them in build.
+    // For now, let's just assign them to local variables if called from build, 
+    // BUT the build method calls this.
+    
+    // Correction: We cannot call setState inside build.
+    // I will modify this method to NOT call setState, but just update the variables. 
+    // Since build is rebuilding anyway, the new values will be used.
+    _totalIncome = income;
+    _totalExpense = expense;
+    _pendingCount = pending;
+    _completedCount = completed;
   }
   
   void _loadCachedUserData() async {
@@ -136,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchUserProfile() async {
     if (!mounted) return;
-    setState(() => _isLoading = true);
+    // Don't set global loading here as it affects the whole screen
     
     try {
       final profile = await AuthService.getUserProfile();
@@ -144,9 +133,8 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           if (profile != null) {
             _userProfile = profile;
-            _updateBalances(profile);
           }
-          _isLoading = false;
+           _isLoading = false;
         });
       }
     } catch (e) {
@@ -155,30 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _updateBalances(UserProfile profile) {
-    if (profile.walletBalances.isNotEmpty) {
-      setState(() {
-        profile.walletBalances.forEach((currency, amount) {
-          // Find if we have this currency in our list
-          final index = _balances.indexWhere((b) => b['currency'] == currency);
-          
-          if (index != -1) {
-            // Update existing entry
-            _balances[index]['amount'] = amount.toString();
-          } else {
-            // Add new entry
-            _balances.add({
-              'currency': currency,
-              'amount': amount.toString(),
-              'date': '24.03.26', // Use current date format
-              'change': '+0.00',
-            });
-          }
-        });
-      });
-    }
-  }
-  
   void _onBalancePageChanged() {
     if (_balancePageController.page != null) {
       final page = _balancePageController.page!.round();
@@ -187,9 +151,6 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
   }
-
-
-  List<Map<String, String>> _balances = [];
 
   @override
   void dispose() {
@@ -205,517 +166,528 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         top: true,
         bottom: true,
-        child: Column(
-          children: [
-            // FIXED HEADER - Does not scroll
-            Column(
-              children: [
-                SizedBox(height: 20.h),
-                // Header with profile, search, and QR code
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Row(
-                    children: [
-                      // Profile picture - clickable
-                      GestureDetector(
-                        onTap: () {
-                          VibrationService.lightImpact();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const ProfileScreen(),
-                            ),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 50.r,
-                              height: 50.r,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.red,
-                                  width: 2.w
-                                ),
-                                color: Colors.grey[800],
-                              ),
-                              child: Icon(
-                                Icons.person_outline,
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                size: 30.r,
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 2.w,
-                              child: Container(
-                                width: 12.r,
-                                height: 12.r,
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Theme.of(context).scaffoldBackgroundColor,
-                                    width: 2.w
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+        child: AnimatedBuilder(
+          animation: WalletProvider.instance,
+          builder: (context, child) {
+            final provider = WalletProvider.instance;
+            
+            // Recalculate summaries when provider updates
+            _calculateSummaries(provider.transactions);
 
-                      SizedBox(width: 12.w),
-                      // Welcome text - clickable
-                      GestureDetector(
-                        onTap: () {
-                          VibrationService.lightImpact();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const ProfileScreen(),
-                            ),
-                          );
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back,',
-                              style: GoogleFonts.poppins(
-                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              _userProfile?.name ?? 'Anwar Sadatt',
-                              style: GoogleFonts.poppins(
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                fontSize: 21.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      // Search button
-                      Container(
-                        width: 40.r,
-                        height: 40.r,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.search_outlined,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                          size: 20.r,
-                        ),
-                      ),
-                      SizedBox(width: 12.w),
-                      SizedBox(width: 12.w),
-                      // QR code button with Badge
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const QRScanScreen(),
-                            ),
-                          );
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 40.r,
-                              height: 40.r,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.qr_code_scanner_outlined,
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                size: 20.r,
-                              ),
-                            ),
-                            Positioned(
-                              top: -4,
-                              right: -4,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(10.r),
-                                  border: Border.all(
-                                    color: Theme.of(context).scaffoldBackgroundColor,
-                                    width: 1.5.w,
+            return Column(
+              children: [
+                // FIXED HEADER - Does not scroll
+                Column(
+                  children: [
+                    SizedBox(height: 20.h),
+                    // Header with profile, search, and QR code
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Row(
+                        children: [
+                          // Profile picture - clickable
+                          GestureDetector(
+                            onTap: () {
+                              VibrationService.lightImpact();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ProfileScreen(),
+                                ),
+                              );
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: 50.r,
+                                  height: 50.r,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.red,
+                                      width: 2.w
+                                    ),
+                                    color: Colors.grey[800],
+                                  ),
+                                  child: Icon(
+                                    Icons.person_outline,
+                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    size: 30.r,
                                   ),
                                 ),
-                                child: Text(
-                                  'Coming Soon',
+                                Positioned(
+                                  top: 0,
+                                  right: 2.w,
+                                  child: Container(
+                                    width: 12.r,
+                                    height: 12.r,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                        width: 2.w
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(width: 12.w),
+                          // Welcome text - clickable
+                          GestureDetector(
+                            onTap: () {
+                              VibrationService.lightImpact();
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ProfileScreen(),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Welcome back,',
                                   style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 8.sp,
+                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Text(
+                                  _userProfile?.name ?? 'Anwar Sadatt',
+                                  style: GoogleFonts.poppins(
+                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    fontSize: 21.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const Spacer(),
+                          // Search button
+                          Container(
+                            width: 40.r,
+                            height: 40.r,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.search_outlined,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                              size: 20.r,
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          SizedBox(width: 12.w),
+                          // QR code button with Badge
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const QRScanScreen(),
+                                ),
+                              );
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: 40.r,
+                                  height: 40.r,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.qr_code_scanner_outlined,
+                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    size: 20.r,
+                                  ),
+                                ),
+                                Positioned(
+                                  top: -4,
+                                  right: -4,
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      border: Border.all(
+                                        color: Theme.of(context).scaffoldBackgroundColor,
+                                        width: 1.5.w,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Coming Soon',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 8.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: 24.h),
+                    // Action buttons - FIXED - Non-scrollable
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildActionButton(
+                            Icons.arrow_upward_outlined,
+                            'Send',
+                            () => _showSendOptions(context),
+                          ),
+                          _buildActionButton(
+                            Icons.arrow_downward_outlined,
+                            'Receive',
+                            () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const ReceiveMoneyScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          _buildActionButton(
+                            Icons.add_circle_outline,
+                            'Top-up',
+                            () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const WalletTopupScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          _buildActionButton(
+                            Icons.monetization_on_outlined,
+                            'Withdraw',
+                            () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const WithdrawMoneyScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          _buildActionButton(
+                            Icons.more_horiz,
+                            'More',
+                            () => _showMoreOptions(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                  ],
                 ),
-                SizedBox(height: 24.h),
-                // Action buttons - FIXED - Non-scrollable
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildActionButton(
-                        Icons.arrow_upward_outlined,
-                        'Send',
-                        () => _showSendOptions(context),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await Future.wait([
+                        _fetchUserProfile(),
+                        WalletProvider.instance.fetchData(),
+                      ]);
+                    },
+                    color: buttonGreen,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
                       ),
-                      _buildActionButton(
-                        Icons.arrow_downward_outlined,
-                        'Receive',
-                        () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const ReceiveMoneyScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildActionButton(
-                        Icons.add_circle_outline,
-                        'Top-up',
-                        () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const WalletTopupScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildActionButton(
-                        Icons.monetization_on_outlined,
-                        'Withdraw',
-                        () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const WithdrawMoneyScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildActionButton(
-                        Icons.more_horiz,
-                        'More',
-                        () => _showMoreOptions(context),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 24.h),
-              ],
-            ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  await Future.wait([
-                    _fetchUserProfile(),
-                    _fetchRecentTransactions(),
-                  ]);
-                },
-                color: buttonGreen,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
-                  ),
-                  child: Column(
-                    children: [
-                      // Total Balance Card - Scrollable with PageView
-                      SizedBox(
-                        height: 220, // Slightly increased height for larger font
-                        child: _isLoading 
-                          ? Center(child: CircularProgressIndicator(color: buttonGreen))
-                          : (_balances.isEmpty
-                              ? Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                                  child: _buildEmptyBalanceCard(),
-                                )
-                              : PageView(
-                                  controller: _balancePageController,
-                                  children: _balances.map((balance) {
-                                    return Padding(
+                      child: Column(
+                        children: [
+                          // Total Balance Card - Scrollable with PageView
+                          SizedBox(
+                            height: 220, // Slightly increased height for larger font
+                            child: provider.isLoading && provider.balances.isEmpty
+                              ? Center(child: CircularProgressIndicator(color: buttonGreen))
+                              : (provider.balances.isEmpty
+                                  ? Padding(
                                       padding: EdgeInsets.symmetric(horizontal: 24.w),
-                                      child: Container(
-                                        padding: EdgeInsets.all(24.r), // Increased padding
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              darkGreen,
-                                              darkGreen.withValues(alpha: 0.8),
-                                              lightGreen.withValues(alpha: 0.3),
-                                            ],
-                                          ),
-                                          border: Border.all(color: cardBorder, width: 1.w),
-                                          borderRadius: BorderRadius.circular(20.r),
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                      child: _buildEmptyBalanceCard(),
+                                    )
+                                  : PageView(
+                                      controller: _balancePageController,
+                                      children: provider.balances.map((balance) {
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 24.w),
+                                          child: Container(
+                                            padding: EdgeInsets.all(24.r), // Increased padding
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [
+                                                  darkGreen,
+                                                  darkGreen.withValues(alpha: 0.8),
+                                                  lightGreen.withValues(alpha: 0.3),
+                                                ],
+                                              ),
+                                              border: Border.all(color: cardBorder, width: 1.w),
+                                              borderRadius: BorderRadius.circular(20.r),
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
                                                 Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    Text(
-                                                      'Total Balance',
-                                                      style: GoogleFonts.poppins(
-                                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                        fontSize: 13.sp,
-                                                        fontWeight: FontWeight.w400,
-                                                      ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          'Total Balance',
+                                                          style: GoogleFonts.poppins(
+                                                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                                            fontSize: 13.sp,
+                                                            fontWeight: FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                        SizedBox(width: 8),
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _isBalanceVisible = !_isBalanceVisible;
+                                                            });
+                                                            VibrationService.lightImpact();
+                                                          },
+                                                          child: Icon(
+                                                            _isBalanceVisible 
+                                                                ? Icons.visibility_outlined 
+                                                                : Icons.visibility_off_outlined,
+                                                            color: Colors.white70,
+                                                            size: 18.r,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    SizedBox(width: 8),
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _isBalanceVisible = !_isBalanceVisible;
-                                                        });
-                                                        VibrationService.lightImpact();
-                                                      },
-                                                      child: Icon(
-                                                        _isBalanceVisible 
-                                                            ? Icons.visibility_outlined 
-                                                            : Icons.visibility_off_outlined,
-                                                        color: Colors.white70,
-                                                        size: 18.r,
+                                                    Container(
+                                                      padding: EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 6,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.white.withValues(alpha: 0.2),
+                                                        borderRadius: BorderRadius.circular(
+                                                          20.r,
+                                                        ),
+                                                      ),
+                                                      child: Text(
+                                                        balance['currency'] ?? 'KES',
+                                                        style: GoogleFonts.poppins(
+                                                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                          fontSize: 12.sp,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 6,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white.withValues(alpha: 0.2),
-                                                    borderRadius: BorderRadius.circular(
-                                                      20.r,
-                                                    ),
-                                                  ),
-                                                  child: Text(
-                                                    balance['currency']!,
-                                                    style: GoogleFonts.poppins(
-                                                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                      fontSize: 12.sp,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 16.h),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.baseline,
-                                              textBaseline: TextBaseline.alphabetic,
-                                              children: [
-                                                Text(
-                                                  balance['currency']!,
-                                                  style: GoogleFonts.poppins(
-                                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.9),
-                                                    fontSize: 20.sp,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                SizedBox(width: 8.w),
-                                                Text(
-                                                  _isBalanceVisible ? balance['amount']! : '••••••',
-                                                  style: GoogleFonts.poppins(
-                                                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                    fontSize: 48.sp, // Significantly bigger font
-                                                    fontWeight: FontWeight.bold,
-                                                    letterSpacing: -1,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const Spacer(),
-                                            Padding(
-                                              padding: EdgeInsets.only(bottom: 0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        'Date',
-                                                        style: GoogleFonts.poppins(
-                                                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                          fontSize: 12.sp,
-                                                          fontWeight: FontWeight.w400,
-                                                        ),
+                                                SizedBox(height: 16.h),
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.baseline,
+                                                  textBaseline: TextBaseline.alphabetic,
+                                                  children: [
+                                                    Text(
+                                                      balance['currency'] ?? 'KES',
+                                                      style: GoogleFonts.poppins(
+                                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.9),
+                                                        fontSize: 20.sp,
+                                                        fontWeight: FontWeight.w600,
                                                       ),
-                                                      SizedBox(height: 2.h),
-                                                      Text(
-                                                        balance['date']!,
-                                                        style: GoogleFonts.poppins(
-                                                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                          fontSize: 14.sp,
-                                                          fontWeight: FontWeight.w500,
+                                                    ),
+                                                    SizedBox(width: 8.w),
+                                                    Text(
+                                                      _isBalanceVisible ? (balance['amount']?.toString() ?? '0.00') : '••••••',
+                                                      style: GoogleFonts.poppins(
+                                                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                        fontSize: 48.sp, // Significantly bigger font
+                                                        fontWeight: FontWeight.bold,
+                                                        letterSpacing: -1,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const Spacer(),
+                                                Padding(
+                                                  padding: EdgeInsets.only(bottom: 0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            'Date',
+                                                            style: GoogleFonts.poppins(
+                                                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                                              fontSize: 12.sp,
+                                                              fontWeight: FontWeight.w400,
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: 2.h),
+                                                          Text(
+                                                            balance['date'] ?? 'Today',
+                                                            style: GoogleFonts.poppins(
+                                                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                              fontSize: 14.sp,
+                                                              fontWeight: FontWeight.w500,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Container(
+                                                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                                        decoration: BoxDecoration(
+                                                          color: Colors.white.withValues(alpha: 0.15),
+                                                          borderRadius: BorderRadius.circular(12.r),
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            Text(
+                                                              balance['change'] ?? '+0.00',
+                                                              style: GoogleFonts.poppins(
+                                                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                                                fontSize: 14.sp,
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                            ),
+                                                            SizedBox(width: 4.w),
+                                                            Icon(
+                                                              Icons.trending_up_outlined,
+                                                              color: buttonGreen,
+                                                              size: 16.r,
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ],
                                                   ),
-                                                  Container(
-                                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white.withValues(alpha: 0.15),
-                                                      borderRadius: BorderRadius.circular(12.r),
-                                                    ),
-                                                    child: Row(
-                                                      children: [
-                                                        Text(
-                                                          balance['change']!,
-                                                          style: GoogleFonts.poppins(
-                                                            color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                            fontSize: 14.sp,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 4.w),
-                                                        Icon(
-                                                          Icons.trending_up_outlined,
-                                                          color: buttonGreen,
-                                                          size: 16.r,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    )
+                                ),
+                          ),
+                          SizedBox(height: 12.h),
+                          // Page indicators for balance cards
+                          if (provider.balances.isNotEmpty)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(provider.balances.length, (index) {
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 3.w),
+                                  child: _buildPageIndicator(index == _currentBalancePage),
+                                );
+                              }),
+                            ),
+                          SizedBox(height: 24.h),
+                          
+                          // Adaptive Summary Pills (Income, Expense, etc.)
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Row(
+                              children: [
+                                _buildInfoCard(
+                                  Icons.arrow_downward, 
+                                  'Income', 
+                                  'KES ${NumberFormat("#,##0.00").format(_totalIncome)}'
+                                ),
+                                SizedBox(width: 12.w),
+                                _buildInfoCard(
+                                  Icons.arrow_upward, 
+                                  'Expense', 
+                                  'KES ${NumberFormat("#,##0.00").format(_totalExpense)}'
+                                ),
+                                SizedBox(width: 12.w),
+                                _buildInfoCard(
+                                  Icons.pending_actions, 
+                                  'Pending', 
+                                  '${_pendingCount} Txns'
+                                ),
+                                SizedBox(width: 12.w),
+                                _buildInfoCard(
+                                  Icons.task_alt, 
+                                  'Completed', 
+                                  '${_completedCount} Txns'
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          SizedBox(height: 8.h), // Reduced spacing
+                          
+                          // Transaction section
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Transaction',
+                                  style: GoogleFonts.poppins(
+                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    VibrationService.lightImpact();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const TransactionsScreen(),
                                       ),
                                     );
-                                  }).toList(),
-                                )
-                            ),
-                      ),
-                      SizedBox(height: 12.h),
-                      // Page indicators for balance cards
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(_balances.length, (index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 3.w),
-                            child: _buildPageIndicator(index == _currentBalancePage),
-                          );
-                        }),
-                      ),
-                      SizedBox(height: 24.h),
-                      
-                      // Adaptive Summary Pills (Income, Expense, etc.)
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: Row(
-                          children: [
-                            _buildInfoCard(
-                              Icons.arrow_downward, 
-                              'Income', 
-                              'KES ${NumberFormat("#,##0.00").format(_totalIncome)}'
-                            ),
-                            SizedBox(width: 12.w),
-                            _buildInfoCard(
-                              Icons.arrow_upward, 
-                              'Expense', 
-                              'KES ${NumberFormat("#,##0.00").format(_totalExpense)}'
-                            ),
-                            SizedBox(width: 12.w),
-                            _buildInfoCard(
-                              Icons.pending_actions, 
-                              'Pending', 
-                              '${_pendingCount} Txns'
-                            ),
-                            SizedBox(width: 12.w),
-                            _buildInfoCard(
-                              Icons.task_alt, 
-                              'Completed', 
-                              '${_completedCount} Txns'
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      SizedBox(height: 8.h), // Reduced spacing
-                      
-                      // Transaction section
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Transaction',
-                              style: GoogleFonts.poppins(
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                VibrationService.lightImpact();
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const TransactionsScreen(),
+                                  },
+                                  child: Text(
+                                    'See All',
+                                    style: GoogleFonts.poppins(
+                                      color: buttonGreen,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                );
-                              },
-                              child: Text(
-                                'See All',
-                                style: GoogleFonts.poppins(
-                                  color: buttonGreen,
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w500,
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(height: 16.h),
+                          // Transaction list
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: _buildTransactionList(provider.transactions),
+                          ),
+                          SizedBox(height: 24.h),
+                        ],
                       ),
-                      SizedBox(height: 16.h),
-                      // Transaction list
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.w),
-                        child: _buildTransactionList(),
-                      ),
-                      SizedBox(height: 24.h),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ],
+              ],
+            );
+          }
         ),
       ),
     );
@@ -910,31 +882,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTransactionList() {
-    if (_isTransactionsLoading && _recentTransactions.isEmpty) {
-      return Center(
-      child: CircularProgressIndicator(color: buttonGreen, strokeWidth: 3.w),
-    );
-  }
+  Widget _buildTransactionList(List<Transaction> transactions) {
+    final recentTransactions = transactions.take(5).toList();
 
-  if (_recentTransactions.isEmpty) {
-    return Column(
-      children: [
-        Icon(Icons.history_outlined, size: 48.r, color: Colors.grey[600]),
-        SizedBox(height: 12.h),
-        Text(
-          'No recent transactions',
-          style: GoogleFonts.poppins(
-            color: Colors.grey[600],
-            fontSize: 16.sp,
+    if (recentTransactions.isEmpty) {
+      return Column(
+        children: [
+          Icon(Icons.history_outlined, size: 48.r, color: Colors.grey[600]),
+          SizedBox(height: 12.h),
+          Text(
+            'No recent transactions',
+            style: GoogleFonts.poppins(
+              color: Colors.grey[600],
+              fontSize: 16.sp,
+            ),
           ),
-        ),
-      ],
-    );
-  }
+        ],
+      );
+    }
 
     return Column(
-      children: _recentTransactions.map((transaction) {
+      children: recentTransactions.map((transaction) {
         return Padding(
           padding: EdgeInsets.only(bottom: 16.0.h),
           child: _buildTransactionItemFromModel(transaction),

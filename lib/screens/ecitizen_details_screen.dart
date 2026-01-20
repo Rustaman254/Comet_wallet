@@ -4,6 +4,7 @@ import '../constants/colors.dart';
 import '../models/ecitizen_bill.dart';
 import '../services/ecitizen_service.dart';
 import '../services/wallet_service.dart';
+import '../services/token_service.dart';
 import 'enter_pin_screen.dart';
 
 class ECitizenDetailsScreen extends StatefulWidget {
@@ -171,6 +172,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                               );
 
                               final transactionId = transferResponse['transaction_id'] ?? 'N/A';
+                              
+                              // Get user details for eCitizen confirmation
+                              final customerName = await TokenService.getUserName() ?? 'Unknown User';
+                              final customerPhone = await TokenService.getPhoneNumber() ?? 'Unknown';
+                              
+                              // Format date as YYYY-MM-DD HH:mm:ss
+                              final now = DateTime.now();
+                              final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
 
                               // 2. Confirm payment with eCitizen
                               return await ECitizenService.confirmPayment(
@@ -178,6 +187,9 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                                 amount: widget.bill.amount,
                                 currency: widget.bill.currency,
                                 transactionId: transactionId,
+                                gatewayTransactionDate: dateStr,
+                                customerName: customerName,
+                                customerAccountNumber: customerPhone,
                               );
                             },
                           ),

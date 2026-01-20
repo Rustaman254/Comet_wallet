@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 import 'add_contact_screen.dart';
 import '../services/wallet_service.dart';
+import '../services/wallet_provider.dart';
 import '../services/token_service.dart';
 import '../services/logger_service.dart';
 import '../services/toast_service.dart';
@@ -39,26 +40,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     'support@antigravity.ai',
   ];
 
-  final List<Map<String, dynamic>> _balances = [
-    {
-      'currency': 'USD',
-      'amount': '4562.00',
-      'date': '24.03.26',
-      'change': '+1.03',
-    },
-    {
-      'currency': 'KES',
-      'amount': '650,000',
-      'date': '24.03.26',
-      'change': '+150',
-    },
-    {
-      'currency': 'EUR',
-      'amount': '4,200',
-      'date': '24.03.26',
-      'change': '+5.20',
-    },
-  ];
+
 
   @override
   void initState() {
@@ -115,7 +97,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       if (_currentBalancePage != page) {
         setState(() {
           _currentBalancePage = page;
-          selectedCurrency = _balances[page]['currency'];
+          if (WalletProvider.instance.balances.isNotEmpty && page < WalletProvider.instance.balances.length) {
+            selectedCurrency = WalletProvider.instance.balances[page]['currency'];
+          }
         });
       }
     }
@@ -239,6 +223,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   }
 
   void _showCurrencyDialog() {
+    final balances = WalletProvider.instance.balances;
+    if (balances.isEmpty) return;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -254,14 +241,14 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: _balances.map((balance) {
+          children: balances.map((balance) {
             return ListTile(
               title: Text(
                 balance['currency'],
                 style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
               ),
               onTap: () {
-                final index = _balances.indexOf(balance);
+                final index = balances.indexOf(balance);
                 _balancePageController.animateToPage(
                   index,
                   duration: const Duration(milliseconds: 300),
@@ -281,424 +268,421 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     return Scaffold(
       backgroundColor: darkBackground,
       body: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Fixed Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back_outlined,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'Send Money',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 40),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-              // Total Balance Card - Scrollable
-              SizedBox(
-                height: 200,
-                child: PageView(
-                  controller: _balancePageController,
-                  children: _balances.map((balance) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              darkGreen,
-                              darkGreen.withOpacity(0.8),
-                              lightGreen.withOpacity(0.3),
-                            ],
+        child: AnimatedBuilder(
+          animation: WalletProvider.instance,
+          builder: (context, child) {
+            final provider = WalletProvider.instance;
+            final balances = provider.balances;
+            
+            // Ensure selectedCurrency is valid or default
+            if (balances.isNotEmpty && _currentBalancePage < balances.length) {
+              // Ensure we don't overwrite if user manually changed it, 
+              // but here the page view drives the currency selection logic in the original code.
+              // So we stick to that pattern: visible card = selected currency for context.
+              // However, for sending, we might want to select ANY currency. 
+              // But let's follow the existing pattern where swiping changes context.
+            }
+
+            return Column(
+              children: [
+                const SizedBox(height: 20),
+                // Fixed Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.3),
+                            shape: BoxShape.circle,
                           ),
-                          border: Border.all(color: cardBorder, width: 1),
-                          borderRadius: BorderRadius.circular(20),
+                          child: const Icon(
+                            Icons.arrow_back_outlined,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Total Balance',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white70,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: _showCurrencyDialog,
+                      ),
+                      Expanded(
+                        child: Text(
+                          'Send Money',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 40),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start, // Align children to start
+                      children: [
+                        // Total Balance Card - Scrollable
+                        SizedBox(
+                          height: 200,
+                          child: balances.isEmpty 
+                            ? Center(child: CircularProgressIndicator(color: buttonGreen))
+                            : PageView(
+                              controller: _balancePageController,
+                              children: balances.map((balance) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(20),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          darkGreen,
+                                          darkGreen.withOpacity(0.8),
+                                          lightGreen.withOpacity(0.3),
+                                        ],
+                                      ),
+                                      border: Border.all(color: cardBorder, width: 1),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: Text(
-                                      balance['currency'],
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Total Balance',
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white70,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: _showCurrencyDialog,
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 6,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.2),
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                child: Text(
+                                                  balance['currency'] ?? 'KES',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              balance['currency'] ?? 'KES',
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              balance['amount']?.toString() ?? '0.00',
+                                              style: GoogleFonts.poppins(
+                                                color: Colors.white,
+                                                fontSize: 35,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Date',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white70,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  balance['date'] ?? 'Today',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  balance['change'] ?? '+0.00',
+                                                  style: GoogleFonts.poppins(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Icon(
+                                                  Icons.trending_up_outlined,
+                                                  color: buttonGreen,
+                                                  size: 20,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                              ],
+                                );
+                              }).toList(),
                             ),
-                            const SizedBox(height: 12),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                        ),
+                        const SizedBox(height: 8),
+                        // Page indicators
+                        if (balances.isNotEmpty)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(balances.length, (index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 3),
+                                child: _buildPageIndicator(index == _currentBalancePage),
+                              );
+                            }),
+                          ),
+                        const SizedBox(height: 24),
+                        
+                        // Recipient Email Section
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Recipient Email',
+                                style: GoogleFonts.poppins(
+                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _emailController,
+                                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                                decoration: buildUnderlineInputDecoration(
+                                  context: context,
+                                  label: '',
+                                  hintText: 'Enter recipient email address',
+                                  prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _favorites.contains(_emailController.text.trim())
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color: buttonGreen,
+                                    ),
+                                    onPressed: () {
+                                      final email = _emailController.text.trim();
+                                      if (email.isNotEmpty && email.contains('@')) {
+                                        setState(() {
+                                          if (_favorites.contains(email)) {
+                                            _favorites.remove(email);
+                                            ToastService().showInfo(context, 'Removed from favorites');
+                                          } else {
+                                            _favorites.add(email);
+                                            ToastService().showSuccess(context, 'Added to favorites');
+                                          }
+                                        });
+                                      } else {
+                                        ToastService().showError(context, 'Enter a valid email first');
+                                      }
+                                    },
+                                  ),
+                                ),
+                                onChanged: (v) => setState(() {}),
+                              ),
+                              if (_favorites.isNotEmpty) ...[
+                                const SizedBox(height: 20),
                                 Text(
-                                  balance['currency'],
+                                  'Favorites',
                                   style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 15,
+                                    color: Colors.white70,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  balance['amount'],
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 35,
-                                    fontWeight: FontWeight.bold,
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  height: 40,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: _favorites.length,
+                                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                                    itemBuilder: (context, index) {
+                                      final favorite = _favorites[index];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _emailController.text = favorite;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(20),
+                                            border: Border.all(
+                                              color: _emailController.text == favorite
+                                                  ? buttonGreen
+                                                  : Colors.white24,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            favorite,
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500, // Added weight
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Date',
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white70,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      balance['date'],
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        
+                        // Amount Section - REFACTORED to match Top-up
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Amount',
+                                style: GoogleFonts.poppins(
+                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
                                 ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      balance['change'],
+                              ),
+                              const SizedBox(height: 8),
+                              TextFormField(
+                                controller: _amountController,
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                style: GoogleFonts.poppins(
+                                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                                  fontSize: 16,
+                                ),
+                                decoration: buildUnderlineInputDecoration(
+                                  context: context,
+                                  label: '',
+                                  hintText: 'Enter amount',
+                                  prefixIcon: Icon(
+                                    Icons.money_outlined,
+                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                  ),
+                                ),
+                                onTap: _showCurrencyDialog, // Optional: Let them change currency on tap or separate button?
+                                // Top-up screen doesn't have currency selector in the input itself.
+                              ),
+                              const SizedBox(height: 8),
+                              // Currency Selector Button (below or beside)
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: _showCurrencyDialog,
+                                  child: Text(
+                                    'Change Currency ($selectedCurrency)',
+                                    style: GoogleFonts.poppins(
+                                      color: buttonGreen,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        const SizedBox(height: 40),
+                        // Send Money button
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _handleTransfer,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: buttonGreen,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: _isLoading
+                                  ? SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                    )
+                                  : Text(
+                                      'Send Money',
                                       style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(width: 4),
-                                    Icon(
-                                      Icons.trending_up_outlined,
-                                      color: buttonGreen,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
-                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Page indicators
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(_balances.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: _buildPageIndicator(index == _currentBalancePage),
-                  );
-                }),
-              ),
-              const SizedBox(height: 24),
-              // Send To section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Recipient Email',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                        const SizedBox(height: 40),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _emailController,
-                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
-                      decoration: buildUnderlineInputDecoration(
-                        context: context,
-                        label: '',
-                        hintText: 'Enter recipient email address',
-                        prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _favorites.contains(_emailController.text.trim())
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: buttonGreen,
-                          ),
-                          onPressed: () {
-                            final email = _emailController.text.trim();
-                            if (email.isNotEmpty && email.contains('@')) {
-                              setState(() {
-                                if (_favorites.contains(email)) {
-                                  _favorites.remove(email);
-                                  ToastService().showInfo(context, 'Removed from favorites');
-                                } else {
-                                  _favorites.add(email);
-                                  ToastService().showSuccess(context, 'Added to favorites');
-                                }
-                              });
-                            } else {
-                              ToastService().showError(context, 'Enter a valid email first');
-                            }
-                          },
-                        ),
-                      ),
-                      onChanged: (v) => setState(() {}),
-                    ),
-                    if (_favorites.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      Text(
-                        'Favorites',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        height: 40,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _favorites.length,
-                          separatorBuilder: (context, index) => const SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            final favorite = _favorites[index];
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _emailController.text = favorite;
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: _emailController.text == favorite
-                                        ? buttonGreen
-                                        : Colors.white24,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  favorite,
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Enter Amount section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: cardBackground,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Enter Your Amount',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: _showCurrencyDialog,
-                            child: Text(
-                              'Change Currency?',
-                              style: GoogleFonts.poppins(
-                                color: buttonGreen,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            selectedCurrency,
-                            style: GoogleFonts.poppins(
-                              color: (_isAmountFocused && _amountController.text == '0.00') 
-                                  ? Colors.grey 
-                                  : Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: TextField(
-                              controller: _amountController,
-                              focusNode: _amountFocusNode,
-                              onChanged: _onAmountChanged,
-                              style: GoogleFonts.poppins(
-                                color: (_isAmountFocused && _amountController.text == '0.00') 
-                                    ? Colors.grey 
-                                    : Colors.white,
-                                fontSize: 35,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                hintText: '0.00',
-                                hintStyle: GoogleFonts.poppins(color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              // Send Money button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleTransfer,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonGreen,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : Text(
-                            'Send Money',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-                  ],
-                ),
-              ),
-            ),
-          ],
+              ],
+            );
+          }
         ),
       ),
     );

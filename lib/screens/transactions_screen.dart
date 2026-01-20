@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../utils/responsive_utils.dart';
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
+import '../services/wallet_provider.dart';
 import '../models/transaction.dart';
 import '../services/vibration_service.dart';
 
@@ -25,40 +26,35 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchTransactions();
+    // Initial fetch if needed, though mostly handled by Home
+    // We can rely on Provider's existing data or fetch fresh
+    if (WalletProvider.instance.transactions.isEmpty) {
+      WalletProvider.instance.fetchData();
+    }
+    
+    // Initialize filtered list with current provider data
+    _filteredTransactions = WalletProvider.instance.transactions;
   }
 
   Future<void> _fetchTransactions() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final transactions = await WalletService.fetchTransactionsList();
-      if (mounted) {
-        setState(() {
-          _transactions = transactions;
-          _filteredTransactions = transactions;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _isLoading = false;
-        });
-      }
+    // Refresh global state
+    await WalletProvider.instance.fetchData();
+    // _filteredTransactions will be updated in build or listener if we added one, 
+    // but here we are using local filtered list. 
+    // Ideally, we should update _filteredTransactions based on new data + search query.
+    // simpler: just re-run filter logic.
+    if (mounted) {
+       _runFilter(_searchController.text);
     }
   }
 
   void _runFilter(String query) {
+    List<Transaction> sourceList = WalletProvider.instance.transactions;
     List<Transaction> results = [];
     if (query.isEmpty && _selectedFilter == 'All') {
-      results = _transactions;
+      results = sourceList;
     } else {
-      results = _transactions.where((tx) {
+      results = sourceList.where((tx) {
         final matchesSearch = tx.phoneNumber.contains(query) || 
                              tx.transactionType.toLowerCase().contains(query.toLowerCase()) ||
                              tx.amount.toString().contains(query);
@@ -102,17 +98,45 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          _buildSearchAndFilter(),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: _fetchTransactions,
-              color: buttonGreen,
-              child: _buildBody(),
-            ),
-          ),
-        ],
+      body: AnimatedBuilder(
+        animation: WalletProvider.instance,
+        builder: (context, child) {
+          // Update filtered list when provider updates if query is empty/unchanged? 
+          // Use a simple trick: if the list size changed significantly or we want real-time,
+          // we might need to re-run filter every time provider notifies.
+          // For now, let's re-run filter immediately.
+          
+          // Careful: _runFilter calls setState, which is bad inside build.
+          // Better: Perform filtering inside build.
+          
+          final provider = WalletProvider.instance;
+          final transactions = provider.transactions;
+          final query = _searchController.text;
+          
+          final filtered = transactions.where((tx) {
+             final matchesSearch = tx.phoneNumber.contains(query) || 
+                                  tx.transactionType.toLowerCase().contains(query.toLowerCase()) ||
+                                  tx.amount.toString().contains(query);
+             final matchesFilter = _selectedFilter == 'All' || tx.transactionType.toLowerCase().contains(_selectedFilter.toLowerCase());
+             return matchesSearch && matchesFilter;
+          }).toList();
+          
+          // Assign to local for compatibility if needed, but we can just use `filtered`
+          _filteredTransactions = filtered;
+
+          return Column(
+            children: [
+              _buildSearchAndFilter(),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _fetchTransactions,
+                  color: buttonGreen,
+                  child: _buildBody(),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -179,11 +203,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading && _filteredTransactions.isEmpty) {
+    final provider = WalletProvider.instance;
+    if (provider.isLoading && _filteredTransactions.isEmpty) {
       return Center(child: CircularProgressIndicator());
     }
 
-    if (_error != null && _filteredTransactions.isEmpty) {
+    if (provider.error.isNotEmpty && _filteredTransactions.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -196,7 +221,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ),
             SizedBox(height: 8.h),
             Text(
-              _error!,
+              provider.error,
               style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14.sp),
               textAlign: TextAlign.center,
             ),
