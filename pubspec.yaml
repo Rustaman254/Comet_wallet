@@ -42,6 +42,7 @@ dependencies:
   camera: ^0.10.5
   intl: ^0.19.0
   flutter_screenutil: ^5.9.3
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -57,7 +58,16 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+# Flutter Launcher Icons
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/android_app_icon.png"
+  adaptive_icon_background: "#132121"
+  adaptive_icon_foreground: "assets/android_app_icon.png"
+
 # The following section is specific to Flutter packages.
+
 flutter:
 
   # The following line ensures that the Material Icons font is

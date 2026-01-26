@@ -8,11 +8,13 @@ import 'enter_pin_screen.dart';
 class MobileWithdrawScreen extends StatefulWidget {
   final String currency;
   final double maxBalance;
+  final String withdrawMethod;
 
   const MobileWithdrawScreen({
     super.key,
     this.currency = 'KES',
     this.maxBalance = 0.0,
+    this.withdrawMethod = 'Mobile Money',
   });
 
   @override
@@ -54,10 +56,12 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => EnterPinScreen(
-          recipientName: phoneText, // Standard field for recipient phone
+          recipientName: phoneText,
           amount: amountText,
           currency: widget.currency,
-          description: 'Withdrawal to M-Pesa',
+          description: widget.withdrawMethod == 'T-Kash' 
+              ? 'Withdrawal to T-Kash user' 
+              : 'Withdrawal to M-Pesa',
         ),
       ),
     );
@@ -82,7 +86,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Mobile Money',
+          widget.withdrawMethod,
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -178,7 +182,9 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                 child: ElevatedButton(
                   onPressed: _handleContinue,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: widget.withdrawMethod == 'T-Kash' 
+                        ? Color(0xFF0066CC) 
+                        : buttonGreen,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

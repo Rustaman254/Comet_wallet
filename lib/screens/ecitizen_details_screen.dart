@@ -134,12 +134,16 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                             fontSize: 18,
                           ),
                         ),
-                        Text(
-                          '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+                        Flexible(
+                          child: Text(
+                            '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
+                            textAlign: TextAlign.end,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -166,14 +170,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                             onVerify: () async {
                               // 1. Perform wallet to wallet transfer
                               final transferResponse = await WalletService.transferWallet(
-                                toEmail: 'colls@cradlevoices.com',
+                                toEmail: 'yeshbloger@gmail.com',
                                 amount: widget.bill.amount,
                                 currency: widget.bill.currency,
                               );
 
                               final transactionId = transferResponse['transaction_id'] ?? 'N/A';
                               
-                              // Get user details for eCitizen confirmation
+                              // Get user detaicolls@cradlevoicesls for eCitizen confirmation
                               final customerName = await TokenService.getUserName() ?? 'Unknown User';
                               final customerPhone = await TokenService.getPhoneNumber() ?? 'Unknown';
                               
@@ -232,12 +236,16 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
             fontSize: 15,
           ),
         ),
-        Text(
-          value,
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
