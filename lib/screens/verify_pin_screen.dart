@@ -178,9 +178,13 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                         height: 16.r,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: buttonGreen,
+                          color: index < _pin.length
+                              ? buttonGreen
+                              : Colors.white.withValues(alpha: 0.3),
                           border: Border.all(
-                            color: buttonGreen,
+                            color: index < _pin.length
+                                ? buttonGreen
+                                : Colors.white.withValues(alpha: 0.3),
                             width: 2.w,
                           ),
                         ),
