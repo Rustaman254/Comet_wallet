@@ -146,7 +146,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     const SizedBox(height: 24),
                     Text(
                       'Comet Wallet',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -156,7 +157,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     const SizedBox(height: 8),
                     Text(
                       'Your Money, Your Way',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
                         color: Colors.white70,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,

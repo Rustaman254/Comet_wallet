@@ -204,9 +204,10 @@ class OnboardingScreen1 extends StatelessWidget {
                 children: [
                   Text(
                     'Welcome to Comet Wallet',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       color: Colors.white,
-                      fontSize: 28.sp.sp,
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -214,9 +215,10 @@ class OnboardingScreen1 extends StatelessWidget {
                   SizedBox(height: 16.h),
                   Text(
                     'A secure, smart way to manage your money every day.',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       color: Colors.white,
-                      fontSize: 16.sp.sp,
+                      fontSize: 16.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -236,12 +238,13 @@ class OnboardingScreen1 extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(50.r),
                     ),
                   ),
                   child: Text(
                     'Next',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
@@ -464,7 +467,8 @@ class OnboardingScreen2 extends StatelessWidget {
                 children: [
                   Text(
                     'Clarity and Control',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
@@ -474,7 +478,8 @@ class OnboardingScreen2 extends StatelessWidget {
                   SizedBox(height: 16.h),
                   Text(
                     'Track spending, set budgets, and review every movement on an immutable ledger.',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 16.sp,
                     ),
@@ -496,12 +501,13 @@ class OnboardingScreen2 extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(50.r),
                     ),
                   ),
                   child: Text(
                     'Next',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
@@ -806,7 +812,8 @@ class OnboardingScreen3 extends StatelessWidget {
                 children: [
                   Text(
                     'Bank-grade Security',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
@@ -816,7 +823,8 @@ class OnboardingScreen3 extends StatelessWidget {
                   SizedBox(height: 16.h),
                   Text(
                     'Your balances and transactions are protected with strong encryption and audited ledgers.',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 16.sp,
                     ),
@@ -838,12 +846,13 @@ class OnboardingScreen3 extends StatelessWidget {
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(50.r),
                     ),
                   ),
                   child: Text(
                     'Next',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:heroicons/heroicons.dart';
 import '../constants/colors.dart';
 import '../main.dart'; // Import main.dart to access MyApp
 import 'home_screen.dart';
@@ -8,6 +8,7 @@ import '../services/vibration_service.dart';
 import '../services/token_service.dart';
 import 'sign_in_screen.dart';
 import '../services/logger_service.dart';
+import '../utils/component_styles.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -36,6 +37,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -44,7 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              // Header
+              // Modern Header
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Row(
@@ -54,105 +57,138 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.0), // Transparent/Hidden
+                        color: Colors.white.withValues(alpha: 0.0),
                         shape: BoxShape.circle,
                       ),
                     ),
                     Text(
-                    'Settings',
-                    style: GoogleFonts.poppins(
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      'Settings',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        color: isDark ? Colors.white : lightTextPrimary,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    ),
-                     GestureDetector(
-                        onTap: () => _showLogoutDialog(),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                              Icons.logout,
-                              color: Colors.white,
-                              size: 20
+                    GestureDetector(
+                      onTap: () => _showLogoutDialog(),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: errorRed.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: HeroIcon(
+                            HeroIcons.arrowRightStartOnRectangle,
+                            color: errorRed,
+                            size: 20,
                           ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 32),
               
               // General Section
-               _buildSectionHeader('General'),
-              _buildSimpleListTile(
-                  'Language',
-                  trailing: Text(
-                      'English',
-                      style: GoogleFonts.poppins(
-                          color: Colors.white70,
-                          fontSize: 14,
-                      ),
+              _buildSectionHeader('General', isDark),
+              _buildModernListTile(
+                'Language',
+                HeroIcons.language,
+                trailing: Text(
+                  'English',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    color: isDark ? Colors.white70 : lightSecondaryText,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                  onTap: () {}
+                ),
+                isDark: isDark,
+                onTap: () {},
               ),
-              _buildDivider(),
-              _buildSimpleListTile('My Profile', onTap: () {
-                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                    );
-              }),
-              _buildDivider(),
-              _buildSimpleListTile('Contact Us', onTap: () {}),
+              _buildDivider(isDark),
+              _buildModernListTile(
+                'My Profile',
+                HeroIcons.user,
+                isDark: isDark,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
+                },
+              ),
+              _buildDivider(isDark),
+              _buildModernListTile(
+                'Contact Us',
+                HeroIcons.envelope,
+                isDark: isDark,
+                onTap: () {},
+              ),
 
               const SizedBox(height: 32),
 
               // Security Section
-               _buildSectionHeader('Security'),
-              _buildSimpleListTile('Change Password', onTap: () {}),
-               _buildDivider(),
-              _buildSimpleListTile('Privacy Policy', onTap: () {}),
+              _buildSectionHeader('Security', isDark),
+              _buildModernListTile(
+                'Change Password',
+                HeroIcons.lockClosed,
+                isDark: isDark,
+                onTap: () {},
+              ),
+              _buildDivider(isDark),
+              _buildModernListTile(
+                'Privacy Policy',
+                HeroIcons.shieldCheck,
+                isDark: isDark,
+                onTap: () {},
+              ),
 
               const SizedBox(height: 32),
 
-              // Data/Preferences (Simulated from "Choose what data you share with us" in image context)
-              _buildSectionHeader('Choose what data you share with us'),
-              _buildSwitchTile(
-                  'Dark Mode',
-                  MyApp.themeNotifier.value == ThemeMode.dark,
-                  (val) async {
-                    VibrationService.selectionClick();
-                    MyApp.themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
-                    setState(() {}); // specific rebuild for this switch visual
-                  },
+              // Preferences Section
+              _buildSectionHeader('Preferences', isDark),
+              _buildModernSwitchTile(
+                'Dark Mode',
+                HeroIcons.moon,
+                MyApp.themeNotifier.value == ThemeMode.dark,
+                (val) async {
+                  VibrationService.selectionClick();
+                  MyApp.themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+                  setState(() {});
+                },
+                isDark: isDark,
               ),
-              const Divider(color: Colors.white10),
-              _buildSwitchTile(
-                  'Biometric',
-                  _biometricsEnabled,
-                  (val) {
-                      VibrationService.selectionClick();
-                      setState(() {
-                          _biometricsEnabled = val;
-                      });
-                  }
+              _buildDivider(isDark),
+              _buildModernSwitchTile(
+                'Biometric',
+                HeroIcons.faceSmile,
+                _biometricsEnabled,
+                (val) {
+                  VibrationService.selectionClick();
+                  setState(() {
+                    _biometricsEnabled = val;
+                  });
+                },
+                isDark: isDark,
               ),
-               _buildDivider(),
-                _buildSwitchTile(
-                  'Vibration',
-                  _vibrationEnabled,
-                  (val) async {
-                      await VibrationService.selectionClick();
-                      await VibrationService.setEnabled(val);
-                      setState(() {
-                          _vibrationEnabled = val;
-                      });
-                  }
-               ),
+              _buildDivider(isDark),
+              _buildModernSwitchTile(
+                'Vibration',
+                HeroIcons.rocketLaunch,
+                _vibrationEnabled,
+                (val) async {
+                  await VibrationService.selectionClick();
+                  await VibrationService.setEnabled(val);
+                  setState(() {
+                    _vibrationEnabled = val;
+                  });
+                },
+                isDark: isDark,
+              ),
 
               const SizedBox(height: 100),
             ],
@@ -162,105 +198,147 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
-      return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                      color: Colors.white70,
-                      fontSize: 14,
-                  ),
-              ),
-          ),
-      );
-  }
-
-  Widget _buildSimpleListTile(String title, {Widget? trailing, VoidCallback? onTap}) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1) ?? Colors.grey.withOpacity(0.1),
-            width: 1,
-          ),
-        ),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-        title: Text(
+  Widget _buildSectionHeader(String title, bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
           title,
-          style: GoogleFonts.poppins(
-            color: Theme.of(context).textTheme.bodyMedium?.color,
-            fontSize: 14, // Requested size
-            fontWeight: FontWeight.w500,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            color: isDark ? Colors.white70 : lightSecondaryText,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
-        ),
-        trailing: trailing ?? Icon(
-          Icons.arrow_forward_ios,
-          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-          size: 14, // Slightly smaller to match text
         ),
       ),
     );
   }
 
-  Widget _buildSwitchTile(String title, bool value, Function(bool) onChanged) {
-       return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-          title: Text(
-              title,
-              style: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-              ),
+  Widget _buildModernListTile(
+    String title,
+    HeroIcons icon, {
+    Widget? trailing,
+    VoidCallback? onTap,
+    required bool isDark,
+  }) {
+    return ListTile(
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: buttonGreen.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: HeroIcon(
+            icon,
+            color: buttonGreen,
+            size: 22,
           ),
-          trailing: Switch(
-              value: value,
-              onChanged: onChanged,
-              activeColor: buttonGreen, // Visible in both
-              activeTrackColor: buttonGreen.withOpacity(0.3),
-              inactiveThumbColor: Colors.grey,
-              inactiveTrackColor: Colors.grey.withOpacity(0.3),
-          ),
-      );
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontFamily: 'Outfit',
+          color: isDark ? Colors.white : lightTextPrimary,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      trailing: trailing ?? HeroIcon(
+        HeroIcons.chevronRight,
+        color: isDark ? Colors.white30 : lightBorder,
+        size: 18,
+      ),
+    );
   }
 
-  Widget _buildDivider() {
-      return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Divider(
-            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1) ?? Colors.grey.withOpacity(0.1),
+  Widget _buildModernSwitchTile(
+    String title,
+    HeroIcons icon,
+    bool value,
+    Function(bool) onChanged, {
+    required bool isDark,
+  }) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: buttonGreen.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: HeroIcon(
+            icon,
+            color: buttonGreen,
+            size: 22,
           ),
-      );
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontFamily: 'Outfit',
+          color: isDark ? Colors.white : lightTextPrimary,
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      trailing: Switch(
+        value: value,
+        onChanged: onChanged,
+        activeColor: buttonGreen,
+        activeTrackColor: buttonGreen.withValues(alpha: 0.3),
+        inactiveThumbColor: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
+        inactiveTrackColor: isDark ? Colors.grey.shade800 : lightBorder,
+      ),
+    );
+  }
+
+  Widget _buildDivider(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Divider(
+        color: isDark ? Colors.white10 : lightBorder,
+        height: 1,
+      ),
+    );
   }
 
 
 
   void _showLogoutDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: cardBackground,
+        backgroundColor: isDark ? darkSurface : lightCardBackground,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
         title: Text(
           'Logout',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            color: isDark ? Colors.white : lightTextPrimary,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Text(
           'Are you sure you want to logout?',
-          style: GoogleFonts.poppins(
-            color: Colors.white70,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            color: isDark ? Colors.white70 : lightSecondaryText,
             fontSize: 14,
           ),
         ),
@@ -269,8 +347,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: GoogleFonts.poppins(
-                color: Colors.white70,
+              style: TextStyle(
+                fontFamily: 'Outfit',
+                color: isDark ? Colors.white70 : lightSecondaryText,
               ),
             ),
           ),
@@ -296,8 +375,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
             child: Text(
               'Logout',
-              style: GoogleFonts.poppins(
-                color: Colors.red,
+              style: TextStyle(
+                fontFamily: 'Outfit',
+                color: errorRed,
                 fontWeight: FontWeight.bold,
               ),
             ),

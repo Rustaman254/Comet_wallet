@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heroicons/heroicons.dart';
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
 import '../utils/responsive_utils.dart';
@@ -36,13 +37,13 @@ class CustomBottomNav extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min, // Fit content
               children: [
-                _buildNavItem(context, 0, Icons.home),
+                _buildNavItem(context, 0, HeroIcons.home),
                 SizedBox(width: 8.w),
-                _buildNavItem(context, 1, Icons.credit_card),
+                _buildNavItem(context, 1, HeroIcons.creditCard),
                 SizedBox(width: 8.w),
-                _buildNavItem(context, 2, Icons.history_outlined),
+                _buildNavItem(context, 2, HeroIcons.clock),
                 SizedBox(width: 8.w),
-                _buildNavItem(context, 3, Icons.settings_outlined),
+                _buildNavItem(context, 3, HeroIcons.cog6Tooth),
               ],
             ),
           ),
@@ -51,7 +52,7 @@ class CustomBottomNav extends StatelessWidget {
     );
   }
 
-  Widget _buildNavItem(BuildContext context, int index, IconData icon) {
+  Widget _buildNavItem(BuildContext context, int index, HeroIcons icon) {
     final isSelected = currentIndex == index;
     return GestureDetector(
       onTap: () {
@@ -69,7 +70,7 @@ class CustomBottomNav extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Icon(
+            HeroIcon(
               icon,
               color: isSelected 
                   ? buttonGreen 

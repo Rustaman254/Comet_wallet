@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:heroicons/heroicons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'constants/colors.dart';
 import 'screens/onboarding_page_view.dart';
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       valueListenable: themeNotifier,
       builder: (_, ThemeMode currentMode, __) {
         return ScreenUtilInit(
-          designSize: const Size(393, 852), // iPhone 14/15/16 Pro size
+          designSize: const Size(393, 852), 
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
@@ -44,15 +44,25 @@ class MyApp extends StatelessWidget {
               outline: lightBorder,
             ),
             useMaterial3: true,
+            fontFamily: 'Outfit',
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: {
                 TargetPlatform.android: ZoomPageTransitionsBuilder(),
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
               },
             ),
-            textTheme: GoogleFonts.poppinsTextTheme().apply(
-              bodyColor: lightTextPrimary,
-              displayColor: lightTextPrimary,
+            textTheme: TextTheme(
+              displayLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 32, fontWeight: FontWeight.bold, color: lightTextPrimary),
+              displayMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 28, fontWeight: FontWeight.bold, color: lightTextPrimary),
+              displaySmall: const TextStyle(fontFamily: 'Outfit', fontSize: 24, fontWeight: FontWeight.bold, color: lightTextPrimary),
+              headlineMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 20, fontWeight: FontWeight.w600, color: lightTextPrimary),
+              headlineSmall: const TextStyle(fontFamily: 'Outfit', fontSize: 18, fontWeight: FontWeight.w600, color: lightTextPrimary),
+              titleLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w600, color: lightTextPrimary),
+              titleMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w500, color: lightTextPrimary),
+              bodyLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w400, color: lightTextPrimary),
+              bodyMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w400, color: lightTextPrimary),
+              bodySmall: const TextStyle(fontFamily: 'Outfit', fontSize: 12, fontWeight: FontWeight.w400, color: lightTextSecondary),
+              labelLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w500, color: lightTextPrimary),
             ),
           ),
           darkTheme: ThemeData(
@@ -66,15 +76,25 @@ class MyApp extends StatelessWidget {
               outline: cardBorder,
             ),
             useMaterial3: true,
+            fontFamily: 'Outfit',
             pageTransitionsTheme: const PageTransitionsTheme(
               builders: {
                 TargetPlatform.android: ZoomPageTransitionsBuilder(),
                 TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
               },
             ),
-            textTheme: GoogleFonts.poppinsTextTheme().apply(
-              bodyColor: Colors.white,
-              displayColor: Colors.white,
+            textTheme: TextTheme(
+              displayLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
+              displayMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+              displaySmall: const TextStyle(fontFamily: 'Outfit', fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              headlineMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+              headlineSmall: const TextStyle(fontFamily: 'Outfit', fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
+              titleLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+              titleMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
+              bodyLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.w400, color: Colors.white),
+              bodyMedium: const TextStyle(fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w400, color: Colors.white),
+              bodySmall: const TextStyle(fontFamily: 'Outfit', fontSize: 12, fontWeight: FontWeight.w400, color: Colors.white70),
+              labelLarge: const TextStyle(fontFamily: 'Outfit', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
             ),
           ),
           home: const OnboardingWrapper(),
@@ -209,17 +229,18 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
                           ),
                         ),
                         child: const Center(
-                          child: Icon(
-                            Icons.wallet,
+                          child: HeroIcon(
+                            HeroIcons.wallet,
                             size: 50,
-                            color: Color(0xFF39CA4D),
+                            color: Color(0xFF10B981),
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
                       Text(
                         'Comet Wallet',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -229,7 +250,8 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
                       const SizedBox(height: 8),
                       Text(
                         'Your Money, Your Way',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
                           color: Colors.white70,
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
