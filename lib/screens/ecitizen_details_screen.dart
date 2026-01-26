@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/ecitizen_bill.dart';
 import '../services/ecitizen_service.dart';
@@ -55,7 +55,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       child: Text(
                         'Service Details',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -90,7 +90,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     Text(
                       widget.bill.name,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -109,7 +109,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       ),
                       child: Text(
                         'Unpaid',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.green[300],
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -129,7 +129,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       children: [
                         Text(
                           'Total Amount',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white70,
                             fontSize: 18,
                           ),
@@ -139,7 +139,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                             '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
                             textAlign: TextAlign.end,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.white,
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -210,7 +210,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     ),
                     child: Text(
                       'Pay Now',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -231,7 +231,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white70,
             fontSize: 15,
           ),
@@ -241,7 +241,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
             value,
             textAlign: TextAlign.end,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w600,

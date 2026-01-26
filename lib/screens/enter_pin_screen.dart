@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../services/vibration_service.dart';
 import '../services/toast_service.dart';
@@ -174,7 +174,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 20.h),
             Text(
               'Payment Successful!',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 10.h),
             Text(
               '${widget.currency} ${widget.amount}',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
@@ -192,7 +192,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 5.h),
             Text(
               'sent to ${widget.recipientName}',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white70,
                 fontSize: 14.sp,
               ),
@@ -200,7 +200,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 10.h),
             Text(
               'ID: $transactionId',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white38,
                 fontSize: 12.sp,
               ),
@@ -221,7 +221,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 ),
                 child: Text(
                   'Done',
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -278,7 +278,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 child: Center(
                   child: Text(
                     widget.recipientName.isNotEmpty ? widget.recipientName[0].toUpperCase() : '?',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 32.sp,
                       fontWeight: FontWeight.bold,
@@ -290,7 +290,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               // Recipient name
               Text(
                 'Sending to',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white70,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
@@ -299,7 +299,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               SizedBox(height: 8.h),
               Text(
                 widget.recipientName,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -312,13 +312,13 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 SizedBox(height: 20.h),
                 Text(
                   'Processing transaction...',
-                  style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14.sp),
+                  style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14.sp),
                 ),
               ] else ...[
                 // Enter PIN text
                 Text(
                   'Enter your PIN',
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w500,
@@ -417,7 +417,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         child: Center(
           child: Text(
             number,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,

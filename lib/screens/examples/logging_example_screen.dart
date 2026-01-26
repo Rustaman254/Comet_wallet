@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../constants/colors.dart';
 import '../../services/logger_service.dart';
 
@@ -180,7 +180,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
       appBar: AppBar(
         title: Text(
           'Logging Examples',
-          style: GoogleFonts.poppins(),
+          style: TextStyle(fontFamily: 'Satoshi',),
         ),
         backgroundColor: buttonGreen,
       ),
@@ -217,7 +217,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
             const SizedBox(height: 24),
             Text(
               'User & Profile Logging',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -236,7 +236,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
             const SizedBox(height: 24),
             Text(
               'KYC Logging',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -255,7 +255,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
             const SizedBox(height: 24),
             Text(
               'API Logging',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -283,7 +283,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
                 children: [
                   Text(
                     'ℹ️ Check the Terminal/Console',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -291,7 +291,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'All logs appear in the terminal/console when running the app with "flutter run"',
-                    style: GoogleFonts.poppins(fontSize: 12),
+                    style: TextStyle(fontFamily: 'Satoshi',fontSize: 12),
                   ),
                 ],
               ),
@@ -313,11 +313,11 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
         child: ListTile(
           title: Text(
             label,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
             description,
-            style: GoogleFonts.poppins(fontSize: 12),
+            style: TextStyle(fontFamily: 'Satoshi',fontSize: 12),
           ),
           trailing: const Icon(Icons.arrow_forward),
           onTap: onPressed,

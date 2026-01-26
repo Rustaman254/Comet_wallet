@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
 import '../services/logger_service.dart';
@@ -146,7 +146,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             const SizedBox(width: 8),
             Text(
               'T-Kash Payment',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -173,14 +173,14 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       children: [
                         Text(
                           'Amount:',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white70,
                             fontSize: 14,
                           ),
                         ),
                         Text(
                           '$_selectedCurrency $amount',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Color(0xFF0066CC),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -194,14 +194,14 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       children: [
                         Text(
                           'Account:',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white70,
                             fontSize: 14,
                           ),
                         ),
                         Text(
                           _userPhoneNumber ?? 'Your phone',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -215,7 +215,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               const SizedBox(height: 16),
               Text(
                 'Follow these steps on your phone:',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -246,7 +246,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     Expanded(
                       child: Text(
                         'Your wallet will be credited automatically once payment is confirmed.',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 11,
                           color: Colors.white70,
                         ),
@@ -263,7 +263,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Got it',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Color(0xFF0066CC),
                 fontWeight: FontWeight.w600,
               ),
@@ -301,7 +301,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             Text(
               response['message'] ?? 'Top-up successful!',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -333,7 +333,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 ),
                 child: Text(
                   'Back to Home',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -352,13 +352,13 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
+            style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -386,7 +386,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             child: Center(
               child: Text(
                 number,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -398,7 +398,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           Expanded(
             child: Text(
               instruction,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 13,
                 color: Colors.white.withOpacity(0.9),
               ),
@@ -428,7 +428,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         ),
         title: Text(
           'Wallet Top-Up',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -456,7 +456,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   children: [
                     Text(
                       'Add Funds to Your Wallet',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -465,7 +465,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Enter the amount you want to add to your wallet. Funds will be transferred immediately upon successful payment.',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.7),
                       ),
@@ -478,7 +478,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Payment Method Selection
               Text(
                 'Payment Method',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -500,7 +500,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   underline: Container(),
                   value: _selectedPaymentMethod,
                   dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 16,
                   ),
@@ -513,7 +513,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           const SizedBox(width: 8),
                           Text(
                             'M-Pesa STK Push',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Theme.of(context).textTheme.bodyMedium?.color,
                               fontSize: 16,
                             ),
@@ -529,7 +529,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           const SizedBox(width: 8),
                           Text(
                             'T-Kash (Telkom)',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Theme.of(context).textTheme.bodyMedium?.color,
                               fontSize: 16,
                             ),
@@ -565,7 +565,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           const SizedBox(width: 8),
                           Text(
                             'Deposit via Telkom',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
@@ -576,7 +576,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       const SizedBox(height: 12),
                       Text(
                         'Follow these steps to deposit:',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 13,
                           color: Colors.white.withOpacity(0.9),
                           fontWeight: FontWeight.w500,
@@ -606,7 +606,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                             Expanded(
                               child: Text(
                                 'Your phone number: ${_userPhoneNumber ?? "Loading..."}',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   fontSize: 12,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -625,7 +625,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Phone Number Field
               Text(
                 'Phone Number',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -652,7 +652,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                         dropdownColor: cardBackground,
                         icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
                         isExpanded: true,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -679,7 +679,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     child: TextFormField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -714,7 +714,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Amount Field
               Text(
                 'Amount',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -724,7 +724,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 16,
                 ),
@@ -760,7 +760,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Currency Selection
               Text(
                 'Currency',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -782,7 +782,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   underline: Container(),
                   value: _selectedCurrency,
                   dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 16,
                   ),
@@ -791,7 +791,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       value: 'KES',
                       child: Text(
                         'KES (Kenyan Shilling)',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 16,
                         ),
@@ -801,7 +801,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       value: 'USD',
                       child: Text(
                         'USD (US Dollar)',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 16,
                         ),
@@ -811,7 +811,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       value: 'EUR',
                       child: Text(
                         'EUR (Euro)',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 16,
                         ),
@@ -841,7 +841,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       children: [
                         Text(
                           'Amount',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white.withOpacity(0.7),
                           ),
                         ),
@@ -849,7 +849,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           _amountController.text.isEmpty
                               ? '$_selectedCurrency 0.00'
                               : '$_selectedCurrency ${_amountController.text}',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -861,7 +861,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       children: [
                         Text(
                           'Total',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -869,7 +869,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           _amountController.text.isEmpty
                               ? '$_selectedCurrency 0.00'
                               : '$_selectedCurrency ${_amountController.text}',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: buttonGreen,
@@ -909,7 +909,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                         _selectedPaymentMethod == 'tkash' 
                             ? 'View Instructions' 
                             : 'Proceed to Payment',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -921,7 +921,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               Text(
                 'Please ensure your phone number is correct. You will receive an SMS confirmation after successful payment.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   fontSize: 12,
                   color: Colors.white.withOpacity(0.5),
                 ),

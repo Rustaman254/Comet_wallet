@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:camera/camera.dart';
 import '../../constants/colors.dart';
 import '../home_screen.dart';
@@ -126,7 +126,7 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
         ),
         title: Text(
           'Selfie Verification',
-          style: GoogleFonts.poppins(color: Colors.white),
+          style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -160,7 +160,7 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
                                 children: [
                                   Text(
                                     'Take a Selfie',
-                                    style: GoogleFonts.poppins(
+                                    style: TextStyle(fontFamily: 'Satoshi',
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -170,7 +170,7 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
                                   Text(
                                     'Look directly at the camera and take a clear selfie',
                                     textAlign: TextAlign.center,
-                                    style: GoogleFonts.poppins(
+                                    style: TextStyle(fontFamily: 'Satoshi',
                                       fontSize: 14,
                                       color: Colors.white.withOpacity(0.7),
                                     ),
@@ -237,7 +237,7 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
                                 const SizedBox(height: 16),
                                 Text(
                                   'Tap to capture',
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(fontFamily: 'Satoshi',
                                     fontSize: 14,
                                     color: Colors.white.withOpacity(0.7),
                                   ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/token_service.dart';
@@ -113,7 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     Text(
                       _isEditing ? 'Edit Profile' : 'Personal Information',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -166,7 +166,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _nameController.text,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -214,7 +214,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       child: Text(
                         'Save Changes',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -242,14 +242,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white30,
                   fontSize: 12,
                 ),
               ),
               Text(
                 controller.text,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -266,7 +266,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white70,
             fontSize: 14,
           ),
@@ -274,7 +274,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         const SizedBox(height: 4),
         TextFormField(
           controller: controller,
-          style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+          style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
           decoration: buildUnderlineInputDecoration(
             context: context,
             label: '',
@@ -300,14 +300,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Text(
                 'Birth Date',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white30,
                   fontSize: 12,
                 ),
               ),
               Text(
                 dateStr,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -324,7 +324,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           'Birth Date',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white70,
             fontSize: 14,
           ),

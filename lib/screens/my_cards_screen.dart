@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'add_card_screen.dart';
 
@@ -23,7 +23,7 @@ class MyCardsScreen extends StatelessWidget {
                   const SizedBox(width: 40),
                   Text(
                     'All Cards',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class MyCardsScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Add Card',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -139,7 +139,8 @@ class MyCardsScreen extends StatelessWidget {
           ),
           Text(
             number, // Formatted with spaces
-            style: GoogleFonts.spaceMono(
+            style: TextStyle(
+              fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -154,7 +155,7 @@ class MyCardsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Aimal Naseem', // Placeholder
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -168,11 +169,11 @@ class MyCardsScreen extends StatelessWidget {
                          children: [
                            Text(
                              'Expiry Date',
-                             style: GoogleFonts.poppins(color: Colors.white70, fontSize: 10),
+                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 10),
                            ),
                            Text(
                              expiry,
-                             style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                            ),
                          ],
                        ),
@@ -182,11 +183,11 @@ class MyCardsScreen extends StatelessWidget {
                          children: [
                            Text(
                              'CVV',
-                             style: GoogleFonts.poppins(color: Colors.white70, fontSize: 10),
+                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 10),
                            ),
                            Text(
                              cvv,
-                             style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                            ),
                          ],
                        ),
@@ -214,7 +215,7 @@ class MyCardsScreen extends StatelessWidget {
                    const SizedBox(height: 4),
                    Text(
                      type == 'mastercard' ? 'Mastercard' : '',
-                     style: GoogleFonts.poppins(color: Colors.white, fontSize: 10),
+                     style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 10),
                    ),
                 ],
               )

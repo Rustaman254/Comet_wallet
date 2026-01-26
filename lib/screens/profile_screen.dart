@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'edit_profile_screen.dart';
 import 'my_cards_screen.dart';
@@ -68,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Text(
                       'Profile',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _userName,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 4),
                     Text(
                       _userRole,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white70,
                         fontSize: 13,
                       ),
@@ -231,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 14, // Requested size
                   fontWeight: FontWeight.w500,
@@ -247,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Text(
                   badgeCount.toString(),
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'send_money_screen.dart';
 import 'send_mobile_number_screen.dart';
@@ -36,7 +36,7 @@ class SendOptionsScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             'Send Money',
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -111,7 +111,7 @@ class SendOptionsScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

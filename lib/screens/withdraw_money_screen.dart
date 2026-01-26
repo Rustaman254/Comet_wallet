@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
 import '../services/wallet_service.dart';
@@ -106,7 +106,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                       child: Text(
                         'Withdraw Money',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -142,7 +142,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                     children: [
                       Text(
                         'Available Balance',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white70,
                           fontSize: 13,
                           fontWeight: FontWeight.w400,
@@ -160,7 +160,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                               children: [
                                 Text(
                                   selectedCurrency,
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(fontFamily: 'Satoshi',
                                     color: Colors.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,
@@ -171,7 +171,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                   child: Text(
                                     _balance.toStringAsFixed(2),
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: TextStyle(fontFamily: 'Satoshi',
                                       color: Colors.white,
                                       fontSize: 35,
                                       fontWeight: FontWeight.bold,
@@ -193,7 +193,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                   children: [
                     Text(
                       'Withdrawal Method',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -248,7 +248,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                       children: [
                                         Text(
                                           method['name'],
-                                          style: GoogleFonts.poppins(
+                                          style: TextStyle(fontFamily: 'Satoshi',
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -257,7 +257,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                         const SizedBox(height: 4),
                                         Text(
                                           method['account'],
-                                          style: GoogleFonts.poppins(
+                                          style: TextStyle(fontFamily: 'Satoshi',
                                             color: isAvailable ? Colors.white54 : buttonGreen,
                                             fontSize: 12,
                                             fontWeight: !isAvailable ? FontWeight.bold : FontWeight.normal,

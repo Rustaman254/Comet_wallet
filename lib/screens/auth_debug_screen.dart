@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../services/token_service.dart';
 import '../services/logger_service.dart';
@@ -74,7 +74,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
       appBar: AppBar(
         title: Text(
           'Authentication Debug',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
         ),
         backgroundColor: buttonGreen,
       ),
@@ -104,7 +104,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                       children: [
                         Text(
                           'Authentication Status',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: textColor,
@@ -125,7 +125,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                               (authStatus['is_authenticated'] == true)
                                   ? 'Authenticated'
                                   : 'Not Authenticated',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: textColor,
@@ -169,7 +169,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                         children: [
                           Text(
                             'Error',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: Colors.red,
@@ -178,7 +178,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           const SizedBox(height: 8),
                           Text(
                             authStatus['error'] ?? '',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               fontSize: 11,
                               color: Colors.red,
                             ),
@@ -201,7 +201,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           icon: const Icon(Icons.refresh),
                           label: Text(
                             'Refresh',
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                            style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
@@ -216,7 +216,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           icon: const Icon(Icons.logout),
                           label: Text(
                             'Logout',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               fontWeight: FontWeight.w600,
                               color: Colors.red,
                             ),
@@ -241,7 +241,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                       icon: const Icon(Icons.payment),
                       label: Text(
                         'Test Wallet Top-up Call',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                        style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -272,7 +272,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
         children: [
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: textColor,
@@ -295,7 +295,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
             width: 100,
             child: Text(
               label,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: textColor.withValues(alpha: 0.6),
@@ -306,11 +306,11 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
             child: Text(
               value,
               style: isCode
-                  ? GoogleFonts.robotoMono(
+                  ? TextStyle(fontFamily: 'Satoshi',
                       fontSize: 11,
                       color: buttonGreen,
                     )
-                  : GoogleFonts.poppins(
+                  : TextStyle(fontFamily: 'Satoshi',
                       fontSize: 12,
                       color: textColor,
                     ),
@@ -338,14 +338,14 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
       builder: (context) => AlertDialog(
         title: Text(
           'Test Wallet Top-up',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
         ),
         content: Text(
           'This will attempt a test wallet top-up with:\n'
           'Phone: 0710000000\n'
           'Amount: 1.00\n'
           'Currency: KES',
-          style: GoogleFonts.poppins(),
+          style: TextStyle(fontFamily: 'Satoshi',),
         ),
         actions: [
           TextButton(

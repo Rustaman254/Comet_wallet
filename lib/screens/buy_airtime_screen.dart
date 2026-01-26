@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'enter_pin_screen.dart';
 
@@ -61,7 +61,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       child: Text(
                         'Buy Airtime',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -81,7 +81,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                   children: [
                     Text(
                       'Select Network',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -113,7 +113,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                               ),
                               child: Text(
                                 provider,
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: isSelected ? buttonGreen : Colors.white,
                                   fontSize: 14,
                                   fontWeight: isSelected
@@ -145,7 +145,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     children: [
                       Text(
                         'Phone Number',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -154,14 +154,14 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _phoneController,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 18,
                         ),
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           hintText: '+254 712 345 678',
-                          hintStyle: GoogleFonts.poppins(
+                          hintStyle: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white38,
                           ),
                           prefixIcon: const Icon(
@@ -202,7 +202,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                   children: [
                     Text(
                       'Select Amount (KES)',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -238,7 +238,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                             ),
                             child: Text(
                               'KES $amount',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: Colors.white,
                                 fontSize: 14,
                                 fontWeight: isSelected
@@ -268,7 +268,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     children: [
                       Text(
                         'Or Enter Custom Amount',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -277,7 +277,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _amountController,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -290,11 +290,11 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: '0',
-                          hintStyle: GoogleFonts.poppins(
+                          hintStyle: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white38,
                           ),
                           prefixText: 'KES ',
-                          prefixStyle: GoogleFonts.poppins(
+                          prefixStyle: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white70,
                             fontSize: 18,
                           ),
@@ -319,7 +319,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                           SnackBar(
                             content: Text(
                               'Please fill all fields',
-                              style: GoogleFonts.poppins(),
+                              style: TextStyle(fontFamily: 'Satoshi',),
                             ),
                             backgroundColor: Colors.red,
                           ),
@@ -346,7 +346,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     ),
                     child: Text(
                       'Buy Airtime',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/real_estate_models.dart';
 import '../services/real_estate_service.dart';
@@ -87,7 +87,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                     child: Text(
                       'My Portfolio',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -115,7 +115,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                               const SizedBox(height: 16),
                               Text(
                                 'No investments yet',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
@@ -123,7 +123,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 'Start investing in properties',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 14,
                                 ),
@@ -164,7 +164,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                                       children: [
                                         Text(
                                           'Total Portfolio Value',
-                                          style: GoogleFonts.poppins(
+                                          style: TextStyle(fontFamily: 'Satoshi',
                                             color:
                                                 Colors.white.withOpacity(0.9),
                                             fontSize: 14,
@@ -174,7 +174,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                                         const SizedBox(height: 8),
                                         Text(
                                           'KES ${_totalPortfolioValue.toStringAsFixed(2)}',
-                                          style: GoogleFonts.poppins(
+                                          style: TextStyle(fontFamily: 'Satoshi',
                                             color: Colors.white,
                                             fontSize: 32,
                                             fontWeight: FontWeight.bold,
@@ -218,7 +218,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                                     children: [
                                       Text(
                                         'My Properties',
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(fontFamily: 'Satoshi',
                                           color: Colors.white,
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -259,7 +259,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
               children: [
                 Text(
                   label,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 11,
                   ),
@@ -267,7 +267,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -323,7 +323,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                     children: [
                       Text(
                         investment.propertyName,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -332,7 +332,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                       const SizedBox(height: 4),
                       Text(
                         investment.location,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[400],
                           fontSize: 13,
                         ),
@@ -349,7 +349,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                             ),
                             child: Text(
                               '${investment.tokensOwned} tokens',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: buttonGreen,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -367,7 +367,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                             ),
                             child: Text(
                               '${investment.ownershipPercentage.toStringAsFixed(2)}%',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: const Color(0xFF6366F1),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -416,7 +416,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                       children: [
                         Text(
                           'Profit/Loss',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.grey[400],
                             fontSize: 12,
                           ),
@@ -436,7 +436,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                             const SizedBox(width: 4),
                             Text(
                               'KES ${profitLoss.abs().toStringAsFixed(0)}',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: isProfitable
                                     ? buttonGreen
                                     : Colors.red,
@@ -464,7 +464,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 12,
           ),
@@ -472,7 +472,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
         const SizedBox(height: 2),
         Text(
           value,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.w600,

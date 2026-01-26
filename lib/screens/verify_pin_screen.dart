@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
 import '../services/vibration_service.dart';
@@ -133,7 +133,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               // Welcome text
               Text(
                 'Welcome back,',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
@@ -142,7 +142,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               SizedBox(height: 8.h),
               Text(
                 _userName,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               // Enter PIN text
               Text(
                 'Enter your PIN',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w500,
@@ -198,7 +198,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 },
                 child: Text(
                   'Forgot PIN?',
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: buttonGreen,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
@@ -237,7 +237,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               onPressed: () => _onNumberPressed('0'),
               child: Text(
                 '0',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w500,
@@ -266,7 +266,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           onPressed: () => _onNumberPressed(number),
           child: Text(
             number,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,

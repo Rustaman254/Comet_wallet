@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/procurement_models.dart';
 import '../services/procurement_service.dart';
@@ -70,7 +70,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                     child: Text(
                       'Track Applications',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -105,7 +105,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                         ),
                         child: Text(
                           filter,
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
                             fontSize: 13,
                             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -132,7 +132,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                               const SizedBox(height: 16),
                               Text(
                                 'No applications found',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
@@ -181,7 +181,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                 Expanded(
                   child: Text(
                     bid.tenderTitle,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -196,7 +196,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                   ),
                   child: Text(
                     bid.status,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: _getStatusColor(bid.status),
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -212,7 +212,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                 const SizedBox(width: 6),
                 Text(
                   bid.id,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.grey[600],
                     fontSize: 12,
                   ),
@@ -228,7 +228,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                     children: [
                       Text(
                         'Bid Amount',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[600],
                           fontSize: 12,
                         ),
@@ -236,7 +236,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                       const SizedBox(height: 2),
                       Text(
                         bid.bidAmount,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: buttonGreen,
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -251,7 +251,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                     children: [
                       Text(
                         'Submitted',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[600],
                           fontSize: 12,
                         ),
@@ -259,7 +259,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                       const SizedBox(height: 2),
                       Text(
                         bid.submittedDate,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -284,7 +284,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                   Expanded(
                     child: Text(
                       bid.evaluationStage,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.grey[400],
                         fontSize: 12,
                       ),
@@ -345,7 +345,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
             const SizedBox(height: 24),
             Text(
               'Application Details',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -368,7 +368,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Notes',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -383,7 +383,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                       ),
                       child: Text(
                         bid.notes,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[400],
                           fontSize: 13,
                           height: 1.5,
@@ -393,7 +393,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Documents',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -414,7 +414,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                           Expanded(
                             child: Text(
                               doc,
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: Colors.white,
                                 fontSize: 13,
                               ),
@@ -443,7 +443,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
             width: 120,
             child: Text(
               label,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.grey[600],
                 fontSize: 13,
               ),
@@ -452,7 +452,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
           Expanded(
             child: Text(
               value,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,

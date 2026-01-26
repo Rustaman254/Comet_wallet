@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 
 class AddCardScreen extends StatefulWidget {
@@ -49,7 +49,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                     ),
                     Text(
                       'Add New Card',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                       ),
                       Text(
                         '4562  1122  4595  7852',
-                        style: GoogleFonts.spaceMono(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -113,7 +113,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                             children: [
                               Text(
                                 'Aimal Naseem',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -127,14 +127,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
                                     children: [
                                       Text(
                                         'Expiry Date',
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(fontFamily: 'Satoshi',
                                           color: Colors.white70,
                                           fontSize: 10,
                                         ),
                                       ),
                                       Text(
                                         '24/2000',
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(fontFamily: 'Satoshi',
                                           color: Colors.white,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
@@ -148,14 +148,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
                                     children: [
                                       Text(
                                         'CVV',
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(fontFamily: 'Satoshi',
                                           color: Colors.white70,
                                           fontSize: 10,
                                         ),
                                       ),
                                       Text(
                                         '6986',
-                                        style: GoogleFonts.poppins(
+                                        style: TextStyle(fontFamily: 'Satoshi',
                                           color: Colors.white,
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,
@@ -204,7 +204,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 'Mastercard',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.white,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w500,
@@ -253,7 +253,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white70,
             fontSize: 14,
           ),
@@ -270,7 +270,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
            // Let's use UnderlineInputBorder.
            child: TextField(
              controller: controller,
-             style: GoogleFonts.poppins(
+             style: TextStyle(fontFamily: 'Satoshi',
                color: Colors.white,
                fontSize: 15,
              ),
@@ -279,7 +279,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
                focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: buttonGreen)),
-               hintStyle: GoogleFonts.poppins(color: Colors.white30),
+               hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.white30),
                contentPadding: const EdgeInsets.only(bottom: 8, top: 8),
              ),
            ),

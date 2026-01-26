@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/real_estate_models.dart';
 import '../services/real_estate_service.dart';
@@ -93,7 +93,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             const SizedBox(height: 16),
             Text(
               'Purchase Successful!',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -107,7 +107,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             Text(
               result['message'] ?? 'Successfully purchased tokens',
               textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white.withOpacity(0.8),
                 fontSize: 14,
               ),
@@ -145,7 +145,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             },
             child: Text(
               'Done',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -169,7 +169,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             const SizedBox(width: 12),
             Text(
               'Error',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
         ),
         content: Text(
           message,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white.withOpacity(0.8),
             fontSize: 15,
           ),
@@ -189,7 +189,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'OK',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -234,7 +234,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                     child: Text(
                       'Buy Tokens',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -289,7 +289,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                               children: [
                                 Text(
                                   widget.property.name,
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(fontFamily: 'Satoshi',
                                     color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -298,7 +298,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   widget.property.location,
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(fontFamily: 'Satoshi',
                                     color: Colors.grey[400],
                                     fontSize: 13,
                                   ),
@@ -313,7 +313,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                                   ),
                                   child: Text(
                                     'ROI: ${widget.property.expectedROI}%',
-                                    style: GoogleFonts.poppins(
+                                    style: TextStyle(fontFamily: 'Satoshi',
                                       color: buttonGreen,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
@@ -331,7 +331,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                     // Token count input
                     Text(
                       'Number of Tokens',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -365,7 +365,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                             controller: _tokenController,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.white,
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -414,7 +414,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Min: 10 tokens • Max: ${widget.property.availableTokens} tokens',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.grey[400],
                         fontSize: 12,
                       ),
@@ -434,7 +434,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                         children: [
                           Text(
                             'Investment Summary',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -455,7 +455,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                             children: [
                               Text(
                                 'Total Amount',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -463,7 +463,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                               ),
                               Text(
                                 'KES ${_totalAmount.toStringAsFixed(2)}',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: buttonGreen,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -488,7 +488,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                                 Expanded(
                                   child: Text(
                                     'Expected annual return: KES ${(_totalAmount * widget.property.expectedROI / 100).toStringAsFixed(2)}',
-                                    style: GoogleFonts.poppins(
+                                    style: TextStyle(fontFamily: 'Satoshi',
                                       color: buttonGreen,
                                       fontSize: 12,
                                     ),
@@ -538,7 +538,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                         )
                       : Text(
                           'Confirm Purchase',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
@@ -558,14 +558,14 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 14,
           ),
         ),
         Text(
           value,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -583,7 +583,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
           children: [
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.grey[400],
                 fontSize: 12,
               ),
@@ -592,7 +592,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
               child: Text(
                 value,
                 textAlign: TextAlign.right,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'enter_pin_screen.dart';
 
@@ -48,7 +48,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                     child: Text(
                       'Confirm Payment',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                 children: [
                    Text(
                     'Sending',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white60,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -77,7 +77,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                     children: [
                       Text(
                         currency,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: buttonGreen,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         amount,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -171,7 +171,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Text(
                         'Confirm & Send',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
@@ -195,7 +195,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'Cancel Transaction',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white60,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -235,7 +235,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white60,
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -244,7 +244,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                const SizedBox(height: 2),
               Text(
                 value,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: valueColor ?? Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

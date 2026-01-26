@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'ecitizen_services_screen.dart';
 import '../services/toast_service.dart';
@@ -35,7 +35,7 @@ class MoreOptionsScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             'More Options',
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -149,7 +149,7 @@ class MoreOptionsScreen extends StatelessWidget {
                     ),
                     child: Text(
                       'Coming Soon',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 8,
                         fontWeight: FontWeight.bold,
@@ -164,7 +164,7 @@ class MoreOptionsScreen extends StatelessWidget {
             width: 80,
             child: Text(
               label,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.w400,

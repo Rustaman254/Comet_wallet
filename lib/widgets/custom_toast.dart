@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 
 enum ToastType { success, error, info }
@@ -67,7 +67,7 @@ class CustomToast extends StatelessWidget {
             Expanded(
               child: Text(
                 message,
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: isDark ? Colors.white : Colors.black87,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

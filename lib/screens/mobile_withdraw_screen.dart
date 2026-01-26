@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
 import '../utils/input_decoration.dart';
@@ -87,7 +87,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
         ),
         title: Text(
           widget.withdrawMethod,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -103,7 +103,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               // Phone Input
               Text(
                 'Phone Number',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
@@ -112,7 +112,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                style: GoogleFonts.poppins(color: Colors.white),
+                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
                 decoration: buildUnderlineInputDecoration(
                   context: context,
                   label: '',
@@ -124,7 +124,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               // Amount Input (MSISDN Style)
               Text(
                 'Enter Amount',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
@@ -147,7 +147,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
                       widget.currency,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -160,7 +160,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     child: TextField(
                       controller: _amountController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -193,7 +193,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                   ),
                   child: Text(
                     'Continue',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

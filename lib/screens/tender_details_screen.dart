@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/procurement_models.dart';
 
@@ -41,7 +41,7 @@ class TenderDetailsScreen extends StatelessWidget {
                     child: Text(
                       'Tender Details',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -66,7 +66,7 @@ class TenderDetailsScreen extends StatelessWidget {
                       children: [
                         Text(
                           tender.id,
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: buttonGreen,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -83,7 +83,7 @@ class TenderDetailsScreen extends StatelessWidget {
                           ),
                           child: Text(
                             tender.status,
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: tender.status == 'Closing Soon' ? Colors.orange : buttonGreen,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -97,7 +97,7 @@ class TenderDetailsScreen extends StatelessWidget {
                     // Title
                     Text(
                       tender.title,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -113,7 +113,7 @@ class TenderDetailsScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             tender.ministry,
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[600],
                               fontSize: 14,
                             ),
@@ -171,7 +171,7 @@ class TenderDetailsScreen extends StatelessWidget {
         icon: const Icon(Icons.gavel, color: Colors.white),
         label: Text(
           'Submit Bid',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
@@ -197,7 +197,7 @@ class TenderDetailsScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.grey[600],
               fontSize: 12,
             ),
@@ -205,7 +205,7 @@ class TenderDetailsScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             value,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -222,7 +222,7 @@ class TenderDetailsScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -231,7 +231,7 @@ class TenderDetailsScreen extends StatelessWidget {
         const SizedBox(height: 12),
         Text(
           content,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 14,
             height: 1.6,
@@ -247,7 +247,7 @@ class TenderDetailsScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -272,7 +272,7 @@ class TenderDetailsScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   item,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.grey[400],
                     fontSize: 14,
                     height: 1.5,
@@ -292,7 +292,7 @@ class TenderDetailsScreen extends StatelessWidget {
       children: [
         Text(
           'Tender Documents',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -316,7 +316,7 @@ class TenderDetailsScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   doc,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 13,
                   ),
@@ -345,7 +345,7 @@ class TenderDetailsScreen extends StatelessWidget {
         children: [
           Text(
             'Contact Information',
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -370,7 +370,7 @@ class TenderDetailsScreen extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.grey[400],
               fontSize: 13,
             ),
@@ -388,7 +388,7 @@ class TenderDetailsScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Submit Bid',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -396,7 +396,7 @@ class TenderDetailsScreen extends StatelessWidget {
         ),
         content: Text(
           'Bid submission functionality will be available soon. You will be able to upload documents and submit your bid directly through the app.',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white.withOpacity(0.8),
             fontSize: 15,
           ),
@@ -406,7 +406,7 @@ class TenderDetailsScreen extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'OK',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

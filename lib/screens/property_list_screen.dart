@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/real_estate_models.dart';
 import '../services/real_estate_service.dart';
@@ -106,7 +106,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                     child: Text(
                       'Browse Properties',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -129,10 +129,10 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                     _filterProperties(_selectedFilter);
                   });
                 },
-                style: GoogleFonts.poppins(color: Colors.white),
+                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Search properties...',
-                  hintStyle: GoogleFonts.poppins(color: Colors.grey),
+                  hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.grey),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
                   fillColor: cardBackground,
@@ -187,7 +187,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                               const SizedBox(height: 16),
                               Text(
                                 'No properties found',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
@@ -231,7 +231,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
         ),
         child: Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: isSelected ? Colors.black : Colors.white,
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -291,7 +291,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       ),
                       child: Text(
                         property.status,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.black,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -310,7 +310,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       ),
                       child: Text(
                         property.propertyType,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -330,7 +330,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                 children: [
                   Text(
                     property.name,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -344,7 +344,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       const SizedBox(width: 4),
                       Text(
                         '${property.location}, ${property.city}',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[400],
                           fontSize: 13,
                         ),
@@ -386,14 +386,14 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                         children: [
                           Text(
                             'Funding Progress',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[400],
                               fontSize: 12,
                             ),
                           ),
                           Text(
                             '${property.fundingPercentage.toStringAsFixed(1)}%',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: buttonGreen,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -428,7 +428,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 11,
           ),
@@ -436,7 +436,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
         const SizedBox(height: 2),
         Text(
           value,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: color,
             fontSize: 14,
             fontWeight: FontWeight.bold,

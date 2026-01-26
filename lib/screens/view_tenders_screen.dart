@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../models/procurement_models.dart';
 import '../services/procurement_service.dart';
@@ -79,7 +79,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                     child: Text(
                       'Available Tenders',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                         ),
                         child: Text(
                           category,
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
                             fontSize: 14,
                             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -141,7 +141,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                               const SizedBox(height: 16),
                               Text(
                                 'No tenders available',
-                                style: GoogleFonts.poppins(
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
@@ -205,7 +205,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                   ),
                   child: Text(
                     tender.category,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: _getCategoryColor(tender.category),
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -226,7 +226,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                         const SizedBox(width: 4),
                         Text(
                           'Closing Soon',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.orange,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -240,7 +240,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
             const SizedBox(height: 12),
             Text(
               tender.title,
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -254,7 +254,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                 Expanded(
                   child: Text(
                     tender.ministry,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.grey[600],
                       fontSize: 13,
                     ),
@@ -271,7 +271,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                     children: [
                       Text(
                         'Budget',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[600],
                           fontSize: 12,
                         ),
@@ -279,7 +279,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                       const SizedBox(height: 2),
                       Text(
                         tender.budget,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: buttonGreen,
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -294,7 +294,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                     children: [
                       Text(
                         'Deadline',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[600],
                           fontSize: 12,
                         ),
@@ -302,7 +302,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                       const SizedBox(height: 2),
                       Text(
                         tender.deadline,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

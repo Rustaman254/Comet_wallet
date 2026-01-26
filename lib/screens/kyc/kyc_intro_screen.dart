@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../constants/colors.dart';
 import 'id_upload_screen.dart';
 import '../home_screen.dart';
@@ -28,7 +28,7 @@ class KYCIntroScreen extends StatelessWidget {
             },
             child: Text(
               'Skip',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white.withOpacity(0.6),
                 fontWeight: FontWeight.w500,
               ),
@@ -57,7 +57,7 @@ class KYCIntroScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               'Verify Your Identity',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -67,7 +67,7 @@ class KYCIntroScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'To protect your account and unlock all features, we need to verify your identity. This process is quick and secure.',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 16,
                 color: Colors.white.withOpacity(0.7),
                 height: 1.5,
@@ -99,7 +99,7 @@ class KYCIntroScreen extends StatelessWidget {
                 ),
                 child: Text(
                   'Start Verification',
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -120,7 +120,7 @@ class KYCIntroScreen extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           text,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             fontSize: 14,
             color: Colors.white,
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
 import '../services/toast_service.dart';
@@ -135,7 +135,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                     child: Text(
                       'Receive Money',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -153,7 +153,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 children: [
                   Text(
                     'Your Mobile Wallet Number',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white70,
                       fontSize: 14,
                     ),
@@ -170,7 +170,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                           },
                           child: Text(
                             walletAddress,
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[600],
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -208,7 +208,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 children: [
                   Text(
                     'Amount (KES)',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
@@ -216,7 +216,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _amountController,
-                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                    style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -227,7 +227,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   const SizedBox(height: 24),
                   Text(
                     'Description',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
@@ -235,7 +235,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: _descriptionController,
-                    style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                    style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
@@ -267,7 +267,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                               color: Colors.white, strokeWidth: 2))
                       : Text(
                           'Generate QR Code',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

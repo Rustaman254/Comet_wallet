@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../constants/colors.dart';
 
 InputDecoration buildUnderlineInputDecoration({
@@ -17,14 +16,16 @@ InputDecoration buildUnderlineInputDecoration({
 
   return InputDecoration(
     labelText: label,
-    labelStyle: GoogleFonts.poppins(
+    labelStyle: TextStyle(
       color: textColor.withOpacity(0.7),
       fontSize: 14,
+      fontFamily: 'Satoshi',
     ),
     hintText: hintText,
-    hintStyle: GoogleFonts.poppins(
+    hintStyle: TextStyle(
       color: hintColor,
       fontSize: 16,
+      fontFamily: 'Satoshi',
     ),
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,

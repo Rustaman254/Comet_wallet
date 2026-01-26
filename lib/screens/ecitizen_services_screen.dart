@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import '../utils/input_decoration.dart';
 import '../services/ecitizen_service.dart';
@@ -32,7 +32,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         SnackBar(
           content: Text(
             'Please enter a reference number',
-            style: GoogleFonts.poppins(),
+            style: TextStyle(fontFamily: 'Satoshi',),
           ),
           backgroundColor: Colors.red,
         ),
@@ -73,7 +73,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
           SnackBar(
             content: Text(
               e.toString().replaceAll('Exception: ', ''),
-              style: GoogleFonts.poppins(),
+              style: TextStyle(fontFamily: 'Satoshi',),
             ),
             backgroundColor: Colors.red,
           ),
@@ -90,7 +90,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Select Currency',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -102,7 +102,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
             return ListTile(
               title: Text(
                 currency,
-                style: GoogleFonts.poppins(color: Colors.white, fontSize: 16),
+                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
               ),
               onTap: () {
                 setState(() {
@@ -152,7 +152,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                       child: Text(
                         'E-Citizen Services',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -173,7 +173,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                   children: [
                     Text(
                       'Reference Number',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -182,7 +182,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _referenceController,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 16,
                       ),
@@ -198,7 +198,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     const SizedBox(height: 24),
                     Text(
                       'Currency',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -226,7 +226,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                             const SizedBox(width: 12),
                             Text(
                               selectedCurrency,
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: Theme.of(context).textTheme.bodyMedium?.color,
                                 fontSize: 16,
                               ),
@@ -274,7 +274,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                           )
                         : Text(
                             'Check Status',
-                            style: GoogleFonts.poppins(
+                            style: TextStyle(fontFamily: 'Satoshi',
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),

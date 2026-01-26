@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:qr_flutter/qr_flutter.dart';
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
@@ -53,7 +53,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                     child: Text(
                       'Payment',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Requested Amount',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white70,
                       fontSize: 14,
                     ),
@@ -83,7 +83,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                       children: [
                         TextSpan(
                           text: '$currency ',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.grey[600],
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -91,7 +91,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                         ),
                         TextSpan(
                           text: amount.toStringAsFixed(2),
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.grey[600],
                             fontSize: 60,
                             fontWeight: FontWeight.bold,
@@ -125,7 +125,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(
                       'Scan to make payment',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: buttonGreen,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -142,7 +142,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Payment Link',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white70,
                       fontSize: 12,
                     ),
@@ -153,7 +153,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           paymentUrl,
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.grey[500],
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
@@ -202,7 +202,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'Done',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

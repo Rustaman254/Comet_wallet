@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:camera/camera.dart';
 import 'dart:io';
 import '../../constants/colors.dart';
@@ -167,7 +167,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
         ),
         title: Text(
           _step < 3 ? 'Front of ID' : 'Back of ID',
-          style: GoogleFonts.poppins(color: Colors.white),
+          style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
         ),
         centerTitle: true,
       ),
@@ -209,7 +209,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
           const SizedBox(height: 32),
           Text(
             isFront ? 'Scan Front Side' : 'Scan Back Side',
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -221,7 +221,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
                 ? 'Place your ID card within the frame. Make sure the text is clear and readable.'
                 : 'Turn your ID card over and scan the back side.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               fontSize: 16,
               color: Colors.white.withOpacity(0.7),
             ),
@@ -241,7 +241,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
               ),
               child: Text(
                 'Continue',
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -280,7 +280,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
                     child: Text(
                       'Align your ID card within the frame',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 16,
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
@@ -366,7 +366,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
           const SizedBox(height: 20),
           Text(
             'Check Readability',
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
@@ -376,7 +376,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
           Text(
             'Make sure all details are clear and not blurry.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white.withOpacity(0.7),
             ),
           ),
@@ -416,7 +416,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
                   ),
                   child: Text(
                     'Retake',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -438,7 +438,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
                   ),
                   child: Text(
                     'Confirm',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../constants/colors.dart';
 import 'view_tenders_screen.dart';
 import 'track_application_screen.dart';
@@ -47,7 +47,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                       child: Text(
                         'Government Procurement',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -66,7 +66,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                 child: Text(
                   'Access government tenders, submit bids, and manage your procurement activities',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -206,7 +206,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -215,7 +215,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
@@ -251,7 +251,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
             const SizedBox(width: 12),
             Text(
               'Coming Soon',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -261,7 +261,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
         ),
         content: Text(
           '$feature functionality will be available soon. Stay tuned!',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white.withOpacity(0.8),
             fontSize: 15,
           ),
@@ -271,7 +271,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
             onPressed: () => Navigator.pop(context),
             child: Text(
               'OK',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

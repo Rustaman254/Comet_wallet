@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../utils/responsive_utils.dart';
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
@@ -90,7 +90,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
         title: Text(
           'Transactions',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
@@ -156,10 +156,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: _runFilter,
-              style: GoogleFonts.poppins(color: Theme.of(context).textTheme.bodyMedium?.color),
+              style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).textTheme.bodyMedium?.color),
               decoration: InputDecoration(
                 hintText: 'Search transactions...',
-                hintStyle: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14.sp),
+                hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.grey[500], fontSize: 14.sp),
                 border: InputBorder.none,
                 icon: Icon(Icons.search, color: buttonGreen, size: 20.r),
               ),
@@ -186,7 +186,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                     child: Text(
                       filter.toUpperCase(),
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 12.sp,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -217,12 +217,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             SizedBox(height: 16.h),
             Text(
               'Error loading transactions',
-              style: GoogleFonts.poppins(fontSize: 18.sp, fontWeight: FontWeight.w500),
+              style: TextStyle(fontFamily: 'Satoshi',fontSize: 18.sp, fontWeight: FontWeight.w500),
             ),
             SizedBox(height: 8.h),
             Text(
               provider.error,
-              style: GoogleFonts.poppins(color: Colors.grey[400], fontSize: 14.sp),
+              style: TextStyle(fontFamily: 'Satoshi',color: Colors.grey[400], fontSize: 14.sp),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 24.h),
@@ -248,7 +248,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             SizedBox(height: 16.h),
             Text(
               'No matches found',
-              style: GoogleFonts.poppins(
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 16.sp,
                 color: Colors.grey[400],
                 fontWeight: FontWeight.w500,
@@ -333,7 +333,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               Text(
                 _formatTransactionType(transaction.transactionType),
-                style: GoogleFonts.poppins(
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
@@ -344,7 +344,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 children: [
                   Text(
                     transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
@@ -362,7 +362,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   SizedBox(width: 8.w),
                   Text(
                     transaction.status.toUpperCase(),
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: statusColor,
                       fontSize: 10.sp,
                       fontWeight: FontWeight.bold,
@@ -375,7 +375,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
         Text(
           'KES ${transaction.amount.toStringAsFixed(2)}',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
