@@ -315,7 +315,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           width: 50.r,
           height: 50.r,
           decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
+            color: Theme.of(context).brightness == Brightness.light
+                ? transactionIconLight
+                : iconColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(

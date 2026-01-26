@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-// Primary color - Vibrant green for actions
-const Color buttonGreen = Color(0xFF10B981); // Modern teal green
+// Primary color - Updated to bright green
+const Color buttonGreen = Color(0xFF2ECD42); // Primary action color
 
 // Gradient & Accent colors
 const Color primaryBlue = Color(0xFF3B82F6); // Modern blue
@@ -9,6 +9,7 @@ const Color accentPurple = Color(0xFF8B5CF6); // Vibrant purple
 const Color successGreen = Color(0xFF34D399); // Success/positive
 const Color warningOrange = Color(0xFFFA9D3A); // Warning/caution
 const Color errorRed = Color(0xFFEF4444); // Error/negative
+const Color transactionIconLight = Color(0xFFE9EBEB); // Transaction icon background (light mode)
 
 // Dark Theme Colors
 const Color darkBackground = Color(0xFF0F1419); // Deep dark background
@@ -16,7 +17,7 @@ const Color darkSurface = Color(0xFF1A1F26); // Card/surface background
 const Color darkBorder = Color(0xFF2A3441); // Subtle border
 
 // Light Theme Colors - Modern & Colorful
-const Color lightBackground = Color(0xFFF8FAFC); // Clean light background
+const Color lightBackground = Color(0xFFEEF0F2); // Updated light background
 const Color lightCardBackground = Color(0xFFFFFFFF); // Pure white cards
 const Color lightSurface = Color(0xFFF1F5F9); // Alternate surface
 const Color lightPrimaryText = Color(0xFF0F1419); // Near-black text

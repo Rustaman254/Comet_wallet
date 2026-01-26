@@ -345,13 +345,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                           height: 16.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: index < _pin.length
-                                ? buttonGreen
-                                : Colors.white.withValues(alpha: 0.3),
+                            color: buttonGreen,
                             border: Border.all(
-                              color: index < _pin.length
-                                  ? buttonGreen
-                                  : Colors.white.withValues(alpha: 0.3),
+                              color: buttonGreen,
                               width: 2.w,
                             ),
                           ),
