@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
 import 'ecitizen_services_screen.dart';
+import 'currency_converter_screen.dart';
 import '../services/toast_service.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
@@ -101,8 +102,19 @@ class MoreOptionsScreen extends StatelessWidget {
                   );
                 },
               ),
-              // Empty placeholder for alignment
-              const SizedBox(width: 60),
+              // Currency Converter Link
+              _buildCircularOption(
+                Icons.currency_exchange,
+                'Currency Converter',
+                () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CurrencyConverterScreen(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 32),
