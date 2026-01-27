@@ -42,11 +42,6 @@ dependencies:
   camera: ^0.10.5
   intl: ^0.19.0
   flutter_screenutil: ^5.9.3
-<<<<<<< HEAD
-  flutter_launcher_icons: ^0.14.4
-  heroicons: ^0.11.0
-=======
->>>>>>> parent of 2a5d2da (Update: Launcher icon updated)
 
 dev_dependencies:
   flutter_test:
