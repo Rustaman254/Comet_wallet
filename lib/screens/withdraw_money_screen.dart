@@ -149,7 +149,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                             )
                           : Text(
                               '$selectedCurrency ${_balance.toStringAsFixed(2)}',
-                              style: GoogleFonts.poppins(
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: Colors.white,
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,

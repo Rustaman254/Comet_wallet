@@ -46,14 +46,22 @@ class MainWrapperState extends State<MainWrapper> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       // We use IndexedStack to preserve state of each tab
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      // Persistent Bottom Navigation
-      bottomNavigationBar: CustomBottomNav(
-        currentIndex: _currentIndex,
-        onTap: onTabChanged,
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: _currentIndex,
+            children: _pages,
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: CustomBottomNav(
+              currentIndex: _currentIndex,
+              onTap: onTabChanged,
+            ),
+          ),
+        ],
       ),
     );
   }

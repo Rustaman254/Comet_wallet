@@ -19,10 +19,11 @@ class CustomBottomNav extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(bottom: 20.h, left: 24.w, right: 24.w),
-        child: Center(
-          heightFactor: 1,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(40.r), // Pill shape
@@ -46,7 +47,8 @@ class CustomBottomNav extends StatelessWidget {
                 _buildNavItem(context, 3, HeroIcons.cog6Tooth),
               ],
             ),
-          ),
+            ),
+          ],
         ),
       ),
     );

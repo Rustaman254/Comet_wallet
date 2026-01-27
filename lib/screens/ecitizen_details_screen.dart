@@ -136,7 +136,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         ),
                         Text(
                           '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
-                          style: GoogleFonts.poppins(
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -234,7 +234,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
         ),
         Text(
           value,
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,

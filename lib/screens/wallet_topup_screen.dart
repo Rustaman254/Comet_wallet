@@ -573,7 +573,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       )
                     : Text(
                         'Proceed to Payment',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),

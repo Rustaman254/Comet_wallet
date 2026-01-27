@@ -83,7 +83,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
         ),
         title: Text(
           'Mobile Money',
-          style: GoogleFonts.poppins(
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
