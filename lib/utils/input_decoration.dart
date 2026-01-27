@@ -19,13 +19,13 @@ InputDecoration buildUnderlineInputDecoration({
     labelStyle: TextStyle(
       color: textColor.withOpacity(0.7),
       fontSize: 14,
-      fontFamily: 'Satoshi',
+      fontFamily: 'Outfit',
     ),
     hintText: hintText,
     hintStyle: TextStyle(
       color: hintColor,
       fontSize: 16,
-      fontFamily: 'Satoshi',
+      fontFamily: 'Outfit',
     ),
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,

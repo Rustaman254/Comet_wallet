@@ -74,7 +74,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
       appBar: AppBar(
         title: Text(
           'Authentication Debug',
-          style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
+          style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.w600),
         ),
         backgroundColor: buttonGreen,
       ),
@@ -104,7 +104,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                       children: [
                         Text(
                           'Authentication Status',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: textColor,
@@ -125,7 +125,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                               (authStatus['is_authenticated'] == true)
                                   ? 'Authenticated'
                                   : 'Not Authenticated',
-                              style: TextStyle(fontFamily: 'Satoshi',
+                              style: TextStyle(fontFamily: 'Outfit',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: textColor,
@@ -169,7 +169,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                         children: [
                           Text(
                             'Error',
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: Colors.red,
@@ -178,7 +178,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           const SizedBox(height: 8),
                           Text(
                             authStatus['error'] ?? '',
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               fontSize: 11,
                               color: Colors.red,
                             ),
@@ -201,7 +201,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           icon: const Icon(Icons.refresh),
                           label: Text(
                             'Refresh',
-                            style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
+                            style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
@@ -216,7 +216,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           icon: const Icon(Icons.logout),
                           label: Text(
                             'Logout',
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               fontWeight: FontWeight.w600,
                               color: Colors.red,
                             ),
@@ -241,7 +241,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                       icon: const Icon(Icons.payment),
                       label: Text(
                         'Test Wallet Top-up Call',
-                        style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
+                        style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -272,7 +272,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
         children: [
           Text(
             title,
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: textColor,
@@ -295,7 +295,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
             width: 100,
             child: Text(
               label,
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: textColor.withValues(alpha: 0.6),
@@ -306,11 +306,11 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
             child: Text(
               value,
               style: isCode
-                  ? TextStyle(fontFamily: 'Satoshi',
+                  ? TextStyle(fontFamily: 'Outfit',
                       fontSize: 11,
                       color: buttonGreen,
                     )
-                  : TextStyle(fontFamily: 'Satoshi',
+                  : TextStyle(fontFamily: 'Outfit',
                       fontSize: 12,
                       color: textColor,
                     ),
@@ -338,14 +338,14 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
       builder: (context) => AlertDialog(
         title: Text(
           'Test Wallet Top-up',
-          style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
+          style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.w600),
         ),
         content: Text(
           'This will attempt a test wallet top-up with:\n'
           'Phone: 0710000000\n'
           'Amount: 1.00\n'
           'Currency: KES',
-          style: TextStyle(fontFamily: 'Satoshi',),
+          style: TextStyle(fontFamily: 'Outfit',),
         ),
         actions: [
           TextButton(

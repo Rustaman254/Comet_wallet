@@ -174,7 +174,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             const SizedBox(height: 16),
             Text(
               response['message'] ?? 'Transfer Successful',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -199,7 +199,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text('Done', style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold)),
+                child: Text('Done', style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 16),
@@ -215,8 +215,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14)),
-          Text(value, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(fontFamily: 'Outfit',color: Colors.white70, fontSize: 14)),
+          Text(value, style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -233,7 +233,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Select Currency',
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -245,7 +245,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             return ListTile(
               title: Text(
                 balance['currency'],
-                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 16),
               ),
               onTap: () {
                 final index = balances.indexOf(balance);
@@ -311,7 +311,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         child: Text(
                           'Send Money',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -364,7 +364,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                           children: [
                                             Text(
                                               'Total Balance',
-                                              style: TextStyle(fontFamily: 'Satoshi',
+                                              style: TextStyle(fontFamily: 'Outfit',
                                                 color: Colors.white70,
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w400,
@@ -383,7 +383,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                                 ),
                                                 child: Text(
                                                   balance['currency'] ?? 'KES',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
+                                                  style: TextStyle(fontFamily: 'Outfit',
                                                     color: Colors.white,
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.bold,
@@ -399,7 +399,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                           children: [
                                             Text(
                                               balance['currency'] ?? 'KES',
-                                              style: TextStyle(fontFamily: 'Satoshi',
+                                              style: TextStyle(fontFamily: 'Outfit',
                                                 color: Colors.white,
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w500,
@@ -408,7 +408,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                             const SizedBox(width: 8),
                                             Text(
                                               balance['amount']?.toString() ?? '0.00',
-                                              style: TextStyle(fontFamily: 'Satoshi',
+                                              style: TextStyle(fontFamily: 'Outfit',
                                                 color: Colors.white,
                                                 fontSize: 35,
                                                 fontWeight: FontWeight.bold,
@@ -425,7 +425,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                               children: [
                                                 Text(
                                                   'Date',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
+                                                  style: TextStyle(fontFamily: 'Outfit',
                                                     color: Colors.white70,
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w400,
@@ -434,7 +434,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                                 const SizedBox(height: 4),
                                                 Text(
                                                   balance['date'] ?? 'Today',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
+                                                  style: TextStyle(fontFamily: 'Outfit',
                                                     color: Colors.white,
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w500,
@@ -446,7 +446,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                               children: [
                                                 Text(
                                                   balance['change'] ?? '+0.00',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
+                                                  style: TextStyle(fontFamily: 'Outfit',
                                                     color: Colors.white,
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,
@@ -491,7 +491,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                             children: [
                               Text(
                                 'Recipient Email',
-                                style: TextStyle(fontFamily: 'Satoshi',
+                                style: TextStyle(fontFamily: 'Outfit',
                                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -500,7 +500,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: _emailController,
-                                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                                style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 16),
                                 decoration: buildUnderlineInputDecoration(
                                   context: context,
                                   label: '',
@@ -537,7 +537,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                 const SizedBox(height: 20),
                                 Text(
                                   'Favorites',
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Colors.white70,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
@@ -572,7 +572,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                           alignment: Alignment.center,
                                           child: Text(
                                             favorite,
-                                            style: TextStyle(fontFamily: 'Satoshi',
+                                            style: TextStyle(fontFamily: 'Outfit',
                                               color: Colors.white,
                                               fontSize: 12,
                                               fontWeight: FontWeight.w500, // Added weight
@@ -597,47 +597,67 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                             children: [
                               Text(
                                 'Amount',
-                                style: TextStyle(fontFamily: 'Satoshi',
+                                style: TextStyle(fontFamily: 'Outfit',
                                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _amountController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                style: TextStyle(fontFamily: 'Satoshi',
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  fontSize: 16,
-                                ),
-                                decoration: buildUnderlineInputDecoration(
-                                  context: context,
-                                  label: '',
-                                  hintText: 'Enter amount',
-                                  prefixIcon: Icon(
-                                    Icons.money_outlined,
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  ),
-                                ),
-                                onTap: _showCurrencyDialog, // Optional: Let them change currency on tap or separate button?
-                                // Top-up screen doesn't have currency selector in the input itself.
-                              ),
-                              const SizedBox(height: 8),
-                              // Currency Selector Button (below or beside)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: _showCurrencyDialog,
-                                  child: Text(
-                                    'Change Currency ($selectedCurrency)',
-                                    style: TextStyle(fontFamily: 'Satoshi',
-                                      color: buttonGreen,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  // Currency Selector Label
+                                  GestureDetector(
+                                    onTap: _showCurrencyDialog,
+                                    child: Container(
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color: Colors.white.withValues(alpha: 0.3),
+                                            width: 1,
+                                          ),
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            selectedCurrency,
+                                            style: TextStyle(fontFamily: 'Outfit',
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  const SizedBox(width: 12),
+                                  // Amount Input
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _amountController,
+                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                      style: TextStyle(fontFamily: 'Outfit',
+                                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      decoration: buildUnderlineInputDecoration(
+                                        context: context,
+                                        label: '',
+                                        hintText: '0.00',
+                                      ),
+                                      onTap: _showCurrencyDialog,
+                                      readOnly: false, // Allow editing
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -667,7 +687,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                                     )
                                   : Text(
                                       'Send Money',
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(fontFamily: 'Outfit',
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -717,7 +737,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           const SizedBox(height: 8),
           Text(
             'Add',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Colors.white,
               fontSize: 14,
               fontWeight: FontWeight.w400,
@@ -742,7 +762,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           child: Center(
             child: Text(
               name[0],
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -753,7 +773,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         const SizedBox(height: 8),
         Text(
           name,
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.w400,

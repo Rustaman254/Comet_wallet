@@ -154,7 +154,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             Text(
               response['message'] ?? 'Top-up successful!',
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -186,7 +186,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 ),
                 child: Text(
                   'Back to Home',
-                  style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold),
+                  style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -205,13 +205,13 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14),
+            style: TextStyle(fontFamily: 'Outfit',color: Colors.white70, fontSize: 14),
           ),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -242,7 +242,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         ),
         title: Text(
           'Wallet Top-Up',
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -270,7 +270,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   children: [
                     Text(
                       'Add Funds to Your Wallet',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -279,7 +279,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'Enter the amount you want to add to your wallet. Funds will be transferred immediately upon successful payment.',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.7),
                       ),
@@ -292,7 +292,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Phone Number Field
               Text(
                 'Phone Number',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -319,7 +319,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                         dropdownColor: cardBackground,
                         icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
                         isExpanded: true,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -346,7 +346,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     child: TextFormField(
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -381,7 +381,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Amount Field
               Text(
                 'Amount',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -391,7 +391,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 16,
                 ),
@@ -427,7 +427,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               // Currency Selection
               Text(
                 'Currency',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -449,7 +449,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   underline: Container(),
                   value: _selectedCurrency,
                   dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 16,
                   ),
@@ -458,7 +458,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       value: 'KES',
                       child: Text(
                         'KES (Kenyan Shilling)',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 16,
                         ),
@@ -468,7 +468,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       value: 'USD',
                       child: Text(
                         'USD (US Dollar)',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 16,
                         ),
@@ -478,7 +478,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       value: 'EUR',
                       child: Text(
                         'EUR (Euro)',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 16,
                         ),
@@ -508,7 +508,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       children: [
                         Text(
                           'Amount',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white.withOpacity(0.7),
                           ),
                         ),
@@ -516,7 +516,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           _amountController.text.isEmpty
                               ? '$_selectedCurrency 0.00'
                               : '$_selectedCurrency ${_amountController.text}',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -528,7 +528,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       children: [
                         Text(
                           'Total',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -536,7 +536,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           _amountController.text.isEmpty
                               ? '$_selectedCurrency 0.00'
                               : '$_selectedCurrency ${_amountController.text}',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: buttonGreen,
@@ -574,7 +574,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       )
                     : Text(
                         'Proceed to Payment',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.outfit(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -586,7 +586,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               Text(
                 'Please ensure your phone number is correct. You will receive an SMS confirmation after successful payment.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   fontSize: 12,
                   color: Colors.white.withOpacity(0.5),
                 ),

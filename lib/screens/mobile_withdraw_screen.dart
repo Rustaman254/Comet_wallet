@@ -84,7 +84,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
         ),
         title: Text(
           'Mobile Money',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.outfit(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -100,7 +100,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               // Phone Input
               Text(
                 'Phone Number',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
@@ -109,7 +109,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
+                style: TextStyle(fontFamily: 'Outfit',color: Colors.white),
                 decoration: buildUnderlineInputDecoration(
                   context: context,
                   label: '',
@@ -121,7 +121,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               // Amount Input (MSISDN Style)
               Text(
                 'Enter Amount',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
@@ -144,7 +144,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
                       widget.currency,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -157,7 +157,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     child: TextField(
                       controller: _amountController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
@@ -188,7 +188,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                   ),
                   child: Text(
                     'Continue',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

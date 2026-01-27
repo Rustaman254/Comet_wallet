@@ -174,7 +174,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 20.h),
             Text(
               'Payment Successful!',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 10.h),
             Text(
               '${widget.currency} ${widget.amount}',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: buttonGreen,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
@@ -192,7 +192,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 5.h),
             Text(
               'sent to ${widget.recipientName}',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white70,
                 fontSize: 14.sp,
               ),
@@ -200,7 +200,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 10.h),
             Text(
               'ID: $transactionId',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white38,
                 fontSize: 12.sp,
               ),
@@ -221,7 +221,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 ),
                 child: Text(
                   'Done',
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -278,7 +278,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 child: Center(
                   child: Text(
                     widget.recipientName.isNotEmpty ? widget.recipientName[0].toUpperCase() : '?',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 32.sp,
                       fontWeight: FontWeight.bold,
@@ -290,7 +290,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               // Recipient name
               Text(
                 'Sending to',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white70,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
@@ -299,7 +299,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               SizedBox(height: 8.h),
               Text(
                 widget.recipientName,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -312,13 +312,13 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 SizedBox(height: 20.h),
                 Text(
                   'Processing transaction...',
-                  style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14.sp),
+                  style: TextStyle(fontFamily: 'Outfit',color: Colors.white70, fontSize: 14.sp),
                 ),
               ] else ...[
                 // Enter PIN text
                 Text(
                   'Enter your PIN',
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Colors.white,
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w500,
@@ -421,7 +421,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         child: Center(
           child: Text(
             number,
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Colors.white,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,

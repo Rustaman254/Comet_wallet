@@ -36,7 +36,7 @@ class SendOptionsScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             'Send Money',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -111,7 +111,7 @@ class SendOptionsScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

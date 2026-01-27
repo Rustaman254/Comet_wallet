@@ -68,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Text(
                       'Profile',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _userName,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
@@ -121,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 4),
                     Text(
                       _userRole,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white70,
                         fontSize: 13,
                       ),
@@ -231,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 14, // Requested size
                   fontWeight: FontWeight.w500,
@@ -247,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Text(
                   badgeCount.toString(),
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

@@ -133,7 +133,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               // Welcome text
               Text(
                 'Welcome back,',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,
@@ -142,7 +142,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               SizedBox(height: 8.h),
               Text(
                 _userName,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               // Enter PIN text
               Text(
                 'Enter your PIN',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w500,
@@ -202,7 +202,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 },
                 child: Text(
                   'Forgot PIN?',
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: buttonGreen,
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
@@ -241,7 +241,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               onPressed: () => _onNumberPressed('0'),
               child: Text(
                 '0',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w500,
@@ -270,7 +270,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           onPressed: () => _onNumberPressed(number),
           child: Text(
             number,
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,

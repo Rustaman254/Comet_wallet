@@ -54,7 +54,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
         ),
         title: Text(
           'Currency Converter',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.outfit(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -80,16 +80,14 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                   children: [
                      Text(
                       'Exchange Rate',
-                      style: TextStyle(
-                        fontFamily: 'Satoshi',
+                      style: GoogleFonts.outfit(
                         color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 14,
                       ),
                     ),
                      Text(
                       '1 USD = $_exchangeRate KSH',
-                      style: const TextStyle(
-                        fontFamily: 'Satoshi',
+                      style: GoogleFonts.outfit(
                         color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -103,8 +101,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
               // KSH Input
               Text(
                 'Amount in KSH',
-                style: TextStyle(
-                  fontFamily: 'Satoshi',
+                style: GoogleFonts.outfit(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
@@ -113,8 +110,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
               TextField(
                 controller: _kshController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(
-                  fontFamily: 'Satoshi',
+                style: GoogleFonts.outfit(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -131,8 +127,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
               // USD Output (Read-only look)
               Text(
                 'Amount in USD',
-                style: TextStyle(
-                  fontFamily: 'Satoshi',
+                style: GoogleFonts.outfit(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
@@ -151,8 +146,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                   ),
                  child: Text(
                    _usdAmount,
-                   style: const TextStyle(
-                     fontFamily: 'Satoshi',
+                   style: GoogleFonts.outfit(
                      color: buttonGreen, // Highlight result
                      fontSize: 24,
                      fontWeight: FontWeight.bold,
@@ -175,10 +169,9 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Convert',
-                    style: TextStyle(
-                      fontFamily: 'Satoshi',
+                    style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),

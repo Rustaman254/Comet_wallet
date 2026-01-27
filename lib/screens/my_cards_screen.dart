@@ -23,7 +23,7 @@ class MyCardsScreen extends StatelessWidget {
                   const SizedBox(width: 40),
                   Text(
                     'All Cards',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class MyCardsScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Add Card',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -140,7 +140,7 @@ class MyCardsScreen extends StatelessWidget {
           Text(
             number, // Formatted with spaces
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class MyCardsScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Aimal Naseem', // Placeholder
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -169,11 +169,11 @@ class MyCardsScreen extends StatelessWidget {
                          children: [
                            Text(
                              'Expiry Date',
-                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 10),
+                             style: TextStyle(fontFamily: 'Outfit',color: Colors.white70, fontSize: 10),
                            ),
                            Text(
                              expiry,
-                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                             style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                            ),
                          ],
                        ),
@@ -183,11 +183,11 @@ class MyCardsScreen extends StatelessWidget {
                          children: [
                            Text(
                              'CVV',
-                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 10),
+                             style: TextStyle(fontFamily: 'Outfit',color: Colors.white70, fontSize: 10),
                            ),
                            Text(
                              cvv,
-                             style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                             style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
                            ),
                          ],
                        ),
@@ -215,7 +215,7 @@ class MyCardsScreen extends StatelessWidget {
                    const SizedBox(height: 4),
                    Text(
                      type == 'mastercard' ? 'Mastercard' : '',
-                     style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 10),
+                     style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 10),
                    ),
                 ],
               )

@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   'Welcome back,',
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w400,
@@ -258,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 Text(
                                   _userProfile?.name ?? 'Anwar Sadatt',
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Theme.of(context).textTheme.bodyMedium?.color,
                                     fontSize: 21.sp,
                                     fontWeight: FontWeight.bold,
@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: Text(
                                       'Coming Soon',
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(fontFamily: 'Outfit',
                                         color: Colors.white,
                                         fontSize: 8.sp,
                                         fontWeight: FontWeight.bold,
@@ -450,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       children: [
                                                         Text(
                                                           'Total Balance',
-                                                          style: TextStyle(fontFamily: 'Satoshi',
+                                                          style: TextStyle(fontFamily: 'Outfit',
                                                             color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                                                             fontSize: 13.sp,
                                                             fontWeight: FontWeight.w400,
@@ -487,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                       child: Text(
                                                         balance['currency'] ?? 'KES',
-                                                        style: TextStyle(fontFamily: 'Satoshi',
+                                                        style: TextStyle(fontFamily: 'Outfit',
                                                           color: Theme.of(context).textTheme.bodyMedium?.color,
                                                           fontSize: 12.sp,
                                                           fontWeight: FontWeight.bold,
@@ -504,7 +504,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   children: [
                                                     Text(
                                                       balance['currency'] ?? 'KES',
-                                                      style: TextStyle(fontFamily: 'Satoshi',
+                                                      style: TextStyle(fontFamily: 'Outfit',
                                                         color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.9),
                                                         fontSize: 20.sp,
                                                         fontWeight: FontWeight.w600,
@@ -513,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     SizedBox(width: 8.w),
                                                     Text(
                                                       _isBalanceVisible ? (balance['amount']?.toString() ?? '0.00') : '••••••',
-                                                      style: TextStyle(fontFamily: 'Satoshi',
+                                                      style: TextStyle(fontFamily: 'Outfit',
                                                         color: Theme.of(context).textTheme.bodyMedium?.color,
                                                         fontSize: 48.sp, // Significantly bigger font
                                                         fontWeight: FontWeight.bold,
@@ -535,7 +535,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         children: [
                                                           Text(
                                                             'Date',
-                                                            style: TextStyle(fontFamily: 'Satoshi',
+                                                            style: TextStyle(fontFamily: 'Outfit',
                                                               color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                                                               fontSize: 12.sp,
                                                               fontWeight: FontWeight.w400,
@@ -544,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           SizedBox(height: 2.h),
                                                           Text(
                                                             balance['date'] ?? 'Today',
-                                                            style: TextStyle(fontFamily: 'Satoshi',
+                                                            style: TextStyle(fontFamily: 'Outfit',
                                                               color: Theme.of(context).textTheme.bodyMedium?.color,
                                                               fontSize: 14.sp,
                                                               fontWeight: FontWeight.w500,
@@ -562,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           children: [
                                                             Text(
                                                               balance['change'] ?? '+0.00',
-                                                              style: TextStyle(fontFamily: 'Satoshi',
+                                                              style: TextStyle(fontFamily: 'Outfit',
                                                                 color: Theme.of(context).textTheme.bodyMedium?.color,
                                                                 fontSize: 14.sp,
                                                                 fontWeight: FontWeight.bold,
@@ -646,7 +646,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   'Transaction',
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Theme.of(context).textTheme.bodyMedium?.color,
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
@@ -663,7 +663,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   child: Text(
                                     'See All',
-                                    style: TextStyle(fontFamily: 'Satoshi',
+                                    style: TextStyle(fontFamily: 'Outfit',
                                       color: buttonGreen,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
@@ -742,7 +742,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 8.h),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Theme.of(context).textTheme.bodyMedium?.color,
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
@@ -779,14 +779,14 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 title,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 10.sp,
                 ),
               ),
               Text(
                 value,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
@@ -823,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 'Total Balance',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
@@ -837,7 +837,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Text(
                   'KES',
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
@@ -852,7 +852,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 'KES',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 25.sp,
                   fontWeight: FontWeight.w500,
@@ -861,7 +861,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(width: 8.w),
               Text(
                 '0.00',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 35.sp,
                   fontWeight: FontWeight.bold,
@@ -872,7 +872,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Spacer(),
           Text(
             'Top up to start transacting',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
               fontSize: 14.sp,
             ),
@@ -892,7 +892,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 12.h),
           Text(
             'No recent transactions',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Colors.grey[600],
               fontSize: 16.sp,
             ),
@@ -969,7 +969,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 _formatTransactionType(transaction.transactionType),
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
@@ -980,7 +980,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
@@ -998,7 +998,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(width: 8.w),
                   Text(
                     transaction.status.toUpperCase(),
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: statusColor,
                       fontSize: 10.sp,
                       fontWeight: FontWeight.bold,
@@ -1011,7 +1011,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Text(
           'KES ${transaction.amount.toStringAsFixed(2)}',
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
@@ -1050,7 +1050,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 phone,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
@@ -1059,7 +1059,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 4.h),
               Text(
                 date,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
@@ -1070,7 +1070,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Text(
           amount,
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,

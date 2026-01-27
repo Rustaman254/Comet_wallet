@@ -116,7 +116,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Select Currency',
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -128,7 +128,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
             return ListTile(
               title: Text(
                 balance['currency'],
-                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 16),
               ),
               onTap: () {
                 final index = _balances.indexOf(balance);
@@ -226,7 +226,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                       child: Text(
                         'Send to Mobile',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -280,7 +280,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                               children: [
                                 Text(
                                   'Total Balance',
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Colors.white70,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w400,
@@ -299,7 +299,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                     ),
                                     child: Text(
                                       balance['currency'],
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(fontFamily: 'Outfit',
                                         color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -315,7 +315,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                               children: [
                                 Text(
                                   balance['currency'],
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Colors.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,
@@ -324,7 +324,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                 const SizedBox(width: 8),
                                 Text(
                                   balance['amount'],
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: Colors.white,
                                     fontSize: 35,
                                     fontWeight: FontWeight.bold,
@@ -341,7 +341,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                   children: [
                                     Text(
                                       'Date',
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(fontFamily: 'Outfit',
                                         color: Colors.white70,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
@@ -350,7 +350,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                     const SizedBox(height: 4),
                                     Text(
                                       balance['date'],
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(fontFamily: 'Outfit',
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
@@ -362,7 +362,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                   children: [
                                     Text(
                                       balance['change'],
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(fontFamily: 'Outfit',
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -408,7 +408,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                   children: [
                     Text(
                       'Mobile Number',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -435,7 +435,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                               dropdownColor: cardBackground,
                               icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
                               isExpanded: true,
-                              style: TextStyle(fontFamily: 'Satoshi',
+                              style: TextStyle(fontFamily: 'Outfit',
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
@@ -461,7 +461,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                         Expanded(
                           child: TextField(
                             controller: _phoneController,
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               color: Colors.white,
                               fontSize: 16,
                             ),
@@ -492,7 +492,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                   children: [
                     Text(
                       'Enter Amount',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -501,7 +501,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _amountController,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 24, // Highlighting amount
                         fontWeight: FontWeight.bold,
@@ -515,7 +515,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                           padding: const EdgeInsets.all(12.0),
                           child: Text(
                             selectedCurrency,
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               color: buttonGreen,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -546,7 +546,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                     ),
                     child: Text(
                       'Continue',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

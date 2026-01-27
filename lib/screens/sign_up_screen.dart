@@ -127,7 +127,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Center(
                     child: Text(
                       'Sign Up',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 32.sp,
                         fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Full Name field
                   Text(
                     'Full Name',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -147,7 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _nameController,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16.sp,
                     ),
@@ -170,7 +170,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Phone Number field
                   Text(
                     'Phone Number',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -179,7 +179,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _phoneController,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 16.sp,
                     ),
@@ -203,7 +203,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Email field
                   Text(
                     'Email Address',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -212,7 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _emailController,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 16.sp,
                     ),
@@ -236,7 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Location field
                   Text(
                     'Location',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -245,7 +245,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _locationController,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 16.sp,
                     ),
@@ -269,7 +269,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   // Password field
                   Text(
                     'Password',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -279,7 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 16.sp,
                     ),
@@ -328,7 +328,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       child: Text(
                         'Sign Up',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                         ),
@@ -348,7 +348,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       },
                       child: RichText(
                         text: TextSpan(
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
@@ -357,7 +357,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const TextSpan(text: 'Already have an account. '),
                             TextSpan(
                               text: 'Sign In',
-                              style: TextStyle(fontFamily: 'Satoshi',
+                              style: TextStyle(fontFamily: 'Outfit',
                                 color: buttonGreen,
                                 fontWeight: FontWeight.bold,
                               ),
