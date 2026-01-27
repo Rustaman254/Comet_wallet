@@ -100,7 +100,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                       child: Text(
                         'Withdraw Money',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -136,7 +136,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                     children: [
                       Text(
                         'Available Balance',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white70,
                           fontSize: 14,
                         ),
@@ -150,7 +150,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                             )
                           : Text(
                               '$selectedCurrency ${_balance.toStringAsFixed(2)}',
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
@@ -169,7 +169,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                   children: [
                     Text(
                       'Withdrawal Method',
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -222,7 +222,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                       children: [
                                         Text(
                                           method['name'],
-                                          style: TextStyle(fontFamily: 'Outfit',
+                                          style: TextStyle(fontFamily: 'Satoshi',
                                             color: Colors.white,
                                             fontSize: 16,
                                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -231,7 +231,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                         const SizedBox(height: 4),
                                         Text(
                                           method['account'],
-                                          style: TextStyle(fontFamily: 'Outfit',
+                                          style: TextStyle(fontFamily: 'Satoshi',
                                             color: isAvailable ? Colors.white54 : buttonGreen,
                                             fontSize: 12,
                                             fontWeight: !isAvailable ? FontWeight.bold : FontWeight.normal,

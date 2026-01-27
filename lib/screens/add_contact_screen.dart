@@ -47,7 +47,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                 children: [
                   Text(
                     'Add Contact',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -57,7 +57,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                   // Phone Number field with underline
                   TextField(
                     controller: _phoneController,
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
@@ -65,7 +65,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       hintText: 'XXX XXX XXX',
-                      hintStyle: TextStyle(fontFamily: 'Outfit',
+                      hintStyle: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 16,
                       ),
@@ -128,7 +128,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                       const SizedBox(width: 12),
                       Text(
                         'Add to favourite',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -154,7 +154,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                       ),
                       child: Text(
                         'Add Contact',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),

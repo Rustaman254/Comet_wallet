@@ -56,7 +56,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       child: Text(
                         'Service Details',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     Text(
                       widget.bill.name,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       ),
                       child: Text(
                         'Unpaid',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.green[300],
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -130,14 +130,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       children: [
                         Text(
                           'Total Amount',
-                          style: TextStyle(fontFamily: 'Outfit',
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white70,
                             fontSize: 18,
                           ),
                         ),
                         Text(
                           '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
-                          style: GoogleFonts.outfit(
+                          style: GoogleFonts.poppins(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -207,7 +207,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     ),
                     child: Text(
                       'Pay Now',
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -228,14 +228,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white70,
             fontSize: 15,
           ),
         ),
         Text(
           value,
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,

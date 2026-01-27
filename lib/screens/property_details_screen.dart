@@ -118,7 +118,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                           Expanded(
                             child: Text(
                               widget.property.name,
-                              style: TextStyle(fontFamily: 'Outfit',
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: Colors.white,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                             ),
                             child: Text(
                               widget.property.propertyType,
-                              style: TextStyle(fontFamily: 'Outfit',
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: buttonGreen,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -152,7 +152,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                           const SizedBox(width: 4),
                           Text(
                             '${widget.property.location}, ${widget.property.city}',
-                            style: TextStyle(fontFamily: 'Outfit',
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[400],
                               fontSize: 14,
                             ),
@@ -220,7 +220,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                           children: [
                             Text(
                               'Token Information',
-                              style: TextStyle(fontFamily: 'Outfit',
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -249,14 +249,14 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                                   children: [
                                     Text(
                                       'Funding Progress',
-                                      style: TextStyle(fontFamily: 'Outfit',
+                                      style: TextStyle(fontFamily: 'Satoshi',
                                         color: Colors.grey[400],
                                         fontSize: 13,
                                       ),
                                     ),
                                     Text(
                                       '${widget.property.fundingPercentage.toStringAsFixed(1)}%',
-                                      style: TextStyle(fontFamily: 'Outfit',
+                                      style: TextStyle(fontFamily: 'Satoshi',
                                         color: buttonGreen,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
@@ -286,7 +286,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                       // Description
                       Text(
                         'About Property',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -295,7 +295,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                       const SizedBox(height: 12),
                       Text(
                         widget.property.description,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[400],
                           fontSize: 14,
                           height: 1.6,
@@ -306,7 +306,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                       // Amenities
                       Text(
                         'Amenities',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -333,7 +333,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                                       const SizedBox(width: 6),
                                       Text(
                                         amenity,
-                                        style: TextStyle(fontFamily: 'Outfit',
+                                        style: TextStyle(fontFamily: 'Satoshi',
                                           color: Colors.white,
                                           fontSize: 13,
                                         ),
@@ -411,7 +411,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                     widget.property.availableTokens > 0
                         ? 'Buy Tokens'
                         : 'Fully Funded',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -441,7 +441,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Outfit',
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.grey[400],
               fontSize: 12,
             ),
@@ -449,7 +449,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
           const SizedBox(height: 4),
           Text(
             value,
-            style: TextStyle(fontFamily: 'Outfit',
+            style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -466,14 +466,14 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 13,
           ),
         ),
         Text(
           value,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 13,
             fontWeight: FontWeight.w600,

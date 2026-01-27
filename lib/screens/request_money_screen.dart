@@ -58,7 +58,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                       child: Text(
                         'Request Money',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 23,
                           fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                           ),
                           child: Text(
                             'My Payment Link',
-                            style: TextStyle(fontFamily: 'Outfit',
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: _selectedMode == 'Payment Link'
                                   ? Colors.white
                                   : Colors.white70,
@@ -140,7 +140,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                           ),
                           child: Text(
                             'Wallet to Wallet',
-                            style: TextStyle(fontFamily: 'Outfit',
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: _selectedMode == 'Wallet to Wallet'
                                   ? Colors.white
                                   : Colors.white70,
@@ -196,7 +196,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
               const SizedBox(height: 12),
               Text(
                 'Scan to Pay',
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.black87,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -219,7 +219,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
             children: [
               Text(
                 'Payment Link',
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white70,
                   fontSize: 14,
                 ),
@@ -230,7 +230,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                   Expanded(
                     child: Text(
                       _paymentLink,
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: buttonGreen,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -246,7 +246,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                         SnackBar(
                           content: Text(
                             'Payment link copied to clipboard',
-                            style: TextStyle(fontFamily: 'Outfit',),
+                            style: TextStyle(fontFamily: 'Satoshi',),
                           ),
                           backgroundColor: buttonGreen,
                           duration: const Duration(seconds: 2),
@@ -290,7 +290,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
             icon: const Icon(Icons.share_outlined),
             label: Text(
               'Share Payment Link',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -338,7 +338,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                 const SizedBox(height: 24),
                 Text(
                   'Scan QR Code',
-                  style: TextStyle(fontFamily: 'Outfit',
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -347,7 +347,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Tap to open camera',
-                  style: TextStyle(fontFamily: 'Outfit',
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -367,7 +367,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'OR',
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white70,
                   fontSize: 14,
                 ),
@@ -392,7 +392,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
             children: [
               Text(
                 'Request Amount',
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -401,7 +401,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _amountController,
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -409,11 +409,11 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: '0.00',
-                  hintStyle: TextStyle(fontFamily: 'Outfit',
+                  hintStyle: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white38,
                   ),
                   prefixText: '\$ ',
-                  prefixStyle: TextStyle(fontFamily: 'Outfit',
+                  prefixStyle: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white70,
                     fontSize: 18,
                   ),
@@ -434,7 +434,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                   SnackBar(
                     content: Text(
                       'Please enter an amount',
-                      style: TextStyle(fontFamily: 'Outfit',),
+                      style: TextStyle(fontFamily: 'Satoshi',),
                     ),
                     backgroundColor: Colors.red,
                   ),
@@ -446,7 +446,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                 SnackBar(
                   content: Text(
                     'Payment request generated',
-                    style: TextStyle(fontFamily: 'Outfit',),
+                    style: TextStyle(fontFamily: 'Satoshi',),
                   ),
                   backgroundColor: buttonGreen,
                 ),
@@ -462,7 +462,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
             ),
             child: Text(
               'Generate Request',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

@@ -106,7 +106,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                     child: Text(
                       'Browse Properties',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -129,10 +129,10 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                     _filterProperties(_selectedFilter);
                   });
                 },
-                style: TextStyle(fontFamily: 'Outfit',color: Colors.white),
+                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Search properties...',
-                  hintStyle: TextStyle(fontFamily: 'Outfit',color: Colors.grey),
+                  hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.grey),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
                   fillColor: cardBackground,
@@ -187,7 +187,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                               const SizedBox(height: 16),
                               Text(
                                 'No properties found',
-                                style: TextStyle(fontFamily: 'Outfit',
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
@@ -231,7 +231,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
         ),
         child: Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: isSelected ? Colors.black : Colors.white,
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -291,7 +291,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       ),
                       child: Text(
                         property.status,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.black,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -310,7 +310,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       ),
                       child: Text(
                         property.propertyType,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -330,7 +330,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                 children: [
                   Text(
                     property.name,
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -344,7 +344,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       const SizedBox(width: 4),
                       Text(
                         '${property.location}, ${property.city}',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[400],
                           fontSize: 13,
                         ),
@@ -386,14 +386,14 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                         children: [
                           Text(
                             'Funding Progress',
-                            style: TextStyle(fontFamily: 'Outfit',
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[400],
                               fontSize: 12,
                             ),
                           ),
                           Text(
                             '${property.fundingPercentage.toStringAsFixed(1)}%',
-                            style: TextStyle(fontFamily: 'Outfit',
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: buttonGreen,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -428,7 +428,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 11,
           ),
@@ -436,7 +436,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: color,
             fontSize: 14,
             fontWeight: FontWeight.bold,

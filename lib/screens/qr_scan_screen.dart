@@ -196,7 +196,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
             const SizedBox(height: 24),
             Text(
               'QR Code Detected!',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -235,7 +235,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                     },
                     child: Text(
                       'Scan Again',
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white70,
                         fontWeight: FontWeight.w500,
                       ),
@@ -259,7 +259,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                     ),
                     child: Text(
                       'Use Code',
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -309,7 +309,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                     const SizedBox(height: 16),
                     Text(
                       'Camera Error',
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -321,7 +321,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                           ? 'Camera permission denied. Please enable it in settings.'
                           : 'Something went wrong: ${error.errorCode}',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white70,
                         fontSize: 14,
                       ),
@@ -368,7 +368,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                 const SizedBox(width: 16),
                 Text(
                   'Scan QR Code',
-                  style: TextStyle(fontFamily: 'Outfit',
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -450,7 +450,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                   ),
                   child: Text(
                     'Position the QR code within the frame',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -493,7 +493,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
               const SizedBox(height: 16),
               Text(
                 'Tap to toggle flash',
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w400,

@@ -107,7 +107,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   // Title
                   Text(
                     'Sign In',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 32.sp,
                       fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   // Email field
                   Text(
                     'Email Address',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -126,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _emailController,
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16.sp,
                     ),
@@ -150,7 +150,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   // Password field
                   Text(
                     'Password',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -160,7 +160,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16.sp,
                     ),
@@ -209,7 +209,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                       child: Text(
                         'Sign In',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                         ),
@@ -229,7 +229,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       },
                       child: RichText(
                         text: TextSpan(
-                          style: TextStyle(fontFamily: 'Outfit',
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
@@ -238,7 +238,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             const TextSpan(text: "I'm a new user. "),
                             TextSpan(
                               text: 'Sign UP',
-                              style: TextStyle(fontFamily: 'Outfit',
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: buttonGreen,
                                 fontWeight: FontWeight.bold,
                               ),

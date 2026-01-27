@@ -51,7 +51,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Confirm Purchase',
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -63,7 +63,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
           children: [
             Text(
               'Are you sure you want to buy these tokens?',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white.withOpacity(0.8),
                 fontSize: 14,
               ),
@@ -99,7 +99,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Cancel',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.grey[400],
                 fontSize: 16,
               ),
@@ -112,7 +112,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             },
             child: Text(
               'Buy Now',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -178,7 +178,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             const SizedBox(height: 16),
             Text(
               'Purchase Successful!',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -189,7 +189,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
         content: Text(
           result['message'] ?? 'Successfully purchased tokens from marketplace',
           textAlign: TextAlign.center,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white.withOpacity(0.8),
             fontSize: 14,
           ),
@@ -202,7 +202,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             },
             child: Text(
               'Done',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -247,7 +247,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                     child: Text(
                       'Marketplace',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Outfit',
+                      style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -263,7 +263,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
                 'Buy tokens from other investors',
-                style: TextStyle(fontFamily: 'Outfit',
+                style: TextStyle(fontFamily: 'Satoshi',
                   color: Colors.grey[400],
                   fontSize: 14,
                 ),
@@ -286,7 +286,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                               const SizedBox(height: 16),
                               Text(
                                 'No listings available',
-                                style: TextStyle(fontFamily: 'Outfit',
+                                style: TextStyle(fontFamily: 'Satoshi',
                                   color: Colors.grey[600],
                                   fontSize: 16,
                                 ),
@@ -355,7 +355,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                     children: [
                       Text(
                         listing.propertyName,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -364,7 +364,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                       const SizedBox(height: 4),
                       Text(
                         listing.location,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.grey[400],
                           fontSize: 13,
                         ),
@@ -377,7 +377,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                           const SizedBox(width: 4),
                           Text(
                             listing.sellerName,
-                            style: TextStyle(fontFamily: 'Outfit',
+                            style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[400],
                               fontSize: 12,
                             ),
@@ -420,7 +420,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                       children: [
                         Text(
                           'vs. Original Price',
-                          style: TextStyle(fontFamily: 'Outfit',
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.grey[400],
                             fontSize: 12,
                           ),
@@ -440,7 +440,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                             const SizedBox(width: 4),
                             Text(
                               '${listing.priceChangePercentage.abs().toStringAsFixed(1)}%',
-                              style: TextStyle(fontFamily: 'Outfit',
+                              style: TextStyle(fontFamily: 'Satoshi',
                                 color: listing.isPriceIncreased
                                     ? Colors.red
                                     : buttonGreen,
@@ -457,7 +457,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                       children: [
                         Text(
                           'Total Value',
-                          style: TextStyle(fontFamily: 'Outfit',
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.grey[400],
                             fontSize: 12,
                           ),
@@ -465,7 +465,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                         const SizedBox(height: 2),
                         Text(
                           'KES ${listing.totalValue.toStringAsFixed(0)}',
-                          style: TextStyle(fontFamily: 'Outfit',
+                          style: TextStyle(fontFamily: 'Satoshi',
                             color: const Color(0xFF6366F1),
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -489,7 +489,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                   ),
                   child: Text(
                     'Buy Now',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -509,7 +509,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: 12,
           ),
@@ -517,7 +517,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -533,7 +533,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.grey[400],
             fontSize: isTotal ? 14 : 12,
             fontWeight: isTotal ? FontWeight.w600 : FontWeight.normal,
@@ -541,7 +541,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
         ),
         Text(
           value,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: isTotal ? buttonGreen : Colors.white,
             fontSize: isTotal ? 16 : 12,
             fontWeight: FontWeight.w600,

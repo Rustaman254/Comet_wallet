@@ -31,7 +31,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Confirm Payment Details',
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
                       ),
                       child: Text(
                         'proceed',
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -97,7 +97,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white70,
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -105,7 +105,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
         ),
         Text(
           value,
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,

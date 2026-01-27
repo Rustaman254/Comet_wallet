@@ -48,7 +48,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                       child: Text(
                         'Real Estate Tokenization',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Outfit',
+                        style: TextStyle(fontFamily: 'Satoshi',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -67,7 +67,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                 child: Text(
                   'Invest in fractional real estate ownership through blockchain tokenization',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Outfit',
+                  style: TextStyle(fontFamily: 'Satoshi',
                     color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -211,7 +211,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -220,7 +220,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontFamily: 'Outfit',
+                    style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
@@ -256,7 +256,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
             const SizedBox(width: 12),
             Text(
               'Coming Soon',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -266,7 +266,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
         ),
         content: Text(
           '$feature functionality will be available soon. Stay tuned!',
-          style: TextStyle(fontFamily: 'Outfit',
+          style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white.withOpacity(0.8),
             fontSize: 15,
           ),
@@ -276,7 +276,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'OK',
-              style: TextStyle(fontFamily: 'Outfit',
+              style: TextStyle(fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
