@@ -22,15 +22,8 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
     {
       'name': 'Mobile Money',
       'icon': Icons.phone_android_outlined,
-      'account': 'Safaricom M-Pesa',
+      'account': 'M-Pesa / T-Pesa',
       'isAvailable': true,
-    },
-    {
-      'name': 'T-Kash',
-      'icon': Icons.account_balance_wallet,
-      'account': 'Telkom T-Kash',
-      'isAvailable': true,
-      'color': Color(0xFF0066CC),
     },
     {
       'name': 'Bank Account',
@@ -118,7 +111,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Available Balance Card (Same style as Send Money)
+              // Available Balance Card (Original Style preserved)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Container(
@@ -144,41 +137,23 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                         'Available Balance',
                         style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white70,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _isBalanceLoading
                           ? const SizedBox(
-                              height: 35,
-                              width: 35,
+                              height: 32,
+                              width: 32,
                               child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                             )
-                          : Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  selectedCurrency,
-                                  style: TextStyle(fontFamily: 'Satoshi',
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    _balance.toStringAsFixed(2),
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontFamily: 'Satoshi',
-                                      color: Colors.white,
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          : Text(
+                              '$selectedCurrency ${_balance.toStringAsFixed(2)}',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                     ],
                   ),
@@ -203,7 +178,6 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                     ..._withdrawMethods.map((method) {
                       final isSelected = selectedMethod == method['name'];
                       final isAvailable = method['isAvailable'] as bool;
-                      final methodColor = method['color'] as Color?;
                       
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
@@ -213,13 +187,12 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                               selectedMethod = method['name'];
                             });
                             
-                            if (method['name'] == 'Mobile Money' || method['name'] == 'T-Kash') {
+                            if (method['name'] == 'Mobile Money') {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => MobileWithdrawScreen(
                                       currency: selectedCurrency,
                                       maxBalance: _balance,
-                                      withdrawMethod: method['name'],
                                     ),
                                   ),
                                 );
@@ -238,7 +211,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                 children: [
                                   Icon(
                                     method['icon'],
-                                    color: isSelected ? (methodColor ?? buttonGreen) : (methodColor ?? Colors.white70),
+                                    color: isSelected ? buttonGreen : Colors.white70,
                                     size: 24,
                                   ),
                                   const SizedBox(width: 16),
