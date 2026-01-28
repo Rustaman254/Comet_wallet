@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
@@ -16,172 +17,16 @@ class OnboardingScreen1 extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const Spacer(flex: 2),
-            // Main Illustration
+            // Welcome SVG Illustration
             Expanded(
               flex: 5,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // White Board
-                  Positioned(
-                    child: Container(
-                      width: 320.w,
-                      height: 300.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: lightGreen, width: 2.w),
-                      ),
-                      child: Stack(
-                        children: [
-                          // Chart on left
-                          Positioned(
-                            left: 20,
-                            top: 40,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Woman figure (simplified as icon)
-                                Icon(Icons.person, size: 40.r, color: darkTeal),
-                                SizedBox(height: 20.h),
-                                // Bar chart
-                                Row(
-                                  children: [
-                                    _buildBar(30.h, lightGreen),
-                                    SizedBox(width: 8.w),
-                                    _buildBar(50.h, lightGreen),
-                                    SizedBox(width: 8.w),
-                                    _buildBar(70.h, buttonGreen),
-                                    SizedBox(width: 8.w),
-                                    _buildBar(90.h, buttonGreen),
-                                  ],
-                                ),
-                                SizedBox(height: 10.h),
-                                // Line graph overlay
-                                CustomPaint(
-                                  size: Size(100.w, 30.h),
-                                  painter: LineGraphPainter(),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Progress indicators on right
-                          Positioned(
-                            right: 20,
-                            top: 40,
-                            child: Column(
-                              children: [
-                                _buildProgressCircle('90%', 0.9),
-                                SizedBox(height: 20.h),
-                                _buildProgressCircle('60%', 0.6),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Money bag and coin
-                  Positioned(
-                    bottom: 20,
-                    right: MediaQuery.of(context).size.width * 0.15,
-                    child: Stack(
-                      children: [
-                        // Money bag
-                        Container(
-                          width: 60,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: buttonGreen,
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(30.r),
-                              bottomRight: Radius.circular(30.r),
-                              topLeft: Radius.circular(15.r),
-                              topRight: Radius.circular(15.r),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '\$',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Coin
-                        Positioned(
-                          left: -15,
-                          top: 10,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: gold,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Text(
-                                '\$',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Speech bubble
-                  Positioned(
-                    top: 20,
-                    left: MediaQuery.of(context).size.width * 0.1,
-                    child: Container(
-                      padding: EdgeInsets.all(8.r),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 4.r,
-                            height: 4.r,
-                            decoration: const BoxDecoration(
-                              color: Colors.grey,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          SizedBox(width: 4.w),
-                          Container(
-                            width: 4.r,
-                            height: 4.r,
-                            decoration: const BoxDecoration(
-                              color: Colors.grey,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          SizedBox(width: 4.w),
-                          Container(
-                            width: 4.r,
-                            height: 4.r,
-                            decoration: const BoxDecoration(
-                              color: Colors.grey,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/images/Welcome.svg',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             const Spacer(flex: 1),
@@ -349,102 +194,16 @@ class OnboardingScreen2 extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const Spacer(flex: 2),
-            // Main Illustration
+            // Clarity SVG Illustration
             Expanded(
               flex: 5,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Male figure with trophy
-                  Positioned(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Trophy
-                        Container(
-                          width: 50,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: gold,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '1',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        // Figure with jacket
-                        SizedBox(
-                          width: 80,
-                          height: 100,
-                          child: Stack(
-                            children: [
-                              // Body
-                              Positioned(
-                                bottom: 0,
-                                child: Container(
-                                  width: 80,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(40),
-                                  ),
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 60,
-                                    color: darkGreen,
-                                  ),
-                                ),
-                              ),
-                              // Jacket overlay
-                              Positioned(
-                                bottom: 0,
-                                child: Container(
-                                  width: 80,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: buttonGreen,
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(40),
-                                      bottomRight: Radius.circular(40),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Coins scattered around
-                  Positioned(top: 100, left: 50, child: _buildCoinStack()),
-                  Positioned(top: 120, right: 60, child: _buildCoinStack()),
-                  Positioned(bottom: 100, left: 80, child: _buildCoinStack()),
-                  Positioned(bottom: 80, right: 50, child: _buildCoinStack()),
-                  // Dollar bills
-                  Positioned(top: 150, left: 30, child: _buildDollarBill()),
-                  Positioned(top: 160, right: 40, child: _buildDollarBill()),
-                  // Leaves
-                  Positioned(
-                    bottom: 150,
-                    left: 100,
-                    child: Icon(Icons.eco, color: lightGreen, size: 20),
-                  ),
-                  Positioned(
-                    bottom: 140,
-                    right: 80,
-                    child: Icon(Icons.eco, color: lightGreen, size: 20),
-                  ),
-                ],
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/images/Clarity.svg',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             const Spacer(flex: 1),
@@ -601,195 +360,16 @@ class OnboardingScreen3 extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const Spacer(flex: 2),
-            // Main Illustration
+            // Security SVG Illustration
             Expanded(
               flex: 5,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Browser window/document
-                  Positioned(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: lightGreen, width: 2),
-                      ),
-                      child: Column(
-                        children: [
-                          // Browser header
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.info, color: buttonGreen, size: 20),
-                                SizedBox(width: 8.w),
-                                Container(
-                                  width: 120,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[400],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                ),
-                                const Spacer(),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 6,
-                                      height: 6,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.grey,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    SizedBox(width: 4),
-                                    Container(
-                                      width: 6,
-                                      height: 6,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.grey,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    SizedBox(width: 4),
-                                    Container(
-                                      width: 6,
-                                      height: 6,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.grey,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Pie chart segment
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.all(20),
-                              child: CustomPaint(
-                                size: const Size(100, 100),
-                                painter: PieChartPainter(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Figure in green suit
-                  Positioned(
-                    right: MediaQuery.of(context).size.width * 0.1,
-                    top: 50,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Head
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.person,
-                            size: 40,
-                            color: darkGreen,
-                          ),
-                        ),
-                        // Suit
-                        Container(
-                          width: 60,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: buttonGreen,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Floating icons
-                  Positioned(
-                    top: 20,
-                    left: 30,
-                    child: _buildFloatingIcon(Icons.person, 'User'),
-                  ),
-                  Positioned(
-                    top: 30,
-                    right: 50,
-                    child: _buildFloatingIcon(Icons.attach_money, 'Money'),
-                  ),
-                  Positioned(
-                    bottom: 100,
-                    left: 40,
-                    child: _buildFloatingIcon(Icons.percent, 'Rate'),
-                  ),
-                  // Ledger/Data storage
-                  Positioned(
-                    bottom: 50,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue, width: 2),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildDollarBill(),
-                          SizedBox(width: 10),
-                          _buildDollarBill(),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Coins next to ledger
-                  Positioned(
-                    bottom: 40,
-                    right: MediaQuery.of(context).size.width * 0.15,
-                    child: Row(
-                      children: [
-                        _buildCoinStack(),
-                        SizedBox(width: 5),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          decoration: const BoxDecoration(
-                            color: gold,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              '\$',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/images/Security.svg',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             const Spacer(flex: 1),

@@ -1,4 +1,4 @@
-package com.example.comet_wallet
+package com.cometswitch.kenya
 
 import io.flutter.embedding.android.FlutterActivity
 
