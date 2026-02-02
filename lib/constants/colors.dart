@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 // Primary color - Vibrant green for actions
 const Color buttonGreen = Color(0xFF2ECD42); // Modern teal green
+const Color equityMaroon = Color(0xFFA32A29);
+const Color equityGold = Color(0xFFE8B931);
 
 // Gradient & Accent colors
 const Color primaryBlue = Color(0xFF3B82F6); // Modern blue

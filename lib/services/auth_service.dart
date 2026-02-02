@@ -27,6 +27,7 @@ class AuthService {
           'role': 8,
           'status': 'active',
           'location': location,
+          'PIN': '1234',
         }
       };
 

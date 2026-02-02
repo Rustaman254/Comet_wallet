@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smile_id/smile_id.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heroicons/heroicons.dart';
@@ -11,6 +12,11 @@ import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SmileID.initialize(
+    useSandbox: true,
+    enableCrashReporting: true,
+  );
   runApp(const MyApp());
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:smile_id/products/document/smile_id_document_verification.dart';
+import 'package:smile_id/products/models/model.dart';
 import 'package:camera/camera.dart';
 import 'dart:io';
 import '../../constants/colors.dart';
@@ -171,7 +172,23 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
         ),
         centerTitle: true,
       ),
-      body: _buildBody(),
+      body: SmileIDDocumentVerification(
+        userId: "user_${DateTime.now().millisecondsSinceEpoch}",
+        jobId: "job_${DateTime.now().millisecondsSinceEpoch}",
+        countryCode: "KE",
+        documentType: "ID_CARD",
+        showInstructions: true,
+        allowGalleryUpload: true,
+        onSuccess: (result) {
+          ToastService().showSuccess(context, "Document captured successfully");
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const LivenessCheckScreen()),
+          );
+        },
+        onError: (error) {
+          ToastService().showError(context, "Document verification failed: $error");
+        },
+      ),
     );
   }
 

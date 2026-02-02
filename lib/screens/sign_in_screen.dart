@@ -114,6 +114,15 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                   SizedBox(height: 40.r.h),
+                  Text(
+                    'Welcome to Comet',
+                    style: TextStyle(fontFamily: 'Satoshi',
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 40.r.h),
                   // Email field
                   Text(
                     'Email Address',

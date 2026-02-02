@@ -509,6 +509,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  smile_id:
+    dependency: "direct main"
+    description:
+      name: smile_id
+      sha256: "8994800ab2fc724876b49a3b24942e97d9160133abd097e07813ff0f414d81bf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "11.2.7"
   source_span:
     dependency: transitive
     description:
