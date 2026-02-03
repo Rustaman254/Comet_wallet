@@ -10,6 +10,8 @@ import 'sign_up_screen.dart';
 import 'verify_pin_screen.dart';
 import '../services/auth_service.dart';
 
+import 'forgot_password_screen.dart';
+
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
@@ -22,24 +24,21 @@ class _SignInScreenState extends State<SignInScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  final ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _handleSignIn() async {
     VibrationService.selectionClick();
     if (_formKey.currentState!.validate()) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(child: CircularProgressIndicator()),
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
       try {
         await AuthService.login(
@@ -47,9 +46,10 @@ class _SignInScreenState extends State<SignInScreen> {
           password: _passwordController.text,
         );
 
-        if (mounted) Navigator.pop(context);
-
         if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
           ToastService().showSuccess(context, "Login successful! Welcome back!");
           VibrationService.lightImpact();
           Navigator.of(context).pushReplacement(
@@ -58,7 +58,9 @@ class _SignInScreenState extends State<SignInScreen> {
         }
       } catch (e) {
         if (mounted) {
-          Navigator.pop(context);
+          setState(() {
+            _isLoading = false;
+          });
           VibrationService.errorVibrate();
           String errorMessage = e.toString().replaceFirst('Exception: ', '');
           ToastService().showError(context, errorMessage);
@@ -73,10 +75,9 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
-          controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -85,49 +86,29 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20.h),
-                  // Back button
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Container(
-                      width: 40.r,
-                      height: 40.r,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  // Title
+                  SizedBox(height: 60.h),
                   Text(
-                    'Sign In',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 32.sp,
+                    'Welcome back',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 40.r.h),
+                  SizedBox(height: 8.h),
                   Text(
-                    'Welcome to Comet',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    'Sign in to continue. Remember, your password is yours, do not share it with anyone.',
+                    style: TextStyle(
+                      color: Colors.grey[400],
                       fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(height: 40.r.h),
+                  SizedBox(height: 40.h),
                   // Email field
                   Text(
-                    'Email Address',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    'Email address or mobile number',
+                    style: TextStyle(
+                      color: Colors.white,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -135,18 +116,14 @@ class _SignInScreenState extends State<SignInScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _emailController,
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 16.sp,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Enter your email address',
-                      prefixIcon: Icon(
-                        Icons.email_outlined,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
+                      hintText: 'Email address or mobile number',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -159,8 +136,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   // Password field
                   Text(
                     'Password',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    style: TextStyle(
+                      color: Colors.white,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -169,24 +146,20 @@ class _SignInScreenState extends State<SignInScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 16.sp,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Enter your password',
-                      prefixIcon: Icon(
-                        Icons.lock_outline,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
+                      hintText: 'Enter password',
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                          color: buttonGreen,
                         ),
                         onPressed: () {
                           setState(() {
@@ -202,65 +175,87 @@ class _SignInScreenState extends State<SignInScreen> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 40.r.h),
-                  // Sign In button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _handleSignIn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                  SizedBox(height: 16.h),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ForgotPasswordScreen(),
                         ),
-                      ),
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(fontFamily: 'Satoshi',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      );
+                    },
+                    child: Text(
+                      'Forget your password?',
+                      style: TextStyle(
+                        color: buttonGreen,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ),
-                  SizedBox(height: 24.h),
-                  // Sign Up link
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const SignUpScreen(),
-                          ),
-                        );
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(fontFamily: 'Satoshi',
-                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          children: [
-                            const TextSpan(text: "I'm a new user. "),
-                            TextSpan(
-                              text: 'Sign UP',
-                              style: TextStyle(fontFamily: 'Satoshi',
-                                color: buttonGreen,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40.r.h),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleSignIn,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonGreen,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Sign in',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+              SizedBox(height: 16.h),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SignUpScreen()),
+                  );
+                },
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14.sp,
+                    ),
+                    children: [
+                      const TextSpan(text: "Don't have an account? "),
+                      TextSpan(
+                        text: 'Sign Up',
+                        style: TextStyle(
+                          color: buttonGreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

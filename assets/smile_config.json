@@ -1,0 +1,6 @@
+{
+  "partnerId": "your_partner_id",
+  "authToken": "your_auth_token",
+  "prodUrl": "https://api.smileidentity.com/v1",
+  "testUrl": "https://testapi.smileidentity.com/v1"
+}

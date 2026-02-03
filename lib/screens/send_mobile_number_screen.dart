@@ -408,8 +408,8 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                   children: [
                     Text(
                       'Mobile Number',
-                      style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white.withValues(alpha: 0.7),
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
@@ -461,12 +461,12 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                         Expanded(
                           child: TextField(
                             controller: _phoneController,
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                             ),
                             keyboardType: TextInputType.phone,
-                            maxLength: 9, // Enforce 9 chars for standard non-0 format
+                            maxLength: 9,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                             ],
@@ -491,9 +491,9 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Enter Amount',
-                      style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white.withValues(alpha: 0.7),
+                      'Amount',
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
@@ -501,27 +501,15 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _amountController,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24, // Highlighting amount
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: buildUnderlineInputDecoration(
                         context: context,
                         label: '',
-                        hintText: '0.00',
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Text(
-                            selectedCurrency,
-                            style: TextStyle(fontFamily: 'Satoshi',
-                              color: buttonGreen,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
+                        hintText: 'Enter amount',
                       ),
                     ),
                   ],

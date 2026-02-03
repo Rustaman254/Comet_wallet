@@ -491,8 +491,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                             children: [
                               Text(
                                 'Recipient Email',
-                                style: TextStyle(fontFamily: 'Satoshi',
-                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                style: const TextStyle(
+                                  color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -500,12 +500,14 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                               const SizedBox(height: 8),
                               TextFormField(
                                 controller: _emailController,
-                                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
                                 decoration: buildUnderlineInputDecoration(
                                   context: context,
                                   label: '',
                                   hintText: 'Enter recipient email address',
-                                  prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _favorites.contains(_emailController.text.trim())
@@ -597,8 +599,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                             children: [
                               Text(
                                 'Amount',
-                                style: TextStyle(fontFamily: 'Satoshi',
-                                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                style: const TextStyle(
+                                  color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -607,21 +609,15 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                               TextFormField(
                                 controller: _amountController,
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                style: TextStyle(fontFamily: 'Satoshi',
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                                style: const TextStyle(
+                                  color: Colors.white,
                                   fontSize: 16,
                                 ),
                                 decoration: buildUnderlineInputDecoration(
                                   context: context,
                                   label: '',
                                   hintText: 'Enter amount',
-                                  prefixIcon: Icon(
-                                    Icons.money_outlined,
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  ),
                                 ),
-                                onTap: _showCurrencyDialog, // Optional: Let them change currency on tap or separate button?
-                                // Top-up screen doesn't have currency selector in the input itself.
                               ),
                               const SizedBox(height: 8),
                               // Currency Selector Button (below or beside)

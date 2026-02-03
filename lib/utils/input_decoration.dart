@@ -18,13 +18,11 @@ InputDecoration buildEquityInputDecoration({
     labelStyle: TextStyle(
       color: textColor.withOpacity(0.7),
       fontSize: 14,
-      fontFamily: 'Satoshi',
     ),
     hintText: hintText,
     hintStyle: TextStyle(
       color: textColor.withOpacity(0.4),
       fontSize: 15,
-      fontFamily: 'Satoshi',
     ),
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,
@@ -57,32 +55,31 @@ InputDecoration buildUnderlineInputDecoration({
   Widget? suffixIcon,
   String? hintText,
 }) {
-  final textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
-  final hintColor = textColor.withOpacity(0.5);
-  final borderColor = textColor.withOpacity(0.3);
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final hintColor = isDark ? Colors.grey[600] : Colors.grey[500];
+  final borderColor = isDark ? Colors.grey[700] : Colors.grey[400];
 
   return InputDecoration(
-    labelText: label,
-    labelStyle: TextStyle(
-      color: textColor.withOpacity(0.7),
+    labelText: label.isEmpty ? null : label,
+    labelStyle: const TextStyle(
+      color: Colors.grey,
       fontSize: 14,
-      fontFamily: 'Satoshi',
     ),
     hintText: hintText,
     hintStyle: TextStyle(
       color: hintColor,
       fontSize: 16,
-      fontFamily: 'Satoshi',
+      // Using system font (no fontFamily specified)
     ),
     prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,
     enabledBorder: UnderlineInputBorder(
       borderSide: BorderSide(
-        color: borderColor,
+        color: borderColor ?? Colors.grey,
         width: 1,
       ),
     ),
-    focusedBorder: UnderlineInputBorder(
+    focusedBorder: const UnderlineInputBorder(
       borderSide: BorderSide(
         color: buttonGreen,
         width: 2,
@@ -90,7 +87,7 @@ InputDecoration buildUnderlineInputDecoration({
     ),
     border: UnderlineInputBorder(
       borderSide: BorderSide(
-        color: borderColor,
+        color: borderColor ?? Colors.grey,
         width: 1,
       ),
     ),

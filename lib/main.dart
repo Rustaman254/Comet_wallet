@@ -11,12 +11,21 @@ import 'screens/verify_pin_screen.dart';
 import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SmileID.initialize(
-    useSandbox: true,
-    enableCrashReporting: true,
-  );
+  
+  // Initialize SmileID with error handling
+  try {
+    SmileID.initialize(
+      useSandbox: true,
+      enableCrashReporting: true,
+    );
+  } catch (e) {
+    // Log error but don't crash the app
+    print('SmileID initialization warning: $e');
+    // App will continue to work, KYC features may be limited
+  }
+  
   runApp(const MyApp());
 }
 
@@ -210,65 +219,31 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
 
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: const Color(0xFF122022), // darkBackground
-        body: Center(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Opacity(
-                  opacity: _fadeAnimation.value,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Logo Container (replicated from splash_screen.dart design)
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF39CA4D).withValues(alpha: 0.1), // buttonGreen
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFF39CA4D).withValues(alpha: 0.3),
-                            width: 2,
-                          ),
-                        ),
-                        child: const Center(
-                          child: HeroIcon(
-                            HeroIcons.wallet,
-                            size: 50,
-                            color: Color(0xFF10B981),
-                          ),
+        backgroundColor: buttonGreen,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              children: [
+                const Spacer(),
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _scaleAnimation.value,
+                      child: Opacity(
+                        opacity: 1,
+                        child: Image.asset(
+                          'assets/images/Logo.png',
+                          width: MediaQuery.of(context).size.width * 0.2,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Comet Wallet',
-                        style: TextStyle(
-                          fontFamily: 'Satoshi',
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Your Money, Your Way',
-                        style: TextStyle(
-                          fontFamily: 'Satoshi',
-                          color: Colors.white70,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
-              );
-            },
+              ],
+            ),
           ),
         ),
       );

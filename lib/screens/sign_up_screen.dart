@@ -27,7 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _passwordController = TextEditingController();
   final _locationController = TextEditingController();
   bool _obscurePassword = true;
-  final ScrollController _scrollController = ScrollController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -36,18 +36,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _locationController.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _handleSignUp() async {
     VibrationService.selectionClick();
     if (_formKey.currentState!.validate()) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(child: CircularProgressIndicator()),
-      );
+      setState(() {
+        _isLoading = true;
+      });
 
       try {
         await AuthService.register(
@@ -58,9 +55,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           location: _locationController.text.trim(),
         );
         
-        if (mounted) Navigator.pop(context);
-
         if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
           ToastService().showSuccess(context, "Account created successfully!");
           
           final hasToken = await TokenService.getToken() != null;
@@ -77,7 +75,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
       } catch (e) {
         if (mounted) {
-          Navigator.pop(context);
+          setState(() {
+            _isLoading = false;
+          });
           VibrationService.errorVibrate();
           String errorMessage = e.toString().replaceFirst('Exception: ', '');
           ToastService().showError(context, errorMessage);
@@ -92,10 +92,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
-          controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -104,140 +103,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 20.h),
-                  // Back button
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Container(
-                      width: 40.r,
-                      height: 40.r,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.h),
-                  // Title
-                  Center(
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(fontFamily: 'Satoshi',
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                        fontSize: 32.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40.r.h),
-                  // Full Name field
+                  SizedBox(height: 60.h),
                   Text(
-                    'Full Name',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  TextFormField(
-                    controller: _nameController,
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 16.sp,
-                    ),
-                    decoration: buildUnderlineInputDecoration(
-                      context: context,
-                      label: '',
-                      prefixIcon: Icon(
-                        Icons.person_outline,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your full name';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 24.h),
-                  // Phone Number field
-                  Text(
-                    'Phone Number',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  TextFormField(
-                    controller: _phoneController,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    'Register',
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16.sp,
-                    ),
-                    keyboardType: TextInputType.phone,
-                    decoration: buildUnderlineInputDecoration(
-                      context: context,
-                      label: '',
-                      prefixIcon: Icon(
-                        Icons.phone_outlined,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 24.h),
-                  // Email field
-                  Text(
-                    'Email Address',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 8.h),
-                  TextFormField(
-                    controller: _emailController,
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Colors.white,
+                  Text(
+                    'Create your profile',
+                    style: TextStyle(
+                      color: Colors.grey[400],
                       fontSize: 16.sp,
                     ),
-                    decoration: buildUnderlineInputDecoration(
-                      context: context,
-                      label: '',
-                      hintText: 'Enter your email address',
-                      prefixIcon: Icon(
-                        Icons.email_outlined,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      return null;
-                    },
                   ),
-                  SizedBox(height: 24.h),
-                  // Location field
+                  SizedBox(height: 40.h),
+                  // Country field
                   Text(
-                    'Location',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    'Country',
+                    style: TextStyle(
+                      color: Colors.white,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -245,132 +133,183 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _locationController,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Enter your location',
-                      prefixIcon: Icon(
-                        Icons.location_on_outlined,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
+                      hintText: 'Select a country',
+                      suffixIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your location';
+                        return 'Please select your country';
                       }
                       return null;
                     },
                   ),
                   SizedBox(height: 24.h),
-                  // Password field
+                  // Account Number field
                   Text(
-                    'Password',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    'Account number',
+                    style: TextStyle(
+                      color: Colors.white,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                   SizedBox(height: 8.h),
                   TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    controller: _nameController,
+                    style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16.sp,
+                      fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Enter your password',
-                      prefixIcon: Icon(
-                        Icons.lock_outline,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
+                      hintText: 'Enter an account number',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return 'Please enter your account number';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 40.r.h),
-                  // Sign Up button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _handleSignUp,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                      ),
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(fontFamily: 'Satoshi',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
                   SizedBox(height: 24.h),
-                  // Sign In link
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (_) => const SignInScreen(),
-                          ),
-                        );
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(fontFamily: 'Satoshi',
-                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          children: [
-                            const TextSpan(text: 'Already have an account. '),
-                            TextSpan(
-                              text: 'Sign In',
-                              style: TextStyle(fontFamily: 'Satoshi',
-                                color: buttonGreen,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  // ID Number field
+                  Text(
+                    'ID number',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
-                  SizedBox(height: 40.r.h),
+                  SizedBox(height: 8.h),
+                  TextFormField(
+                    controller: _phoneController,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: buildUnderlineInputDecoration(
+                      context: context,
+                      label: '',
+                      hintText: 'Enter your ID number',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your ID number';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 40.h),
+                  // Terms checkbox
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Checkbox(
+                  //       value: true,
+                  //       onChanged: (value) {},
+                  //       side: BorderSide(color: Colors.grey[600]!),
+                  //       fillColor: MaterialStateProperty.all(Colors.transparent),
+                  //     ),
+                  //     Expanded(
+                  //       child: Padding(
+                  //         padding: EdgeInsets.only(top: 12.h),
+                  //         child: RichText(
+                  //           text: TextSpan(
+                  //             style: TextStyle(
+                  //               color: Colors.white,
+                  //               fontSize: 14.sp,
+                  //             ),
+                  //             children: [
+                  //               const TextSpan(text: 'I agree to the '),
+                  //               TextSpan(
+                  //                 text: 'terms',
+                  //                 style: TextStyle(color: Colors.red[400]),
+                  //               ),
+                  //               const TextSpan(text: ' and '),
+                  //               TextSpan(
+                  //                 text: 'privacy policy',
+                  //                 style: TextStyle(color: Colors.red[400]),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  SizedBox(height: 40.h),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleSignUp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonGreen,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+              SizedBox(height: 16.h),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const SignInScreen()),
+                  );
+                },
+                child: RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 14.sp,
+                    ),
+                    children: [
+                      const TextSpan(text: 'Already have an account? '),
+                      TextSpan(
+                        text: 'Sign In',
+                        style: TextStyle(
+                          color: buttonGreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
