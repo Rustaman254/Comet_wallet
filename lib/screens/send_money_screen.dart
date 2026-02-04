@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 
 import '../constants/colors.dart';
 import 'add_contact_screen.dart';
@@ -26,7 +28,7 @@ class SendMoneyScreen extends StatefulWidget {
 class _SendMoneyScreenState extends State<SendMoneyScreen> {
   final ScrollController _scrollController = ScrollController();
   final PageController _balancePageController = PageController();
-  final TextEditingController _amountController = TextEditingController(text: '0.00');
+  final TextEditingController _amountController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
 
@@ -65,19 +67,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     setState(() {
       _isAmountFocused = _amountFocusNode.hasFocus;
     });
-    
-    if (_amountFocusNode.hasFocus && _amountController.text == '0.00') {
-      // Don't clear immediately, just let the next type clear it
-    }
   }
 
   void _onAmountChanged(String value) {
-    if (value.startsWith('0.00') && value.length > 4) {
-      _amountController.text = value.substring(4);
-      _amountController.selection = TextSelection.fromPosition(
-        TextPosition(offset: _amountController.text.length),
-      );
-    }
     setState(() {});
   }
 
@@ -293,28 +285,20 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     children: [
                       IconButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.3),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.arrow_back_outlined,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
                         ),
                       ),
                       Expanded(
                         child: Text(
-                          'Send Money',
+                          'Send to Another Wallet',
                           textAlign: TextAlign.center,
                           style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -322,363 +306,234 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 40),
                 Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start, // Align children to start
-                      children: [
-                        // Total Balance Card - Scrollable
-                        SizedBox(
-                          height: 200,
-                          child: balances.isEmpty 
-                            ? Center(child: CircularProgressIndicator(color: buttonGreen))
-                            : PageView(
-                              controller: _balancePageController,
-                              children: balances.map((balance) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                                  child: Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                        colors: [
-                                          darkGreen,
-                                          darkGreen.withOpacity(0.8),
-                                          lightGreen.withOpacity(0.3),
-                                        ],
-                                      ),
-                                      border: Border.all(color: cardBorder, width: 1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Total Balance',
-                                              style: TextStyle(fontFamily: 'Satoshi',
-                                                color: Colors.white70,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: _showCurrencyDialog,
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 6,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white.withOpacity(0.2),
-                                                  borderRadius: BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  balance['currency'] ?? 'KES',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              balance['currency'] ?? 'KES',
-                                              style: TextStyle(fontFamily: 'Satoshi',
-                                                color: Colors.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              balance['amount']?.toString() ?? '0.00',
-                                              style: TextStyle(fontFamily: 'Satoshi',
-                                                color: Colors.white,
-                                                fontSize: 35,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Date',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
-                                                    color: Colors.white70,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  balance['date'] ?? 'Today',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  balance['change'] ?? '+0.00',
-                                                  style: TextStyle(fontFamily: 'Satoshi',
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Icon(
-                                                  Icons.trending_up_outlined,
-                                                  color: buttonGreen,
-                                                  size: 20,
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Page indicators
-                        if (balances.isNotEmpty)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(balances.length, (index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 3),
-                                child: _buildPageIndicator(index == _currentBalancePage),
-                              );
-                            }),
-                          ),
-                        const SizedBox(height: 24),
-                        
-                        // Recipient Email Section
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Recipient Email',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _emailController,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                                decoration: buildUnderlineInputDecoration(
-                                  context: context,
-                                  label: '',
-                                  hintText: 'Enter recipient email address',
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _favorites.contains(_emailController.text.trim())
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color: buttonGreen,
-                                    ),
-                                    onPressed: () {
-                                      final email = _emailController.text.trim();
-                                      if (email.isNotEmpty && email.contains('@')) {
-                                        setState(() {
-                                          if (_favorites.contains(email)) {
-                                            _favorites.remove(email);
-                                            ToastService().showInfo(context, 'Removed from favorites');
-                                          } else {
-                                            _favorites.add(email);
-                                            ToastService().showSuccess(context, 'Added to favorites');
-                                          }
-                                        });
-                                      } else {
-                                        ToastService().showError(context, 'Enter a valid email first');
-                                      }
-                                    },
-                                  ),
-                                ),
-                                onChanged: (v) => setState(() {}),
-                              ),
-                              if (_favorites.isNotEmpty) ...[
-                                const SizedBox(height: 20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Balance Section at Top
+                          Center(
+                            child: Column(
+                              children: [
                                 Text(
-                                  'Favorites',
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  'Available Balance',
+                                  style: TextStyle(
+                                    fontFamily: 'Satoshi',
                                     color: Colors.white70,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  height: 40,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: _favorites.length,
-                                    separatorBuilder: (context, index) => const SizedBox(width: 8),
-                                    itemBuilder: (context, index) {
-                                      final favorite = _favorites[index];
-                                      return GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _emailController.text = favorite;
-                                          });
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(20),
-                                            border: Border.all(
-                                              color: _emailController.text == favorite
-                                                  ? buttonGreen
-                                                  : Colors.white24,
-                                            ),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            favorite,
-                                            style: TextStyle(fontFamily: 'Satoshi',
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500, // Added weight
-                                            ),
-                                          ),
+                                SizedBox(height: 8.h),
+                                if (balances.isNotEmpty && _currentBalancePage < balances.length)
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${balances[_currentBalancePage]['currency']} ',
+                                        style: TextStyle(
+                                          fontFamily: 'Satoshi',
+                                          color: buttonGreen,
+                                          fontSize: 20.sp,
+                                          fontWeight: FontWeight.w600,
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        
-                        // Amount Section - REFACTORED to match Top-up
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Amount',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              TextFormField(
-                                controller: _amountController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                                decoration: buildUnderlineInputDecoration(
-                                  context: context,
-                                  label: '',
-                                  hintText: 'Enter amount',
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Currency Selector Button (below or beside)
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: _showCurrencyDialog,
-                                  child: Text(
-                                    'Change Currency ($selectedCurrency)',
-                                    style: TextStyle(fontFamily: 'Satoshi',
-                                      color: buttonGreen,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        const SizedBox(height: 40),
-                        // Send Money button
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _handleTransfer,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: buttonGreen,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                                    )
-                                  : Text(
-                                      'Send Money',
-                                      style: TextStyle(fontFamily: 'Satoshi',
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
                                       ),
+                                      Text(
+                                        '${balances[_currentBalancePage]['amount']}',
+                                        style: TextStyle(
+                                          fontFamily: 'Satoshi',
+                                          color: buttonGreen,
+                                          fontSize: 36.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                else
+                                  Text(
+                                    'KES 0.00',
+                                    style: TextStyle(
+                                      fontFamily: 'Satoshi',
+                                      color: buttonGreen,
+                                      fontSize: 36.sp,
+                                      fontWeight: FontWeight.bold,
                                     ),
+                                  ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 40),
-                      ],
+                          SizedBox(height: 32.h),
+                          
+                          // Title
+                          Text(
+                            'Please enter the payment details',
+                            style: TextStyle(
+                              fontFamily: 'Satoshi',
+                              color: Colors.white,
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 24.h),
+                          
+                          // Recipient Email
+                          Text(
+                            'Recipient Email',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          TextFormField(
+                            controller: _emailController,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            decoration: buildUnderlineInputDecoration(
+                              context: context,
+                              label: '',
+                              hintText: 'Enter recipient email address',
+                            ),
+                            onChanged: (v) => setState(() {}),
+                          ),
+                          SizedBox(height: 24.h),
+                          
+                          // Currency
+                          Text(
+                            'Currency',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          GestureDetector(
+                            onTap: _showCurrencyDialog,
+                            child: Container(
+                              padding: EdgeInsets.only(bottom: 12.h),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: Colors.grey[700]!,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    selectedCurrency,
+                                    style: TextStyle(
+                                      fontFamily: 'Satoshi',
+                                      color: Colors.white,
+                                      fontSize: 16.sp,
+                                    ),
+                                  ),
+                                  Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 24.h),
+                          
+                          // Amount
+                          Text(
+                            'Amount',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          TextFormField(
+                            controller: _amountController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            decoration: buildUnderlineInputDecoration(
+                              context: context,
+                              label: '',
+                              hintText: 'Enter amount',
+                            ),
+                          ),
+                          SizedBox(height: 24.h),
+                          
+                          // Payment Reason (optional)
+                          Text(
+                            'Payment Reason',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          TextFormField(
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                            decoration: buildUnderlineInputDecoration(
+                              context: context,
+                              label: '',
+                              hintText: 'Optional',
+                            ),
+                          ),
+                          SizedBox(height: 40.h),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
             );
           }
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _handleTransfer,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonGreen,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    )
+                  : Text(
+                      'Send money',
+                      style: TextStyle(fontFamily: 'Satoshi',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );

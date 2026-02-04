@@ -22,19 +22,22 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _pinController = TextEditingController();
   final _locationController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscurePin = true;
   bool _isLoading = false;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _phoneController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
+    _pinController.dispose();
     _locationController.dispose();
     super.dispose();
   }
@@ -53,6 +56,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           name: _nameController.text.trim(),
           phoneNumber: _phoneController.text.trim(),
           location: _locationController.text.trim(),
+          pin: _pinController.text.trim(),
         );
         
         if (mounted) {
@@ -121,7 +125,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   SizedBox(height: 40.h),
-                  // Country field
+                  
+                  // Country/Location field
                   Text(
                     'Country',
                     style: TextStyle(
@@ -151,9 +156,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   SizedBox(height: 24.h),
-                  // Account Number field
+                  
+                  // Name field
                   Text(
-                    'Account number',
+                    'Full Name',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.sp,
@@ -170,19 +176,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Enter an account number',
+                      hintText: 'Enter your full name',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your account number';
+                        return 'Please enter your full name';
                       }
                       return null;
                     },
                   ),
                   SizedBox(height: 24.h),
-                  // ID Number field
+                  
+                  // Email field
                   Text(
-                    'ID number',
+                    'Email address',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: buildUnderlineInputDecoration(
+                      context: context,
+                      label: '',
+                      hintText: 'Enter your email address',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+                  
+                  // Phone field
+                  Text(
+                    'Phone number',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.sp,
@@ -192,6 +233,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _phoneController,
+                    keyboardType: TextInputType.phone,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -199,11 +241,103 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Enter your ID number',
+                      hintText: 'Enter your phone number',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your ID number';
+                        return 'Please enter your phone number';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+                  
+                  // Password field
+                  Text(
+                    'Password',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: buildUnderlineInputDecoration(
+                      context: context,
+                      label: '',
+                      hintText: 'Enter your password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+                  
+                  // PIN field
+                  Text(
+                    'PIN (4 digits)',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  TextFormField(
+                    controller: _pinController,
+                    obscureText: _obscurePin,
+                    keyboardType: TextInputType.number,
+                    maxLength: 4,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    decoration: buildUnderlineInputDecoration(
+                      context: context,
+                      label: '',
+                      hintText: 'Enter 4-digit PIN',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePin ? Icons.visibility_off : Icons.visibility,
+                          color: Colors.white70,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePin = !_obscurePin;
+                          });
+                        },
+                      ),
+                    ).copyWith(counterText: ''),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a 4-digit PIN';
+                      }
+                      if (value.length != 4) {
+                        return 'PIN must be exactly 4 digits';
                       }
                       return null;
                     },

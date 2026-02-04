@@ -14,7 +14,7 @@ class EnterPinScreen extends StatefulWidget {
   final String currency;
   final String description;
   final Future<Map<String, dynamic>> Function()? onVerify;
-  
+
   const EnterPinScreen({
     super.key,
     required this.recipientName,
@@ -34,7 +34,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   final String _correctPin = '1234';
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
-  bool _isLoading = false;
+  bool _isVerifying = false; // for loader dialog state
 
   @override
   void initState() {
@@ -64,8 +64,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   }
 
   void _onNumberPressed(String number) {
-    if (_pin.length < 4 && !_isLoading) {
-      VibrationService.lightImpact();
+    if (_pin.length < 4 && !_isVerifying) {
+      VibrationService.selectionClick();
       setState(() {
         _pin += number;
       });
@@ -77,26 +77,79 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   }
 
   void _onBackspace() {
-    if (_pin.isNotEmpty && !_isLoading) {
-      VibrationService.lightImpact();
+    if (_pin.isNotEmpty && !_isVerifying) {
+      VibrationService.selectionClick();
       setState(() {
         _pin = _pin.substring(0, _pin.length - 1);
       });
     }
   }
 
+  Future<void> _showLoaderDialog() async {
+    setState(() {
+      _isVerifying = true;
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      builder: (context) {
+        return Center(
+          child: Container(
+            width: 120.r,
+            padding: EdgeInsets.all(16.r),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(
+                color: buttonGreen.withValues(alpha: 0.4),
+                width: 1.5.w,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: buttonGreen),
+                SizedBox(height: 16.h),
+                Text(
+                  'Verifying PIN...',
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    color: Colors.white,
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _hideLoaderDialog() async {
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+    if (mounted) {
+      setState(() {
+        _isVerifying = false;
+      });
+    }
+  }
+
   Future<void> _verifyPin() async {
     if (_pin == _correctPin) {
-      setState(() {
-        _isLoading = true;
-      });
+      await _showLoaderDialog();
 
       try {
         Map<String, dynamic> response;
         if (widget.onVerify != null) {
           response = await widget.onVerify!();
         } else {
-          final amount = double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
+          final amount =
+              double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
           response = await WalletService.sendMoney(
             recipientPhone: widget.recipientName,
             amount: amount,
@@ -105,38 +158,50 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           );
         }
 
+        await _hideLoaderDialog();
+
         if (mounted) {
-          _showSuccessDialog(response['transaction_id'] ?? response['gateway_transaction_id'] ?? 'N/A');
+          VibrationService.lightImpact();
+          _showSuccessDialog(
+            response['transaction_id'] ??
+                response['gateway_transaction_id'] ??
+                'N/A',
+          );
         }
       } catch (e) {
-        if (mounted) {
-          final errorMsg = e.toString();
-          if (errorMsg.contains('401') || errorMsg.contains('expired')) {
-            ToastService().showError(context, 'Session expired. Please login again.');
-            await TokenService.logout();
-            if (mounted) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const SignInScreen()),
-                (route) => false,
-              );
-            }
-          } else {
-            ToastService().showError(context, 'Transaction failed: $e');
-            setState(() {
-              _pin = '';
-              _isLoading = false;
-            });
+        await _hideLoaderDialog();
+        if (!mounted) return;
+
+        final errorMsg = e.toString();
+        if (errorMsg.contains('401') || errorMsg.contains('expired')) {
+          ToastService()
+              .showError(context, 'Session expired. Please login again.');
+          await TokenService.logout();
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const SignInScreen()),
+              (route) => false,
+            );
           }
+        } else {
+          VibrationService.errorVibrate();
+          ToastService().showError(context, 'Transaction failed: $e');
+          setState(() {
+            _pin = '';
+          });
+          _shakeController.forward(from: 0.0);
         }
       }
     } else {
       VibrationService.errorVibrate();
       _shakeController.forward(from: 0.0).then((_) {
-        setState(() {
-          _pin = '';
-        });
+        if (mounted) {
+          setState(() {
+            _pin = '';
+          });
+        }
       });
-      
+
       if (mounted) {
         ToastService().showError(
           context,
@@ -151,7 +216,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: cardBackground,
+        backgroundColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),
@@ -174,7 +239,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 20.h),
             Text(
               'Payment Successful!',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(
+                fontFamily: 'Satoshi',
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -183,7 +249,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 10.h),
             Text(
               '${widget.currency} ${widget.amount}',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(
+                fontFamily: 'Satoshi',
                 color: buttonGreen,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
@@ -192,7 +259,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 5.h),
             Text(
               'sent to ${widget.recipientName}',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(
+                fontFamily: 'Satoshi',
                 color: Colors.white70,
                 fontSize: 14.sp,
               ),
@@ -200,7 +268,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             SizedBox(height: 10.h),
             Text(
               'ID: $transactionId',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(
+                fontFamily: 'Satoshi',
                 color: Colors.white38,
                 fontSize: 12.sp,
               ),
@@ -221,7 +290,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 ),
                 child: Text(
                   'Done',
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -234,140 +304,34 @@ class _EnterPinScreenState extends State<EnterPinScreen>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: darkBackground,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(24.r),
-          child: Column(
-            children: [
-              SizedBox(height: 20.h),
-              // Back button
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: _isLoading ? null : () => Navigator.pop(context),
-                    child: Container(
-                      width: 40.r,
-                      height: 40.r,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 20.r,
-                      ),
-                    ),
-                  ),
-                ],
+  Widget _buildDashPin() {
+    return AnimatedBuilder(
+      animation: _shakeAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_shakeAnimation.value, 0),
+          child: child,
+        );
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(4, (index) {
+          final isFilled = index < _pin.length;
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 2.h,
+              width: 32.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(999.r),
+                color: isFilled
+                    ? buttonGreen
+                    : Colors.white.withValues(alpha: 0.3),
               ),
-              SizedBox(height: 40.h),
-              // Profile picture
-              Container(
-                width: 80.r,
-                height: 80.r,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: buttonGreen, width: 3.w),
-                  color: Colors.grey[800],
-                ),
-                child: Center(
-                  child: Text(
-                    widget.recipientName.isNotEmpty ? widget.recipientName[0].toUpperCase() : '?',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Colors.white,
-                      fontSize: 32.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              // Recipient name
-              Text(
-                'Sending to',
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Colors.white70,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                widget.recipientName,
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Colors.white,
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 50.h),
-              
-              if (_isLoading) ...[
-                const CircularProgressIndicator(color: buttonGreen),
-                SizedBox(height: 20.h),
-                Text(
-                  'Processing transaction...',
-                  style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14.sp),
-                ),
-              ] else ...[
-                // Enter PIN text
-                Text(
-                  'Enter your PIN',
-                  style: TextStyle(fontFamily: 'Satoshi',
-                    color: Colors.white,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 30.h),
-                // PIN dots with shake animation
-                AnimatedBuilder(
-                  animation: _shakeAnimation,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(_shakeAnimation.value, 0),
-                      child: child,
-                    );
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(4, (index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12.w),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          width: 16.r,
-                          height: 16.r,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: index < _pin.length
-                                ? buttonGreen
-                                : Colors.white.withValues(alpha: 0.3),
-                            border: Border.all(
-                              color: index < _pin.length
-                                  ? buttonGreen
-                                  : Colors.white.withValues(alpha: 0.3),
-                              width: 2.w,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ],
-              const Spacer(),
-              // Numeric keypad
-              if (!_isLoading) _buildKeypad(),
-              SizedBox(height: 40.h),
-            ],
-          ),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -399,7 +363,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             ),
             _buildKeypadButton('0'),
             _buildKeyActionButton(
-              onPressed: () {},
+              onPressed: () {
+                // Fingerprint action (hook to biometrics if needed)
+              },
               icon: Icons.fingerprint,
             ),
           ],
@@ -421,7 +387,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         child: Center(
           child: Text(
             number,
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(
+              fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,
@@ -437,7 +404,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
     required IconData icon,
   }) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap: _isVerifying ? null : onPressed,
       child: Container(
         width: 70.r,
         height: 70.r,
@@ -450,6 +417,87 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             icon,
             color: Colors.white,
             size: 24.r,
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black, // match login screen
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20.h),
+              // Back button
+              GestureDetector(
+                onTap: _isVerifying ? null : () => Navigator.pop(context),
+                child: Container(
+                  width: 40.r,
+                  height: 40.r,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 20.r,
+                  ),
+                ),
+              ),
+              SizedBox(height: 40.h),
+              Text(
+                'Enter your PIN',
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white,
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                'Confirm this transaction securely.',
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.grey[400],
+                  fontSize: 14.sp,
+                ),
+              ),
+              SizedBox(height: 32.h),
+              // Amount & recipient (still themed)
+              Text(
+                '${widget.currency} ${widget.amount}',
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: buttonGreen,
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                'to ${widget.recipientName}',
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              SizedBox(height: 40.h),
+              // PIN dashes
+              _buildDashPin(),
+              const Spacer(),
+              _buildKeypad(),
+              SizedBox(height: 40.h),
+            ],
           ),
         ),
       ),

@@ -219,31 +219,23 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
 
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: buttonGreen,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Column(
-              children: [
-                const Spacer(),
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _scaleAnimation.value,
-                      child: Opacity(
-                        opacity: 1,
-                        child: Image.asset(
-                          'assets/images/Logo.png',
-                          width: MediaQuery.of(context).size.width * 0.2,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    );
-                  },
+        backgroundColor: const Color(0xFF122023),
+        body: Center(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _scaleAnimation.value,
+                child: Opacity(
+                  opacity: 1,
+                  child: Image.asset(
+                    'assets/images/Logo.png',
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       );

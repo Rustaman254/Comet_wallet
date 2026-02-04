@@ -14,6 +14,7 @@ class AuthService {
     required String name,
     required String phoneNumber,
     required String location,
+    required String pin,
   }) async {
     final startTime = DateTime.now();
 
@@ -24,10 +25,10 @@ class AuthService {
           'password': password,
           'name': name,
           'phone': phoneNumber,
-          'role': 8,
+          'role': 2,
           'status': 'active',
           'location': location,
-          'PIN': '1234',
+          'pin': pin,
         }
       };
 

@@ -16,7 +16,7 @@ class CustomToast extends StatelessWidget {
     this.onDismiss,
   });
 
-  Color get _borderColor {
+  Color get _backgroundColor {
     switch (type) {
       case ToastType.success:
         return buttonGreen;
@@ -40,20 +40,17 @@ class CustomToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     return Material(
       color: Colors.transparent,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E2025) : Colors.white, // Slightly lighter than background
+          color: _backgroundColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _borderColor, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -62,15 +59,15 @@ class CustomToast extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(_icon, color: _borderColor, size: 24),
+            Icon(_icon, color: Colors.black87, size: 24),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
                 style: TextStyle(fontFamily: 'Satoshi',
-                  color: isDark ? Colors.white : Colors.black87,
+                  color: Colors.black87,
                   fontSize: 14,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -80,7 +77,7 @@ class CustomToast extends StatelessWidget {
                 onTap: onDismiss,
                 child: Icon(
                   Icons.close,
-                  color: isDark ? Colors.white54 : Colors.black45,
+                  color: Colors.black54,
                   size: 18,
                 ),
               ),
