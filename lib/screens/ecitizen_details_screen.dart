@@ -23,7 +23,8 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      // same as login
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -41,7 +42,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Colors.white.withOpacity(0.08),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -55,7 +56,8 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       child: Text(
                         'Service Details',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -77,7 +79,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: buttonGreen.withValues(alpha: 0.1),
+                        color: buttonGreen.withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -90,7 +92,8 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     Text(
                       widget.bill.name,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -103,13 +106,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.2),
+                        color: Colors.green.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+                        // removed border to stay consistent with pills on home/login
                       ),
                       child: Text(
                         'Unpaid',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
                           color: Colors.green[300],
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -122,21 +126,23 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     const SizedBox(height: 24),
                     _buildDetailRow('Date', 'Today'),
                     const SizedBox(height: 24),
-                    Divider(color: Colors.white.withValues(alpha: 0.1)),
+                    Divider(color: Colors.white.withOpacity(0.1)),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Total Amount',
-                          style: TextStyle(fontFamily: 'Satoshi',
-                            color: Colors.white70,
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
+                            color: Colors.grey[400],
                             fontSize: 18,
                           ),
                         ),
                         Text(
                           '${widget.bill.currency} ${widget.bill.amount.toStringAsFixed(2)}',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -165,21 +171,29 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                             currency: widget.bill.currency,
                             onVerify: () async {
                               // 1. Perform wallet to wallet transfer
-                              final transferResponse = await WalletService.transferWallet(
+                              final transferResponse =
+                                  await WalletService.transferWallet(
                                 toEmail: 'colls@cradlevoices.com',
                                 amount: widget.bill.amount,
                                 currency: widget.bill.currency,
                               );
 
-                              final transactionId = transferResponse['transaction_id'] ?? 'N/A';
+                              final transactionId =
+                                  transferResponse['transaction_id'] ?? 'N/A';
                               
                               // Get user details for eCitizen confirmation
-                              final customerName = await TokenService.getUserName() ?? 'Unknown User';
-                              final customerPhone = await TokenService.getPhoneNumber() ?? 'Unknown';
+                              final customerName =
+                                  await TokenService.getUserName() ??
+                                      'Unknown User';
+                              final customerPhone =
+                                  await TokenService.getPhoneNumber() ??
+                                      'Unknown';
                               
                               // Format date as YYYY-MM-DD HH:mm:ss
                               final now = DateTime.now();
-                              final dateStr = "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+                              final dateStr =
+                                  "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} "
+                                  "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
 
                               // 2. Confirm payment with eCitizen
                               return await ECitizenService.confirmPayment(
@@ -206,7 +220,8 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     ),
                     child: Text(
                       'Pay Now',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -214,6 +229,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -227,14 +243,16 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Satoshi',
-            color: Colors.white70,
+          style: TextStyle(
+            fontFamily: 'Satoshi',
+            color: Colors.grey[400],
             fontSize: 15,
           ),
         ),
         Text(
           value,
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(
+            fontFamily: 'Satoshi',
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,

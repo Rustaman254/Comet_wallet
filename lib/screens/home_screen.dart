@@ -83,17 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    // Checking mounted before setState inside a method called from build
-    // strictly speaking setState inside build is bad, but here we update local state based on provider
-    // Better pattern: these should be derived in build or memoized, but for now we update them.
-    // However, calling setState during build phase causes errors.
-    // We should probably move these calculations to the Provider or do them in build.
-    // For now, let's just assign them to local variables if called from build, 
-    // BUT the build method calls this.
-    
-    // Correction: We cannot call setState inside build.
-    // I will modify this method to NOT call setState, but just update the variables. 
-    // Since build is rebuilding anyway, the new values will be used.
     _totalIncome = income;
     _totalExpense = expense;
     _pendingCount = pending;
@@ -202,15 +191,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: 50.r,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.red,
-                                      width: 2.w
-                                    ),
+                                    // remove red border to match clean login avatar
                                     color: Colors.grey[800],
                                   ),
                                   child: Icon(
                                     Icons.person_outline,
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    color: Colors.white,
                                     size: 30.r,
                                   ),
                                 ),
@@ -223,17 +209,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     decoration: BoxDecoration(
                                       color: Colors.red,
                                       shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Theme.of(context).scaffoldBackgroundColor,
-                                        width: 2.w
-                                      ),
+                                      // remove outer white border
                                     ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-
                           SizedBox(width: 12.w),
                           // Welcome text - clickable
                           GestureDetector(
@@ -250,16 +232,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 Text(
                                   'Welcome back,',
-                                  style: TextStyle(fontFamily: 'Satoshi',
-                                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                                  style: TextStyle(
+                                    fontFamily: 'Satoshi',
+                                    color: Colors.grey[400],
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
                                 Text(
                                   _userProfile?.name ?? 'Anwar Sadatt',
-                                  style: TextStyle(fontFamily: 'Satoshi',
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                  style: TextStyle(
+                                    fontFamily: 'Satoshi',
+                                    color: Colors.white,
                                     fontSize: 21.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -278,11 +262,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Icon(
                               Icons.search_outlined,
-                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                              color: Colors.white,
                               size: 20.r,
                             ),
                           ),
-                          SizedBox(width: 12.w),
                           SizedBox(width: 12.w),
                           // QR code button with Badge
                           GestureDetector(
@@ -304,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   child: Icon(
                                     Icons.qr_code_scanner_outlined,
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    color: Colors.white,
                                     size: 20.r,
                                   ),
                                 ),
@@ -312,18 +295,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   top: -4,
                                   right: -4,
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 6.w,
+                                      vertical: 2.h,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: Colors.red,
                                       borderRadius: BorderRadius.circular(10.r),
-                                      border: Border.all(
-                                        color: Theme.of(context).scaffoldBackgroundColor,
-                                        width: 1.5.w,
-                                      ),
+                                      // remove border to keep badge flat
                                     ),
                                     child: Text(
                                       'Coming Soon',
-                                      style: TextStyle(fontFamily: 'Satoshi',
+                                      style: TextStyle(
+                                        fontFamily: 'Satoshi',
                                         color: Colors.white,
                                         fontSize: 8.sp,
                                         fontWeight: FontWeight.bold,
@@ -411,192 +395,277 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // Total Balance Card - Scrollable with PageView
                           SizedBox(
-                            height: 220, // Slightly increased height for larger font
+                            height: 220,
                             child: provider.isLoading && provider.balances.isEmpty
-                              ? Center(child: CircularProgressIndicator(color: buttonGreen))
-                              : (provider.balances.isEmpty
-                                  ? Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                                      child: _buildEmptyBalanceCard(),
-                                    )
-                                  : PageView(
-                                      controller: _balancePageController,
-                                      children: provider.balances.map((balance) {
-                                        return Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                                          child: Container(
-                                            padding: EdgeInsets.all(24.r), // Increased padding
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                                colors: [
-                                                  darkGreen,
-                                                  darkGreen.withValues(alpha: 0.8),
-                                                  lightGreen.withValues(alpha: 0.3),
-                                                ],
-                                              ),
-                                              border: Border.all(color: cardBorder, width: 1.w),
-                                              borderRadius: BorderRadius.circular(20.r),
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: buttonGreen,
+                                    ),
+                                  )
+                                : (provider.balances.isEmpty
+                                    ? Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 24.w,
+                                        ),
+                                        child: _buildEmptyBalanceCard(),
+                                      )
+                                    : PageView(
+                                        controller: _balancePageController,
+                                        children: provider.balances
+                                            .map((balance) {
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 24.w,
                                             ),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          'Total Balance',
-                                                          style: TextStyle(fontFamily: 'Satoshi',
-                                                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                            fontSize: 13.sp,
-                                                            fontWeight: FontWeight.w400,
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 8),
-                                                        GestureDetector(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              _isBalanceVisible = !_isBalanceVisible;
-                                                            });
-                                                            VibrationService.lightImpact();
-                                                          },
-                                                          child: Icon(
-                                                            _isBalanceVisible 
-                                                                ? Icons.visibility_outlined 
-                                                                : Icons.visibility_off_outlined,
-                                                            color: Colors.white70,
-                                                            size: 18.r,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Container(
-                                                      padding: EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 6,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white.withValues(alpha: 0.2),
-                                                        borderRadius: BorderRadius.circular(
-                                                          20.r,
-                                                        ),
-                                                      ),
-                                                      child: Text(
-                                                        balance['currency'] ?? 'KES',
-                                                        style: TextStyle(fontFamily: 'Satoshi',
-                                                          color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                          fontSize: 12.sp,
-                                                          fontWeight: FontWeight.bold,
-                                                        ),
-                                                      ),
-                                                    ),
+                                            child: Container(
+                                              padding: EdgeInsets.all(24.r),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: [
+                                                    darkGreen,
+                                                    darkGreen.withValues(
+                                                        alpha: 0.8),
+                                                    lightGreen.withValues(
+                                                        alpha: 0.3),
                                                   ],
                                                 ),
-                                                SizedBox(height: 16.h),
-                                                Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.baseline,
-                                                  textBaseline: TextBaseline.alphabetic,
-                                                  children: [
-                                                    Text(
-                                                      balance['currency'] ?? 'KES',
-                                                      style: TextStyle(fontFamily: 'Satoshi',
-                                                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.9),
-                                                        fontSize: 20.sp,
-                                                        fontWeight: FontWeight.w600,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 8.w),
-                                                    Text(
-                                                      _isBalanceVisible ? (balance['amount']?.toString() ?? '0.00') : '••••••',
-                                                      style: TextStyle(fontFamily: 'Satoshi',
-                                                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                        fontSize: 48.sp, // Significantly bigger font
-                                                        fontWeight: FontWeight.bold,
-                                                        letterSpacing: -1,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const Spacer(),
-                                                Padding(
-                                                  padding: EdgeInsets.only(bottom: 0),
-                                                  child: Row(
+                                                // remove border to keep it clean
+                                                borderRadius:
+                                                    BorderRadius.circular(20.r),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Row(
                                                     mainAxisAlignment:
-                                                        MainAxisAlignment.spaceBetween,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.start,
+                                                      Row(
                                                         children: [
                                                           Text(
-                                                            'Date',
-                                                            style: TextStyle(fontFamily: 'Satoshi',
-                                                              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                                              fontSize: 12.sp,
-                                                              fontWeight: FontWeight.w400,
+                                                            'Total Balance',
+                                                            style: TextStyle(
+                                                              fontFamily:
+                                                                  'Satoshi',
+                                                              color: Colors
+                                                                  .white70,
+                                                              fontSize: 13.sp,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
                                                             ),
                                                           ),
-                                                          SizedBox(height: 2.h),
-                                                          Text(
-                                                            balance['date'] ?? 'Today',
-                                                            style: TextStyle(fontFamily: 'Satoshi',
-                                                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                              fontSize: 14.sp,
-                                                              fontWeight: FontWeight.w500,
+                                                          SizedBox(width: 8),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              setState(() {
+                                                                _isBalanceVisible =
+                                                                    !_isBalanceVisible;
+                                                              });
+                                                              VibrationService
+                                                                  .lightImpact();
+                                                            },
+                                                            child: Icon(
+                                                              _isBalanceVisible
+                                                                  ? Icons
+                                                                      .visibility_outlined
+                                                                  : Icons
+                                                                      .visibility_off_outlined,
+                                                              color:
+                                                                  Colors.white70,
+                                                              size: 18.r,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                       Container(
-                                                        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                                                        decoration: BoxDecoration(
-                                                          color: Colors.white.withValues(alpha: 0.15),
-                                                          borderRadius: BorderRadius.circular(12.r),
+                                                        padding:
+                                                            EdgeInsets.symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 6,
                                                         ),
-                                                        child: Row(
-                                                          children: [
-                                                            Text(
-                                                              balance['change'] ?? '+0.00',
-                                                              style: TextStyle(fontFamily: 'Satoshi',
-                                                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                                fontSize: 14.sp,
-                                                                fontWeight: FontWeight.bold,
-                                                              ),
-                                                            ),
-                                                            SizedBox(width: 4.w),
-                                                            Icon(
-                                                              Icons.trending_up_outlined,
-                                                              color: buttonGreen,
-                                                              size: 16.r,
-                                                            ),
-                                                          ],
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors.white
+                                                              .withValues(
+                                                                  alpha: 0.2),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                            20.r,
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                          balance['currency'] ??
+                                                              'KES',
+                                                          style: TextStyle(
+                                                            fontFamily:
+                                                                'Satoshi',
+                                                            color: Colors.white,
+                                                            fontSize: 12.sp,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
                                                     ],
                                                   ),
-                                                ),
-                                              ],
+                                                  SizedBox(height: 16.h),
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.baseline,
+                                                    textBaseline:
+                                                        TextBaseline.alphabetic,
+                                                    children: [
+                                                      Text(
+                                                        balance['currency'] ??
+                                                            'KES',
+                                                        style: TextStyle(
+                                                          fontFamily:
+                                                              'Satoshi',
+                                                          color: Colors.white70,
+                                                          fontSize: 20.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 8.w),
+                                                      Text(
+                                                        _isBalanceVisible
+                                                            ? (balance['amount']
+                                                                    ?.toString() ??
+                                                                '0.00')
+                                                            : '••••••',
+                                                        style: TextStyle(
+                                                          fontFamily:
+                                                              'Satoshi',
+                                                          color: Colors.white,
+                                                          fontSize: 48.sp,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          letterSpacing: -1,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const Spacer(),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              'Date',
+                                                              style: TextStyle(
+                                                                fontFamily:
+                                                                    'Satoshi',
+                                                                color: Colors
+                                                                    .white70,
+                                                                fontSize: 12.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                                height: 2.h),
+                                                            Text(
+                                                              balance['date'] ??
+                                                                  'Today',
+                                                              style: TextStyle(
+                                                                fontFamily:
+                                                                    'Satoshi',
+                                                                color:
+                                                                    Colors.white,
+                                                                fontSize: 14.sp,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Container(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                            horizontal: 10.w,
+                                                            vertical: 4.h,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors.white
+                                                                .withValues(
+                                                                    alpha: 0.15),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12.r),
+                                                          ),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                balance['change'] ??
+                                                                    '+0.00',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontFamily:
+                                                                      'Satoshi',
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize:
+                                                                      14.sp,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                  width: 4.w),
+                                                              Icon(
+                                                                Icons
+                                                                    .trending_up_outlined,
+                                                                color:
+                                                                    buttonGreen,
+                                                                size: 16.r,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    )
-                                ),
+                                          );
+                                        }).toList(),
+                                      )),
                           ),
                           SizedBox(height: 12.h),
                           // Page indicators for balance cards
                           if (provider.balances.isNotEmpty)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: List.generate(provider.balances.length, (index) {
+                              children: List.generate(
+                                  provider.balances.length, (index) {
                                 return Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 3.w),
-                                  child: _buildPageIndicator(index == _currentBalancePage),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 3.w),
+                                  child: _buildPageIndicator(
+                                      index == _currentBalancePage),
                                 );
                               }),
                             ),
@@ -606,48 +675,51 @@ class _HomeScreenState extends State<HomeScreen> {
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.symmetric(horizontal: 24.w),
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 24.w),
                             child: Row(
                               children: [
                                 _buildInfoCard(
                                   Icons.arrow_downward, 
                                   'Income', 
-                                  'KES ${NumberFormat("#,##0.00").format(_totalIncome)}'
+                                  'KES ${NumberFormat("#,##0.00").format(_totalIncome)}',
                                 ),
                                 SizedBox(width: 12.w),
                                 _buildInfoCard(
                                   Icons.arrow_upward, 
                                   'Expense', 
-                                  'KES ${NumberFormat("#,##0.00").format(_totalExpense)}'
+                                  'KES ${NumberFormat("#,##0.00").format(_totalExpense)}',
                                 ),
                                 SizedBox(width: 12.w),
                                 _buildInfoCard(
                                   Icons.pending_actions, 
                                   'Pending', 
-                                  '${_pendingCount} Txns'
+                                  '${_pendingCount} Txns',
                                 ),
                                 SizedBox(width: 12.w),
                                 _buildInfoCard(
                                   Icons.task_alt, 
                                   'Completed', 
-                                  '${_completedCount} Txns'
+                                  '${_completedCount} Txns',
                                 ),
                               ],
                             ),
                           ),
                           
-                          SizedBox(height: 8.h), // Reduced spacing
+                          SizedBox(height: 8.h),
                           
                           // Transaction section
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24.w),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   'Transaction',
-                                  style: TextStyle(fontFamily: 'Satoshi',
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                  style: TextStyle(
+                                    fontFamily: 'Satoshi',
+                                    color: Colors.white,
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -657,13 +729,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                     VibrationService.lightImpact();
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (_) => const TransactionsScreen(),
+                                        builder: (_) =>
+                                            const TransactionsScreen(),
                                       ),
                                     );
                                   },
                                   child: Text(
                                     'See All',
-                                    style: TextStyle(fontFamily: 'Satoshi',
+                                    style: TextStyle(
+                                      fontFamily: 'Satoshi',
                                       color: buttonGreen,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
@@ -677,7 +751,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Transaction list
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24.w),
-                            child: _buildTransactionList(provider.transactions),
+                            child: _buildTransactionList(
+                                provider.transactions),
                           ),
                           SizedBox(height: 24.h),
                         ],
@@ -687,7 +762,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             );
-          }
+          },
         ),
       ),
     );
@@ -722,7 +797,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildActionButton(
+      IconData icon, String label, VoidCallback onTap) {
     return GestureDetector(
       onTap: () {
         VibrationService.selectionClick();
@@ -737,13 +813,18 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color, size: 28.r),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 28.r,
+            ),
           ),
           SizedBox(height: 8.h),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Satoshi',
-              color: Theme.of(context).textTheme.bodyMedium?.color,
+            style: TextStyle(
+              fontFamily: 'Satoshi',
+              color: Colors.white,
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
@@ -757,9 +838,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(50.r), // Fully rounded pill shape
-        border: Border.all(color: cardBorder, width: 1.w),
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(50.r),
+        // removed border
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -779,15 +860,17 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 title,
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.grey[400],
                   fontSize: 10.sp,
                 ),
               ),
               Text(
                 value,
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
                 ),
@@ -812,7 +895,7 @@ class _HomeScreenState extends State<HomeScreen> {
             lightGreen.withValues(alpha: 0.3),
           ],
         ),
-        border: Border.all(color: cardBorder, width: 1.w),
+        // remove border
         borderRadius: BorderRadius.circular(20.r),
       ),
       child: Column(
@@ -823,22 +906,25 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 'Total Balance',
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white70,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                padding: EdgeInsets.symmetric(
+                    horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Text(
                   'KES',
-                  style: TextStyle(fontFamily: 'Satoshi',
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    color: Colors.white,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -852,8 +938,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 'KES',
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white70,
                   fontSize: 25.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -861,8 +948,9 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(width: 8.w),
               Text(
                 '0.00',
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white,
                   fontSize: 35.sp,
                   fontWeight: FontWeight.bold,
                 ),
@@ -872,8 +960,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const Spacer(),
           Text(
             'Top up to start transacting',
-            style: TextStyle(fontFamily: 'Satoshi',
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+            style: TextStyle(
+              fontFamily: 'Satoshi',
+              color: Colors.white70,
               fontSize: 14.sp,
             ),
           ),
@@ -888,11 +977,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (recentTransactions.isEmpty) {
       return Column(
         children: [
-          Icon(Icons.history_outlined, size: 48.r, color: Colors.grey[600]),
+          Icon(Icons.history_outlined,
+              size: 48.r, color: Colors.grey[600]),
           SizedBox(height: 12.h),
           Text(
             'No recent transactions',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(
+              fontFamily: 'Satoshi',
               color: Colors.grey[600],
               fontSize: 16.sp,
             ),
@@ -969,8 +1060,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 _formatTransactionType(transaction.transactionType),
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -979,9 +1071,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   Text(
-                    transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    transaction.phoneNumber.isNotEmpty
+                        ? transaction.phoneNumber
+                        : 'N/A',
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: Colors.white70,
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -998,7 +1093,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(width: 8.w),
                   Text(
                     transaction.status.toUpperCase(),
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
                       color: statusColor,
                       fontSize: 10.sp,
                       fontWeight: FontWeight.bold,
@@ -1011,8 +1107,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Text(
           'KES ${transaction.amount.toStringAsFixed(2)}',
-          style: TextStyle(fontFamily: 'Satoshi',
-            color: Theme.of(context).textTheme.bodyMedium?.color,
+          style: TextStyle(
+            fontFamily: 'Satoshi',
+            color: Colors.white,
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -1022,9 +1119,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatTransactionType(String type) {
-    return type.split('_').map((word) => 
-      word[0].toUpperCase() + word.substring(1).toLowerCase()
-    ).join(' ');
+    return type
+        .split('_')
+        .map(
+          (word) =>
+              word[0].toUpperCase() + word.substring(1).toLowerCase(),
+        )
+        .join(' ');
   }
 
   Widget _buildTransactionItem(String phone, String date, String amount) {
@@ -1039,7 +1140,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Icon(
             Icons.person_outline,
-            color: Theme.of(context).textTheme.bodyMedium?.color,
+            color: Colors.white,
             size: 24.r,
           ),
         ),
@@ -1050,8 +1151,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 phone,
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white,
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1059,8 +1161,9 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 4.h),
               Text(
                 date,
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  color: Colors.white70,
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
                 ),
@@ -1070,8 +1173,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         Text(
           amount,
-          style: TextStyle(fontFamily: 'Satoshi',
-            color: Theme.of(context).textTheme.bodyMedium?.color,
+          style: TextStyle(
+            fontFamily: 'Satoshi',
+            color: Colors.white,
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),
@@ -1079,8 +1183,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-
-
-
 }
