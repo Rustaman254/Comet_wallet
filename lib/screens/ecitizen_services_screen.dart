@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/colors.dart';
 import '../utils/input_decoration.dart';
@@ -138,22 +139,22 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     const SizedBox(height: 20),
                     // Header
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Row(
                         children: [
                           IconButton(
                             onPressed: () => Navigator.of(context).pop(),
                             icon: Container(
-                              width: 40,
-                              height: 40,
+                              width: 40.r,
+                              height: 40.r,
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.08),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back_outlined,
                                 color: Colors.white,
-                                size: 20,
+                                size: 20.r,
                               ),
                             ),
                           ),
@@ -164,12 +165,12 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                               style: TextStyle(
                                 fontFamily: 'Satoshi',
                                 color: Colors.white,
-                                fontSize: 24,
+                                fontSize: 24.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          const SizedBox(width: 40),
+                          SizedBox(width: 40.w),
                         ],
                       ),
                     ),
@@ -177,7 +178,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
               
                     // Reference Number Input
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -186,17 +187,17 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                             style: TextStyle(
                               fontFamily: 'Satoshi',
                               color: Colors.grey[400],
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8.h),
                           TextField(
                             controller: _referenceController,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Satoshi',
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 16.sp,
                             ),
                             decoration: buildUnderlineInputDecoration(
                               context: context,
@@ -207,26 +208,26 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          SizedBox(height: 24.h),
                           Text(
                             'Currency',
                             style: TextStyle(
                               fontFamily: 'Satoshi',
                               color: Colors.grey[400],
-                              fontSize: 14,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8.h),
                           GestureDetector(
                             onTap: _showCurrencyDialog,
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: const BoxDecoration(
+                              padding: EdgeInsets.symmetric(vertical: 12.h),
+                              decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
                                     color: Colors.white24,
-                                    width: 1,
+                                    width: 1.w,
                                   ),
                                 ),
                               ),
@@ -236,13 +237,13 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                                     Icons.monetization_on_outlined,
                                     color: Colors.white,
                                   ),
-                                  const SizedBox(width: 12),
+                                  SizedBox(width: 12.w),
                                   Text(
                                     selectedCurrency,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontFamily: 'Satoshi',
                                       color: Colors.white,
-                                      fontSize: 16,
+                                      fontSize: 16.sp,
                                     ),
                                   ),
                                   const Spacer(),
@@ -265,7 +266,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
             
             // Check Status Button (Fixed at bottom)
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24), // 24 bottom padding
+              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h), // 24 bottom padding
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -275,26 +276,26 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                     foregroundColor: Colors.white,
                     disabledBackgroundColor:
                         buttonGreen.withOpacity(0.5),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                     elevation: 0,
                   ),
                   child: isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
+                      ? SizedBox(
+                          width: 24.r,
+                          height: 24.r,
                           child: CircularProgressIndicator(
                             color: Colors.white,
-                            strokeWidth: 2,
+                            strokeWidth: 2.w,
                           ),
                         )
                       : Text(
                           'Check Status',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Satoshi',
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

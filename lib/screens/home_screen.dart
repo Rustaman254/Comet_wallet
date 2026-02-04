@@ -395,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // Total Balance Card - Scrollable with PageView
                           SizedBox(
-                            height: 220,
+                            height: 220.h,
                             child: provider.isLoading && provider.balances.isEmpty
                                 ? const Center(
                                     child: CircularProgressIndicator(
@@ -459,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       .w400,
                                                             ),
                                                           ),
-                                                          SizedBox(width: 8),
+                                                          SizedBox(width: 8.w),
                                                           GestureDetector(
                                                             onTap: () {
                                                               setState(() {
@@ -485,8 +485,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       Container(
                                                         padding:
                                                             EdgeInsets.symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 6,
+                                                          horizontal: 12.w,
+                                                          vertical: 6.h,
                                                         ),
                                                         decoration:
                                                             BoxDecoration(

@@ -393,7 +393,7 @@ class WalletService {
             'to_email': toEmail,
             'amount': amount,
             'currency': currency,
-            'status': jsonResponse['status'],
+            'recipient': jsonResponse['user']?['name'] ?? 'Unknown',
           },
         );
 

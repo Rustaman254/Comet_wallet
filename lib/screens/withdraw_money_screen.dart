@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
@@ -82,16 +83,16 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Container(
-                        width: 40,
-                        height: 40,
+                        width: 40.r,
+                        height: 40.r,
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.3),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_back_outlined,
                           color: Colors.white,
-                          size: 20,
+                          size: 20.r,
                         ),
                       ),
                     ),
@@ -101,7 +102,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 24.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -116,7 +117,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(20.r),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -127,8 +128,8 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                         lightGreen.withValues(alpha: 0.3),
                       ],
                     ),
-                    border: Border.all(color: cardBorder, width: 1),
-                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: cardBorder, width: 1.w),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,21 +138,21 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                         'Available Balance',
                         style: TextStyle(fontFamily: 'Satoshi',
                           color: Colors.white70,
-                          fontSize: 14,
+                          fontSize: 14.sp,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       _isBalanceLoading
-                          ? const SizedBox(
-                              height: 32,
-                              width: 32,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          ? SizedBox(
+                              height: 32.r,
+                              width: 32.r,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.w),
                             )
                           : Text(
                               '$selectedCurrency ${_balance.toStringAsFixed(2)}',
                               style: TextStyle(fontFamily: 'Satoshi',
                                 color: Colors.white,
-                                fontSize: 32,
+                                fontSize: 32.sp,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -166,67 +167,67 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Withdrawal Method',
-                      style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        'Withdrawal Method',
+                        style: TextStyle(fontFamily: 'Satoshi',
+                          color: Colors.white,
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    ..._withdrawMethods.map((method) {
-                      final isSelected = selectedMethod == method['name'];
-                      final isAvailable = method['isAvailable'] as bool;
-                      
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: GestureDetector(
-                          onTap: isAvailable ? () {
-                            setState(() {
-                              selectedMethod = method['name'];
-                            });
-                            
-                            if (method['name'] == 'Mobile Money') {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => MobileWithdrawScreen(
-                                      currency: selectedCurrency,
-                                      maxBalance: _balance,
+                      SizedBox(height: 16.h),
+                      ..._withdrawMethods.map((method) {
+                        final isSelected = selectedMethod == method['name'];
+                        final isAvailable = method['isAvailable'] as bool;
+                        
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 12.h),
+                          child: GestureDetector(
+                            onTap: isAvailable ? () {
+                              setState(() {
+                                selectedMethod = method['name'];
+                              });
+                              
+                              if (method['name'] == 'Mobile Money') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => MobileWithdrawScreen(
+                                        currency: selectedCurrency,
+                                        maxBalance: _balance,
+                                      ),
                                     ),
+                                  );
+                              }
+                            } : null,
+                            child: Opacity(
+                              opacity: isAvailable ? 1.0 : 0.5,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 16.h),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.white12, width: 0.5.h),
                                   ),
-                                );
-                            }
-                          } : null,
-                          child: Opacity(
-                            opacity: isAvailable ? 1.0 : 0.5,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: Colors.white12, width: 0.5),
                                 ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    method['icon'],
-                                    color: isSelected ? buttonGreen : Colors.white70,
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          method['name'],
-                                          style: TextStyle(fontFamily: 'Satoshi',
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      method['icon'],
+                                      color: isSelected ? buttonGreen : Colors.white70,
+                                      size: 24.r,
+                                    ),
+                                    SizedBox(width: 16.w),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            method['name'],
+                                            style: TextStyle(fontFamily: 'Satoshi',
+                                              color: Colors.white,
+                                              fontSize: 16.sp,
+                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                            ),
                                           ),
-                                        ),
                                         const SizedBox(height: 4),
                                         Text(
                                           method['account'],

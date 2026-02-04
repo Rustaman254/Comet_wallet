@@ -37,10 +37,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   bool _isAmountFocused = false;
   bool _isLoading = false;
 
-  final List<String> _favorites = [
-    'yeshbloger@gmail.com',
-    'support@antigravity.ai',
-  ];
+  final List<String> _favorites = [];
 
 
 
@@ -122,7 +119,19 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       );
 
       if (mounted) {
-        _showSuccessSheet(response);
+        // Construct success data from input and response
+        final successData = {
+          'message': 'Transfer Successful',
+          'status': 'SUCCESS', // API returns 200/201 on success
+          'transfer': {
+            'to_user_name': response['user']?['name'] ?? email,
+            'to_user_email': response['user']?['email'] ?? email,
+            'amount': amount.toString(),
+            'currency': selectedCurrency,
+            'from_user_email': 'Me', // We don't get this back, but it's implied
+          }
+        };
+        _showSuccessSheet(successData);
       }
     } catch (e) {
       if (mounted) {
@@ -143,41 +152,41 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.r),
         decoration: BoxDecoration(
           color: darkBackground,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.r),
+            topRight: Radius.circular(30.r),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 80.r,
+              height: 80.r,
               decoration: BoxDecoration(
                 color: buttonGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.check_circle_outline, color: buttonGreen, size: 50),
+              child: Icon(Icons.check_circle_outline, color: buttonGreen, size: 50.r),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             Text(
               response['message'] ?? 'Transfer Successful',
               style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             _buildDetailRow('To', transfer['to_user_name'] ?? transfer['to_user_email'] ?? 'N/A'),
             _buildDetailRow('Amount', '${transfer['amount']} ${transfer['currency']}'),
-            _buildDetailRow('From', transfer['from_user_email'] ?? 'N/A'),
+            _buildDetailRow('Email', transfer['to_user_email'] ?? 'N/A'),
             _buildDetailRow('Status', response['status']?.toUpperCase() ?? 'SUCCESS'),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -188,13 +197,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonGreen,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                 ),
-                child: Text('Done', style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold)),
+                child: Text('Done', style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold, fontSize: 16.sp)),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
           ],
         ),
       ),
@@ -203,12 +212,12 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14)),
-          Text(value, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14.sp)),
+          Text(value, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -549,28 +558,28 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       child: Column(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 60.r,
+            height: 60.r,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
               shape: BoxShape.circle,
               border: Border.all(
                 color: Colors.white.withOpacity(0.3),
-                width: 2,
+                width: 2.w,
               ),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.add_outlined,
               color: Colors.white,
-              size: 30,
+              size: 30.r,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Text(
             'Add',
             style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
           ),
@@ -583,30 +592,30 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     return Column(
       children: [
         Container(
-          width: 60,
-          height: 60,
+          width: 60.r,
+          height: 60.r,
           decoration: BoxDecoration(
             color: Colors.grey[800],
             shape: BoxShape.circle,
-            border: Border.all(color: buttonGreen, width: 2),
+            border: Border.all(color: buttonGreen, width: 2.w),
           ),
           child: Center(
             child: Text(
               name[0],
               style: TextStyle(fontFamily: 'Satoshi',
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Text(
           name,
           style: TextStyle(fontFamily: 'Satoshi',
             color: Colors.white,
-            fontSize: 14,
+            fontSize: 14.sp,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -616,11 +625,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
   Widget _buildPageIndicator(bool isActive) {
     return Container(
-      width: isActive ? 24 : 8,
-      height: 8,
+      width: isActive ? 24.w : 8.w,
+      height: 8.h,
       decoration: BoxDecoration(
         color: isActive ? buttonGreen : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }

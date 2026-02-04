@@ -5,6 +5,7 @@ import '../services/vibration_service.dart';
 import '../services/toast_service.dart';
 import '../services/wallet_service.dart';
 import '../services/token_service.dart';
+import '../services/auth_service.dart';
 import '../utils/responsive_utils.dart';
 import 'sign_in_screen.dart';
 
@@ -140,73 +141,78 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   }
 
   Future<void> _verifyPin() async {
-    if (_pin == _correctPin) {
-      await _showLoaderDialog();
+    await _showLoaderDialog();
 
-      try {
-        Map<String, dynamic> response;
-        if (widget.onVerify != null) {
-          response = await widget.onVerify!();
-        } else {
-          final amount =
-              double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
-          response = await WalletService.sendMoney(
-            recipientPhone: widget.recipientName,
-            amount: amount,
-            currency: widget.currency,
-            description: widget.description,
-          );
-        }
-
+    try {
+      // 1. Verify PIN via API
+      final isVerified = await AuthService.verifyPin(_pin);
+      
+      if (!isVerified) {
         await _hideLoaderDialog();
-
         if (mounted) {
-          VibrationService.lightImpact();
-          _showSuccessDialog(
-            response['transaction_id'] ??
-                response['gateway_transaction_id'] ??
-                'N/A',
-          );
-        }
-      } catch (e) {
-        await _hideLoaderDialog();
-        if (!mounted) return;
-
-        final errorMsg = e.toString();
-        if (errorMsg.contains('401') || errorMsg.contains('expired')) {
-          ToastService()
-              .showError(context, 'Session expired. Please login again.');
-          await TokenService.logout();
-          if (mounted) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const SignInScreen()),
-              (route) => false,
-            );
-          }
-        } else {
           VibrationService.errorVibrate();
-          ToastService().showError(context, 'Transaction failed: $e');
-          setState(() {
-            _pin = '';
+          _shakeController.forward(from: 0.0).then((_) {
+            if (mounted) {
+              setState(() {
+                _pin = '';
+              });
+            }
           });
-          _shakeController.forward(from: 0.0);
+          ToastService().showError(
+            context,
+            'Incorrect PIN. Please try again.',
+          );
         }
+        return;
       }
-    } else {
-      VibrationService.errorVibrate();
-      _shakeController.forward(from: 0.0).then((_) {
-        if (mounted) {
-          setState(() {
-            _pin = '';
-          });
-        }
-      });
+
+      // 2. PIN Verified, proceed with transaction
+      Map<String, dynamic> response;
+      if (widget.onVerify != null) {
+        response = await widget.onVerify!();
+      } else {
+        final amount =
+            double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
+        response = await WalletService.sendMoney(
+          recipientPhone: widget.recipientName,
+          amount: amount,
+          currency: widget.currency,
+          description: widget.description,
+        );
+      }
+
+      await _hideLoaderDialog();
 
       if (mounted) {
-        ToastService().showError(
-          context,
-          'Incorrect PIN. Please try again.',
+        VibrationService.lightImpact();
+        _showSuccessDialog(
+          response['transaction_id'] ??
+              response['gateway_transaction_id'] ??
+              'N/A',
         );
+      }
+    } catch (e) {
+      await _hideLoaderDialog();
+      if (!mounted) return;
+
+      final errorMsg = e.toString();
+      if (errorMsg.contains('401') || errorMsg.contains('expired')) {
+        ToastService()
+            .showError(context, 'Session expired. Please login again.');
+        await TokenService.logout();
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const SignInScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        VibrationService.errorVibrate();
+        ToastService().showError(context, 'Transaction failed: $e');
+        setState(() {
+          _pin = '';
+        });
+        _shakeController.forward(from: 0.0);
       }
     }
   }

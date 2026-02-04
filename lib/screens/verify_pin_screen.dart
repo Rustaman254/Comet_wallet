@@ -5,6 +5,7 @@ import '../utils/responsive_utils.dart';
 import '../services/vibration_service.dart';
 import 'main_wrapper.dart';
 import '../services/token_service.dart';
+import '../services/auth_service.dart';
 
 class VerifyPinScreen extends StatefulWidget {
   final Widget? nextScreen;
@@ -140,28 +141,46 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   Future<void> _verifyPin() async {
     await _showLoaderDialog();
 
-    // Simulate verification delay or plug into your real check here
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    if (!mounted) return;
-
-    if (_pin == _correctPin) {
+    // Use try-catch for network/API errors
+    try {
+      final isVerified = await AuthService.verifyPin(_pin);
+      
+      if (!mounted) return;
       await _hideLoaderDialog();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => widget.nextScreen ?? const MainWrapper(),
-        ),
-      );
-    } else {
+
+      if (isVerified) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => widget.nextScreen ?? const MainWrapper(),
+          ),
+        );
+      } else {
+        VibrationService.errorVibrate();
+        _shakeController.forward(from: 0.0).then((_) {
+          if (mounted) {
+            setState(() {
+              _pin = '';
+            });
+          }
+        });
+        
+        // Optional: Show toast or snackbar for feedback
+        // ToastService().showError(context, 'Incorrect PIN');
+      }
+    } catch (e) {
+      if (!mounted) return;
       await _hideLoaderDialog();
-      VibrationService.errorVibrate();
-      _shakeController.forward(from: 0.0).then((_) {
+      
+      // Handle error (network, server, etc.)
+       VibrationService.errorVibrate();
+       _shakeController.forward(from: 0.0).then((_) {
         if (mounted) {
           setState(() {
             _pin = '';
           });
         }
       });
+      // ToastService().showError(context, e.toString());
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
 import '../constants/api_constants.dart';
 import 'logger_service.dart';
 import 'token_service.dart';
@@ -18,6 +19,16 @@ class AuthService {
   }) async {
     final startTime = DateTime.now();
 
+    // DEBUG: Test connectivity
+    try {
+      final lookup = await InternetAddress.lookup('google.com');
+      if (lookup.isNotEmpty && lookup[0].rawAddress.isNotEmpty) {
+        AppLogger.info(LogTags.auth, 'Connection verification: Connected to google.com');
+      }
+    } catch (e) {
+      AppLogger.error(LogTags.auth, 'Connection verification failed', data: {'error': e.toString()});
+    }
+
     try {
       final requestBody = {
         'user': {
@@ -25,7 +36,7 @@ class AuthService {
           'password': password,
           'name': name,
           'phone': phoneNumber,
-          'role': 2,
+          'role': 8,
           'status': 'active',
           'location': location,
           'pin': pin,
@@ -60,9 +71,17 @@ class AuthService {
           response: jsonResponse,
         );
 
-        if (jsonResponse['token'] != null || jsonResponse['access_token'] != null) {
-          final token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
-          final userObj = jsonResponse['user'];
+
+        // Handle response structure where User might be capitalized
+        final userObj = jsonResponse['user'] ?? jsonResponse['User'];
+        
+        // Try to find token at root or inside userObj
+        String token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
+        if (token.isEmpty && userObj != null) {
+          token = userObj['token'] ?? userObj['access_token'] ?? '';
+        }
+
+        if (token.isNotEmpty || userObj != null) {
           final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
           final userEmail = userObj?['email'] ?? email ?? '';
           final phone = userObj?['phone'] ?? jsonResponse['phone'] ?? '';
@@ -334,6 +353,66 @@ class AuthService {
       );
       // Return null instead of throwing to allow fallback to hardcoded data
       return null;
+    }
+  }
+
+  /// Verify user PIN
+  static Future<bool> verifyPin(String pin) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final requestBody = {'pin': pin};
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.verifyPinEndpoint,
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await http.post(
+        Uri.parse(ApiConstants.verifyPinEndpoint),
+        headers: headers,
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.verifyPinEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: jsonResponse,
+        );
+
+        return jsonResponse['verified'] == true;
+      } else {
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.verifyPinEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: {'error': response.body},
+        );
+        return false;
+      }
+    } catch (e) {
+      AppLogger.error(LogTags.auth, 'PIN verification failed', data: {'error': e.toString()});
+      rethrow;
     }
   }
 }

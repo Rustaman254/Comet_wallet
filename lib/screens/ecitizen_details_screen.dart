@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/colors.dart';
 import '../models/ecitizen_bill.dart';
@@ -33,22 +34,22 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
               const SizedBox(height: 20),
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: Container(
-                        width: 40,
-                        height: 40,
+                        width: 40.r,
+                        height: 40.r,
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.08),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_back_outlined,
                           color: Colors.white,
-                          size: 20,
+                          size: 20.r,
                         ),
                       ),
                     ),
@@ -59,12 +60,12 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: Colors.white,
-                          fontSize: 24,
+                          fontSize: 24.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 40),
+                    SizedBox(width: 40.w),
                   ],
                 ),
               ),
@@ -72,42 +73,42 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
 
               // Details
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: Column(
                   children: [
                     Container(
-                      width: 80,
-                      height: 80,
+                      width: 80.r,
+                      height: 80.r,
                       decoration: BoxDecoration(
                         color: buttonGreen.withOpacity(0.15),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.description_outlined,
                         color: buttonGreen,
-                        size: 40,
+                        size: 40.r,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     Text(
                       widget.bill.name,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Satoshi',
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 6.h,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20.r),
                         // removed border to stay consistent with pills on home/login
                       ),
                       child: Text(
@@ -115,19 +116,19 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: Colors.green[300],
-                          fontSize: 12,
+                          fontSize: 12.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    SizedBox(height: 40.h),
                     
                     _buildDetailRow('Reference', widget.bill.refNo),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h),
                     _buildDetailRow('Date', 'Today'),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h),
                     Divider(color: Colors.white.withOpacity(0.1)),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -136,7 +137,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             color: Colors.grey[400],
-                            fontSize: 18,
+                            fontSize: 18.sp,
                           ),
                         ),
                         Text(
@@ -144,7 +145,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             color: Colors.white,
-                            fontSize: 32,
+                            fontSize: 32.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -158,7 +159,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
 
               // Pay Button
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -213,16 +214,16 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonGreen,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                       ),
                     ),
                     child: Text(
                       'Pay Now',
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -246,7 +247,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
           style: TextStyle(
             fontFamily: 'Satoshi',
             color: Colors.grey[400],
-            fontSize: 15,
+            fontSize: 15.sp,
           ),
         ),
         Text(
@@ -254,7 +255,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
           style: TextStyle(
             fontFamily: 'Satoshi',
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 16.sp,
             fontWeight: FontWeight.w600,
           ),
         ),

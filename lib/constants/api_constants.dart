@@ -11,6 +11,7 @@ class ApiConstants {
   static const String transactionsListEndpoint = '$baseUrl/transactions/list';
   static const String paymentLinksEndpoint = '$baseUrl/payment-links';
   static const String walletSendMoneyEndpoint = '$baseUrl/wallet/send-money';
+  static const String verifyPinEndpoint = '$baseUrl/users/verify-pin';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
   
   static const String realEstatePropertiesEndpoint = '$baseUrl/real-estate/properties';

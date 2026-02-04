@@ -126,9 +126,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   SizedBox(height: 40.h),
                   
-                  // Country/Location field
+                  // Location field
                   Text(
-                    'Country',
+                    'Location',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14.sp,
@@ -145,12 +145,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
-                      hintText: 'Select a country',
-                      suffixIcon: Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                      hintText: 'Enter your location',
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please select your country';
+                        return 'Please enter your location';
                       }
                       return null;
                     },

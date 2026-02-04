@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 
 import '../constants/colors.dart';
@@ -118,16 +119,16 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Container(
-                      width: 40,
-                      height: 40,
+                      width: 40.r,
+                      height: 40.r,
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_back_outlined,
                         color: Colors.white,
-                        size: 20,
+                        size: 20.r,
                       ),
                     ),
                   ),
@@ -137,7 +138,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(fontFamily: 'Satoshi',
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -172,7 +173,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                             walletAddress,
                             style: TextStyle(fontFamily: 'Satoshi',
                               color: Colors.grey[600],
-                              fontSize: 32,
+                              fontSize: 32.sp,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
                               height: 1.0,
@@ -254,21 +255,21 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
+                      ? SizedBox(
+                          height: 24.r,
+                          width: 24.r,
                           child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2))
+                              color: Colors.white, strokeWidth: 2.w))
                       : Text(
                           'Generate QR Code',
                           style: TextStyle(fontFamily: 'Satoshi',
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

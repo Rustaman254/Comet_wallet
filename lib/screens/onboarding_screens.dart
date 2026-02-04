@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../constants/colors.dart';
-import '../utils/responsive_utils.dart';
+
 
 class OnboardingScreen1 extends StatelessWidget {
   final VoidCallback onNext;
@@ -150,11 +151,11 @@ class OnboardingScreen1 extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOutBack,
-      width: isActive ? 24 : 8,
-      height: 8,
+      width: isActive ? 24.w : 8.w,
+      height: 8.h,
       decoration: BoxDecoration(
         color: isActive ? buttonGreen : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }
@@ -286,8 +287,8 @@ class OnboardingScreen2 extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 30,
-          height: 30,
+          width: 30.r,
+          height: 30.r,
           decoration: const BoxDecoration(color: gold, shape: BoxShape.circle),
           child: Center(
             child: Text(
@@ -300,10 +301,10 @@ class OnboardingScreen2 extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 2),
+        SizedBox(height: 2.h),
         Container(
-          width: 28,
-          height: 28,
+          width: 28.r,
+          height: 28.r,
           decoration: const BoxDecoration(color: gold, shape: BoxShape.circle),
         ),
       ],
@@ -312,19 +313,19 @@ class OnboardingScreen2 extends StatelessWidget {
 
   Widget _buildDollarBill() {
     return Container(
-      width: 40,
-      height: 50,
+      width: 40.w,
+      height: 50.h,
       decoration: BoxDecoration(
         color: buttonGreen,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.white, width: 1),
+        borderRadius: BorderRadius.circular(4.r),
+        border: Border.all(color: Colors.white, width: 1.w),
       ),
       child: Center(
         child: Text(
           '\$',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: 20.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -337,11 +338,11 @@ class OnboardingScreen2 extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOutBack,
-      width: isActive ? 24 : 8,
-      height: 8,
+      width: isActive ? 24.w : 8.w,
+      height: 8.h,
       decoration: BoxDecoration(
         color: isActive ? buttonGreen : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }
@@ -449,23 +450,23 @@ class OnboardingScreen3 extends StatelessWidget {
 
   Widget _buildFloatingIcon(IconData icon, String label) {
     return Container(
-      width: 50,
-      height: 50,
+      width: 50.r,
+      height: 50.r,
       decoration: const BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: buttonGreen, size: 24),
+      child: Icon(icon, color: buttonGreen, size: 24.r),
     );
   }
 
   Widget _buildDollarBill() {
     return Container(
-      width: 30,
-      height: 40,
+      width: 30.w,
+      height: 40.h,
       decoration: BoxDecoration(
         color: buttonGreen,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
       child: Center(
         child: Text(
@@ -514,11 +515,11 @@ class OnboardingScreen3 extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 600),
       curve: Curves.easeInOutBack,
-      width: isActive ? 24 : 8,
-      height: 8,
+      width: isActive ? 24.w : 8.w,
+      height: 8.h,
       decoration: BoxDecoration(
         color: isActive ? buttonGreen : Colors.grey[600],
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(4.r),
       ),
     );
   }
