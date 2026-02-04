@@ -148,6 +148,19 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  String getInitials(String name) {
+    List<String> nameParts = name.trim().split(' ');
+    String initials = '';
+
+    if (nameParts.isNotEmpty) {
+      initials = nameParts[0][0].toUpperCase();
+      if (nameParts.length > 1) {
+        initials += nameParts[nameParts.length - 1][0].toUpperCase();
+      }
+    }
+    return initials;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,10 +207,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     // remove red border to match clean login avatar
                                     color: Colors.grey[800],
                                   ),
-                                  child: Icon(
-                                    Icons.person_outline,
-                                    color: Colors.white,
-                                    size: 30.r,
+                                  child: Center(
+                                    child: Text(
+                                      getInitials(_userProfile?.name ?? 'User'),
+                                      style: TextStyle(
+                                        fontFamily: 'Satoshi',
+                                        color: Colors.white,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Positioned(

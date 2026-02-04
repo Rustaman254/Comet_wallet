@@ -190,6 +190,19 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     );
   }
 
+  String getInitials(String name) {
+    List<String> nameParts = name.trim().split(' ');
+    String initials = '';
+
+    if (nameParts.isNotEmpty) {
+      initials = nameParts[0][0].toUpperCase();
+      if (nameParts.length > 1) {
+        initials += nameParts[nameParts.length - 1][0].toUpperCase();
+      }
+    }
+    return initials;
+  }
+
   /// Dashes + asterisk for filled ones
   Widget _buildDashPin() {
     return AnimatedBuilder(
@@ -349,10 +362,16 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                     border: Border.all(color: buttonGreen, width: 3.w),
                     color: Colors.grey[800],
                   ),
-                  child: Icon(
-                    Icons.person_outline,
-                    color: Colors.white,
-                    size: 40.r,
+                  child: Center(
+                    child: Text(
+                      getInitials(_userName),
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
+                        color: Colors.white,
+                        fontSize: 32.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),

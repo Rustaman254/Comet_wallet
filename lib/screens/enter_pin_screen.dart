@@ -196,7 +196,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       if (!mounted) return;
 
       final errorMsg = e.toString();
-      if (errorMsg.contains('401') || errorMsg.contains('expired')) {
+      
+      // Handle session expiration separately (requires logout + navigation)
+      if (errorMsg.contains('401') || errorMsg.contains('expired') || errorMsg.contains('unauthorized')) {
         ToastService()
             .showError(context, 'Session expired. Please login again.');
         await TokenService.logout();
@@ -207,14 +209,136 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           );
         }
       } else {
+        // Show user-friendly error dialog for all other errors
         VibrationService.errorVibrate();
-        ToastService().showError(context, 'Transaction failed: $e');
         setState(() {
           _pin = '';
         });
         _shakeController.forward(from: 0.0);
+        
+        if (mounted) {
+          final friendlyMessage = _parseErrorMessage(errorMsg);
+          _showFailureDialog(friendlyMessage);
+        }
       }
     }
+  }
+
+  void _showFailureDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80.r,
+              height: 80.r,
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 50.r,
+              ),
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              'Transaction Failed',
+              style: TextStyle(
+                fontFamily: 'Satoshi',
+                color: Colors.white,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10.h),
+            Text(
+              errorMessage,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Satoshi',
+                color: Colors.white70,
+                fontSize: 14.sp,
+              ),
+            ),
+            SizedBox(height: 30.h),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
+                child: Text(
+                  'Try Again',
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _parseErrorMessage(String error) {
+    // Remove "Exception:" prefix
+    String cleaned = error.replaceAll('Exception:', '').trim();
+    
+    // Handle common error patterns
+    if (cleaned.toLowerCase().contains('socketexception') || 
+        cleaned.toLowerCase().contains('failed host lookup') ||
+        cleaned.toLowerCase().contains('network')) {
+      return 'Network connection error. Please check your internet connection and try again.';
+    }
+    
+    if (cleaned.toLowerCase().contains('insufficient') && 
+        cleaned.toLowerCase().contains('fund')) {
+      return 'Insufficient funds in your wallet. Please top up and try again.';
+    }
+    
+    if (cleaned.toLowerCase().contains('timeout')) {
+      return 'Request timed out. Please try again.';
+    }
+    
+    if (cleaned.toLowerCase().contains('not found') || 
+        cleaned.toLowerCase().contains('404')) {
+      return 'Recipient not found. Please verify the phone number.';
+    }
+    
+    if (cleaned.toLowerCase().contains('unauthorized') || 
+        cleaned.toLowerCase().contains('401')) {
+      return 'Session expired. Please login again.';
+    }
+    
+    // If we have a clean message without technical jargon, use it
+    if (!cleaned.contains('error:') && 
+        !cleaned.contains('Error:') && 
+        cleaned.length < 100) {
+      return cleaned;
+    }
+    
+    // Default fallback
+    return 'Transaction failed. Please try again or contact support.';
   }
 
   void _showSuccessDialog(String transactionId) {
