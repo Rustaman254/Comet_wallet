@@ -4,8 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/colors.dart';
 import 'add_contact_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_event.dart';
+import '../bloc/wallet_state.dart';
 import '../services/wallet_service.dart';
-import '../services/wallet_provider.dart';
 import '../services/token_service.dart';
 import '../services/logger_service.dart';
 import '../services/toast_service.dart';
@@ -84,10 +87,18 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     if (_balancePageController.hasClients && _balancePageController.page != null) {
       final page = _balancePageController.page!.round();
       if (_currentBalancePage != page) {
+        final state = context.read<WalletBloc>().state;
+        List<Map<String, dynamic>> balances = [];
+        if (state is WalletLoaded) {
+          balances = state.balances;
+        } else if (state is WalletBalanceUpdated) {
+          balances = state.balances;
+        }
+
         setState(() {
           _currentBalancePage = page;
-          if (WalletProvider.instance.balances.isNotEmpty && page < WalletProvider.instance.balances.length) {
-            selectedCurrency = WalletProvider.instance.balances[page]['currency'];
+          if (balances.isNotEmpty && page < balances.length) {
+            selectedCurrency = balances[page]['currency'];
           }
         });
       }
@@ -112,6 +123,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     setState(() => _isLoading = true);
 
     try {
+      // Use WalletService directly for the API call to get response data,
+      // but also dispatch event to BLoC to update global state
       final response = await WalletService.transferWallet(
         toEmail: email,
         amount: amount,
@@ -119,16 +132,23 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       );
 
       if (mounted) {
+        // Dispatch event to BLoC to indicate a successful transfer and trigger state update
+        context.read<WalletBloc>().add(SendMoney(
+          amount: amount,
+          recipientPhone: email, // Using email as identifier if phone is unavailable
+          transactionType: 'transfer',
+        ));
+
         // Construct success data from input and response
         final successData = {
           'message': 'Transfer Successful',
-          'status': 'SUCCESS', // API returns 200/201 on success
+          'status': 'SUCCESS',
           'transfer': {
             'to_user_name': response['user']?['name'] ?? email,
             'to_user_email': response['user']?['email'] ?? email,
             'amount': amount.toString(),
             'currency': selectedCurrency,
-            'from_user_email': 'Me', // We don't get this back, but it's implied
+            'from_user_email': 'Me',
           }
         };
         _showSuccessSheet(successData);
@@ -224,7 +244,14 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   }
 
   void _showCurrencyDialog() {
-    final balances = WalletProvider.instance.balances;
+    final state = context.read<WalletBloc>().state;
+    List<Map<String, dynamic>> balances = [];
+    if (state is WalletLoaded) {
+      balances = state.balances;
+    } else if (state is WalletBalanceUpdated) {
+      balances = state.balances;
+    }
+
     if (balances.isEmpty) return;
     
     showDialog(
@@ -269,19 +296,15 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     return Scaffold(
       backgroundColor: darkBackground,
       body: SafeArea(
-        child: AnimatedBuilder(
-          animation: WalletProvider.instance,
-          builder: (context, child) {
-            final provider = WalletProvider.instance;
-            final balances = provider.balances;
+        child: BlocBuilder<WalletBloc, WalletState>(
+          builder: (context, state) {
+            final balances = state is WalletLoaded ? state.balances : 
+                           (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
             
             // Ensure selectedCurrency is valid or default
             if (balances.isNotEmpty && _currentBalancePage < balances.length) {
               // Ensure we don't overwrite if user manually changed it, 
               // but here the page view drives the currency selection logic in the original code.
-              // So we stick to that pattern: visible card = selected currency for context.
-              // However, for sending, we might want to select ANY currency. 
-              // But let's follow the existing pattern where swiping changes context.
             }
 
             return Column(

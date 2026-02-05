@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_event.dart';
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
 import '../services/logger_service.dart';
@@ -92,6 +94,12 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         );
 
         if (mounted) {
+          // Dispatch event to BLoC to update global state and trigger refresh
+          context.read<WalletBloc>().add(TopUpWallet(
+            amount: amount,
+            currency: _selectedCurrency,
+          ));
+
           // Show intermediate success
           ToastService().showSuccess(context, 'Payment Processed successfully!');
           

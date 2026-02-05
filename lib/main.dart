@@ -4,12 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'constants/colors.dart';
 import 'screens/onboarding_page_view.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/verify_pin_screen.dart';
 import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
+import 'bloc/wallet_bloc.dart';
+import 'bloc/wallet_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,7 +47,11 @@ class MyApp extends StatelessWidget {
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
-            return MaterialApp(
+            return BlocProvider(
+              create: (context) => WalletBloc()
+                ..add(const FetchWalletDataFromServer())
+                ..add(const StartAutoRefresh()),
+              child: MaterialApp(
               title: 'Comet Wallet',
           debugShowCheckedModeBanner: false,
           themeMode: currentMode,
@@ -113,6 +120,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           home: const OnboardingWrapper(),
+              ),
             );
           },
         );

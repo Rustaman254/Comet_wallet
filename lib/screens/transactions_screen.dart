@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_event.dart';
+import '../bloc/wallet_state.dart';
 import '../utils/responsive_utils.dart';
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
-import '../services/wallet_provider.dart';
 import '../models/transaction.dart';
 import '../services/vibration_service.dart';
 
@@ -26,30 +28,26 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   @override
   void initState() {
     super.initState();
-    // Initial fetch if needed, though mostly handled by Home
-    // We can rely on Provider's existing data or fetch fresh
-    if (WalletProvider.instance.transactions.isEmpty) {
-      WalletProvider.instance.fetchData();
-    }
-    
-    // Initialize filtered list with current provider data
-    _filteredTransactions = WalletProvider.instance.transactions;
+    // Data is managed by WalletBloc globally
   }
 
   Future<void> _fetchTransactions() async {
-    // Refresh global state
-    await WalletProvider.instance.fetchData();
-    // _filteredTransactions will be updated in build or listener if we added one, 
-    // but here we are using local filtered list. 
-    // Ideally, we should update _filteredTransactions based on new data + search query.
-    // simpler: just re-run filter logic.
+    // Refresh global state via BLoC
+    context.read<WalletBloc>().add(const RefreshWallet());
     if (mounted) {
        _runFilter(_searchController.text);
     }
   }
 
   void _runFilter(String query) {
-    List<Transaction> sourceList = WalletProvider.instance.transactions;
+    final state = context.read<WalletBloc>().state;
+    List<Transaction> sourceList = [];
+    if (state is WalletLoaded) {
+      sourceList = state.transactions;
+    } else if (state is WalletBalanceUpdated) {
+      sourceList = state.transactions;
+    }
+
     List<Transaction> results = [];
     if (query.isEmpty && _selectedFilter == 'All') {
       results = sourceList;
@@ -98,19 +96,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         ),
         centerTitle: true,
       ),
-      body: AnimatedBuilder(
-        animation: WalletProvider.instance,
-        builder: (context, child) {
-          // Update filtered list when provider updates if query is empty/unchanged? 
-          // Use a simple trick: if the list size changed significantly or we want real-time,
-          // we might need to re-run filter every time provider notifies.
-          // For now, let's re-run filter immediately.
-          
-          // Careful: _runFilter calls setState, which is bad inside build.
-          // Better: Perform filtering inside build.
-          
-          final provider = WalletProvider.instance;
-          final transactions = provider.transactions;
+      body: BlocBuilder<WalletBloc, WalletState>(
+        builder: (context, state) {
+          final transactions = state is WalletLoaded ? state.transactions : 
+                             (state is WalletBalanceUpdated ? state.transactions : <Transaction>[]);
           final query = _searchController.text;
           
           final filtered = transactions.where((tx) {
@@ -121,7 +110,6 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
              return matchesSearch && matchesFilter;
           }).toList();
           
-          // Assign to local for compatibility if needed, but we can just use `filtered`
           _filteredTransactions = filtered;
 
           return Column(
@@ -131,7 +119,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 child: RefreshIndicator(
                   onRefresh: _fetchTransactions,
                   color: buttonGreen,
-                  child: _buildBody(),
+                  child: _buildBody(state),
                 ),
               ),
             ],
@@ -202,13 +190,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  Widget _buildBody() {
-    final provider = WalletProvider.instance;
-    if (provider.isLoading && _filteredTransactions.isEmpty) {
-      return Center(child: CircularProgressIndicator());
+  Widget _buildBody(WalletState state) {
+    if (state is WalletLoading && _filteredTransactions.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    if (provider.error.isNotEmpty && _filteredTransactions.isEmpty) {
+    if (state is WalletError && _filteredTransactions.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +208,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ),
             SizedBox(height: 8.h),
             Text(
-              provider.error,
+              state.message,
               style: TextStyle(fontFamily: 'Satoshi',color: Colors.grey[400], fontSize: 14.sp),
               textAlign: TextAlign.center,
             ),
@@ -232,7 +219,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 backgroundColor: buttonGreen,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
               ),
-              child: Text('Try Again'),
+              child: const Text('Try Again'),
             ),
           ],
         ),

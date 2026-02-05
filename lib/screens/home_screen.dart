@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
@@ -19,8 +19,9 @@ import 'wallet_topup_screen.dart';
 import 'transactions_screen.dart';
 import '../services/toast_service.dart';
 import '../models/transaction.dart';
-import '../services/wallet_service.dart';
-import '../services/wallet_provider.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_event.dart';
+import '../bloc/wallet_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -49,10 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _balancePageController.addListener(_onBalancePageChanged);
     _loadCachedUserData();
     _fetchUserProfile();
-    // Initial data fetch handled by Provider or here
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      WalletProvider.instance.fetchData();
-    });
+    // Data fetch is now handled by BLoC in main.dart
   }
 
   void _calculateSummaries(List<Transaction> transactions) {
@@ -168,13 +166,33 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         top: true,
         bottom: true,
-        child: AnimatedBuilder(
-          animation: WalletProvider.instance,
-          builder: (context, child) {
-            final provider = WalletProvider.instance;
+        child: BlocConsumer<WalletBloc, WalletState>(
+          listener: (context, state) {
+            // Handle errors with toast messages
+            if (state is WalletError) {
+              ToastService().showError(context, state.message);
+            }
+          },
+          builder: (context, state) {
+            // Extract data from state
+            final balances = state is WalletLoaded ? state.balances : 
+                           (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
+            final transactions = state is WalletLoaded ? state.transactions : 
+                               (state is WalletBalanceUpdated ? state.transactions : <Transaction>[]);
+            final isLoading = state is WalletLoading;
             
-            // Recalculate summaries when provider updates
-            _calculateSummaries(provider.transactions);
+            // Calculate summaries from BLoC state
+            if (state is WalletLoaded) {
+              _totalIncome = state.totalIncome;
+              _totalExpense = state.totalExpense;
+              _pendingCount = state.pendingCount;
+              _completedCount = state.completedCount;
+            } else if (state is WalletBalanceUpdated) {
+              _totalIncome = state.totalIncome;
+              _totalExpense = state.totalExpense;
+              _pendingCount = state.pendingCount;
+              _completedCount = state.completedCount;
+            }
 
             return Column(
               children: [
@@ -401,8 +419,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRefresh: () async {
                       await Future.wait([
                         _fetchUserProfile(),
-                        WalletProvider.instance.fetchData(),
                       ]);
+                      // Dispatch refresh event to BLoC
+                      if (context.mounted) {
+                        context.read<WalletBloc>().add(const RefreshWallet());
+                      }
                     },
                     color: buttonGreen,
                     child: SingleChildScrollView(
@@ -415,13 +436,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Total Balance Card - Scrollable with PageView
                           SizedBox(
                             height: 220.h,
-                            child: provider.isLoading && provider.balances.isEmpty
+                            child: isLoading && balances.isEmpty
                                 ? const Center(
                                     child: CircularProgressIndicator(
                                       color: buttonGreen,
                                     ),
                                   )
-                                : (provider.balances.isEmpty
+                                : (balances.isEmpty
                                     ? Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 24.w,
@@ -430,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       )
                                     : PageView(
                                         controller: _balancePageController,
-                                        children: provider.balances
+                                        children: balances
                                             .map((balance) {
                                           return Padding(
                                             padding: EdgeInsets.symmetric(
@@ -675,11 +696,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           SizedBox(height: 12.h),
                           // Page indicators for balance cards
-                          if (provider.balances.isNotEmpty)
+                          if (balances.isNotEmpty)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: List.generate(
-                                  provider.balances.length, (index) {
+                                  balances.length, (index) {
                                 return Padding(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 3.w),
@@ -771,7 +792,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24.w),
                             child: _buildTransactionList(
-                                provider.transactions),
+                                transactions),
                           ),
                           SizedBox(height: 24.h),
                         ],

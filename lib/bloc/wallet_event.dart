@@ -67,3 +67,15 @@ class AddTransaction extends WalletEvent {
 class RefreshWallet extends WalletEvent {
   const RefreshWallet();
 }
+
+class FetchWalletDataFromServer extends WalletEvent {
+  const FetchWalletDataFromServer();
+}
+
+class StartAutoRefresh extends WalletEvent {
+  const StartAutoRefresh();
+}
+
+class StopAutoRefresh extends WalletEvent {
+  const StopAutoRefresh();
+}
