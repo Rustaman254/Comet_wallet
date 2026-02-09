@@ -7,6 +7,7 @@ import '../services/biometric_service.dart';
 import 'main_wrapper.dart';
 import '../services/token_service.dart';
 import '../services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyPinScreen extends StatefulWidget {
   final Widget? nextScreen;
@@ -17,22 +18,30 @@ class VerifyPinScreen extends StatefulWidget {
 }
 
 class _VerifyPinScreenState extends State<VerifyPinScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   String _pin = '';
   final String _correctPin = '1234';
   String _userName = 'User';
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
+  
+  // Biometric Animation
+  late AnimationController _biometricPulseController;
+  late Animation<double> _biometricScaleAnimation;
+  late Animation<Color?> _biometricColorAnimation;
+
   bool _isVerifying = false;
   bool _biometricsAvailable = false;
   bool _hasFaceID = false;
   bool _hasFingerprint = false;
+  bool _isBiometricScanning = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
-    _checkBiometrics();
+    
+    // Shake Animation
     _shakeController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -49,6 +58,32 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
         curve: Curves.easeInOut,
       ),
     );
+
+    // Biometric Pulse Animation
+    _biometricPulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    
+    _biometricScaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _biometricPulseController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    
+    _biometricColorAnimation = ColorTween(
+      begin: buttonGreen,
+      end: buttonGreen.withOpacity(0.5),
+    ).animate(
+      CurvedAnimation(
+        parent: _biometricPulseController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    // Check biometrics and auto-trigger
+    _checkBiometrics();
   }
 
   Future<void> _loadUserData() async {
@@ -61,6 +96,14 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   }
 
   Future<void> _checkBiometrics() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isEnabled = prefs.getBool('biometric_enabled') ?? false; // Default to false if not set
+    
+    if (!isEnabled) {
+      if (mounted) setState(() => _biometricsAvailable = false);
+      return;
+    }
+
     final isAvailable = await BiometricService.isAvailable();
     final hasFace = await BiometricService.hasFaceID();
     final hasFingerprint = await BiometricService.hasFingerprint();
@@ -86,6 +129,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   @override
   void dispose() {
     _shakeController.dispose();
+    _biometricPulseController.dispose();
     super.dispose();
   }
 
@@ -96,7 +140,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
         _pin += number;
       });
 
-      // Auto-verify when 4 digits entered
       if (_pin.length == 4) {
         _verifyPin();
       }
@@ -169,7 +212,6 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   Future<void> _verifyPin() async {
     await _showLoaderDialog();
 
-    // Use try-catch for network/API errors
     try {
       final isVerified = await AuthService.verifyPin(_pin);
       
@@ -191,40 +233,64 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
             });
           }
         });
-        
-        // Optional: Show toast or snackbar for feedback
-        // ToastService().showError(context, 'Incorrect PIN');
       }
     } catch (e) {
       if (!mounted) return;
       await _hideLoaderDialog();
       
-      // Handle error (network, server, etc.)
-       VibrationService.errorVibrate();
-       _shakeController.forward(from: 0.0).then((_) {
+      VibrationService.errorVibrate();
+      _shakeController.forward(from: 0.0).then((_) {
         if (mounted) {
           setState(() {
             _pin = '';
           });
         }
       });
-      // ToastService().showError(context, e.toString());
     }
   }
 
   Future<void> _onBiometric() async {
-    if (!_biometricsAvailable || _isVerifying) return;
+    if (!_biometricsAvailable || _isVerifying || _isBiometricScanning) return;
     
-    final authenticated = await BiometricService.authenticate(
-      localizedReason: 'Authenticate to access your wallet',
-      useErrorDialogs: true,
-      stickyAuth: true,
-    );
-    
-    if (authenticated && mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
+    setState(() {
+      _isBiometricScanning = true;
+    });
+    _biometricPulseController.repeat(reverse: true);
+
+    try {
+      // Add timeout to prevent infinite loop
+      final authenticated = await BiometricService.authenticate(
+        localizedReason: 'Authenticate to access your wallet',
+        useErrorDialogs: true,
+        stickyAuth: true,
+      ).timeout(
+        const Duration(seconds: 30), 
+        onTimeout: () => false,
       );
+      
+      if (!mounted) return;
+
+      if (authenticated) {
+        // Stop animation immediately on success
+        _biometricPulseController.stop();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
+        );
+      } else {
+        // Handle failure/cancel
+        VibrationService.errorVibrate();
+        // Optional: show message
+      }
+    } catch (e) {
+      debugPrint('Biometric error: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBiometricScanning = false;
+        });
+        _biometricPulseController.stop();
+        _biometricPulseController.reset();
+      }
     }
   }
 
@@ -336,6 +402,46 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     );
   }
 
+  Widget _buildBiometricButton() {
+    return GestureDetector(
+      onTap: _isVerifying ? null : _onBiometric,
+      child: AnimatedBuilder(
+        animation: _biometricPulseController,
+        builder: (context, child) {
+          return Container(
+            width: 70.r,
+            height: 70.r,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+              boxShadow: _isBiometricScanning
+                  ? [
+                      BoxShadow(
+                        color: buttonGreen.withOpacity(0.3),
+                        blurRadius: 10 * _biometricPulseController.value,
+                        spreadRadius: 2 * _biometricPulseController.value,
+                      )
+                    ]
+                  : [],
+            ),
+            child: Transform.scale(
+              scale: _isBiometricScanning ? _biometricScaleAnimation.value : 1.0,
+              child: Center(
+                child: Icon(
+                  _hasFaceID ? Icons.face : Icons.fingerprint,
+                  color: _isBiometricScanning 
+                      ? _biometricColorAnimation.value 
+                      : buttonGreen,
+                  size: 28,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildKeypad() {
     return Column(
       children: [
@@ -368,14 +474,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               ),
             ),
             _biometricsAvailable
-                ? _buildKeypadButton(
-                    onPressed: _onBiometric,
-                    child: Icon(
-                      _hasFaceID ? Icons.face : Icons.fingerprint,
-                      color: buttonGreen,
-                      size: 28,
-                    ),
-                  )
+                ? _buildBiometricButton()
                 : SizedBox(width: 70.r, height: 70.r),
           ],
         ),

@@ -35,22 +35,35 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _mobileAmountController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
 
   String selectedCurrency = 'KES';
-  int _currentBalancePage = 1; 
+  String _mobileCurrency = 'KES';
+  int _currentBalancePage = 1;
   bool _isAmountFocused = false;
   bool _isLoading = false;
 
   final List<String> _favorites = [];
-
-
+  
+  // Phone number prefix mapping
+  final Map<String, String> _countryPrefixes = {
+    '+254': 'KES', // Kenya
+    '+256': 'UGX', // Uganda
+    '+255': 'TZS', // Tanzania
+    '+250': 'RWF', // Rwanda
+    '+27': 'ZAR',  // South Africa
+    '+234': 'NGN', // Nigeria
+    '+233': 'GHS', // Ghana
+  };
 
   @override
   void initState() {
     super.initState();
     _balancePageController.addListener(_onBalancePageChanged);
     _amountFocusNode.addListener(_onAmountFocusChange);
+    _phoneController.addListener(_onPhoneChanged);
     
     if (widget.initialEmail != null) {
       _emailController.text = widget.initialEmail!;
@@ -61,8 +74,42 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
     // Set initial page to KES if it's there
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _balancePageController.jumpToPage(1);
+      if (_balancePageController.hasClients) {
+        _balancePageController.jumpToPage(1);
+      }
     });
+  }
+
+  void _onPhoneChanged() {
+    final phone = _phoneController.text.trim();
+    String detectedCurrency = _mobileCurrency;
+    
+    // Check for country codes
+    for (var prefix in _countryPrefixes.keys) {
+      if (phone.startsWith(prefix)) {
+        detectedCurrency = _countryPrefixes[prefix]!;
+        break;
+      }
+    }
+
+    if (detectedCurrency != _mobileCurrency) {
+      setState(() {
+        _mobileCurrency = detectedCurrency;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _balancePageController.dispose();
+    _amountController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _phoneController.dispose();
+    _mobileAmountController.dispose();
+    _amountFocusNode.dispose();
+    super.dispose();
   }
 
   void _onAmountFocusChange() {
@@ -73,17 +120,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
   void _onAmountChanged(String value) {
     setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _balancePageController.dispose();
-    _amountController.dispose();
-    _emailController.dispose();
-    _addressController.dispose();
-    _amountFocusNode.dispose();
-    super.dispose();
   }
 
   void _onBalancePageChanged() {
@@ -126,8 +162,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // Use WalletService directly for the API call to get response data,
-      // but also dispatch event to BLoC to update global state
       final response = await WalletService.transferWallet(
         toEmail: email,
         amount: amount,
@@ -135,14 +169,12 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       );
 
       if (mounted) {
-        // Dispatch event to BLoC to indicate a successful transfer and trigger state update
         context.read<WalletBloc>().add(SendMoney(
           amount: amount,
-          recipientPhone: email, // Using email as identifier if phone is unavailable
+          recipientPhone: email,
           transactionType: 'transfer',
         ));
 
-        // Construct success data from input and response
         final successData = {
           'message': 'Transfer Successful',
           'status': 'SUCCESS',
@@ -151,6 +183,62 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             'to_user_email': response['user']?['email'] ?? email,
             'amount': amount.toString(),
             'currency': selectedCurrency,
+            'from_user_email': 'Me',
+          }
+        };
+        _showSuccessSheet(successData);
+      }
+    } catch (e) {
+      if (mounted) {
+        ToastService().showError(context, e.toString().replaceAll('Exception:', '').trim());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _handleMobileTransfer() async {
+    final phone = _phoneController.text.trim();
+    final amountText = _mobileAmountController.text.trim();
+    
+    if (phone.isEmpty) {
+      ToastService().showError(context, 'Please enter recipient phone number');
+      return;
+    }
+    
+    final amount = double.tryParse(amountText) ?? 0.0;
+    if (amount <= 0) {
+      ToastService().showError(context, 'Please enter a valid amount');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await WalletService.sendMoney(
+        recipientPhone: phone,
+        amount: amount,
+        currency: _mobileCurrency,
+        description: 'Mobile Transfer',
+      );
+
+      if (mounted) {
+        context.read<WalletBloc>().add(SendMoney(
+          amount: amount,
+          recipientPhone: phone,
+          transactionType: 'mobile_transfer',
+        ));
+
+        final successData = {
+          'message': 'Mobile Transfer Successful',
+          'status': 'SUCCESS',
+          'transfer': {
+            'to_user_name': 'Mobile User',
+            'to_user_email': phone,
+            'amount': amount.toString(),
+            'currency': _mobileCurrency,
             'from_user_email': 'Me',
           }
         };
@@ -190,13 +278,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         amount: amount,
       ));
 
-      // BLoC will handle the API call and refresh.
-      // For now, we'll assume success and show a message or wait for state change.
-      // But usually, we want to show a success sheet like the other one.
-      
-      // Since it's an async operation in BLoC, we might want to listen for state changes.
-      // But for simplicity and matching the existing pattern:
-      
       final successData = {
         'message': 'USDA Transfer Successful',
         'status': 'SUCCESS',
@@ -268,8 +349,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close sheet
-                  Navigator.pop(context); // Go back to Home
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: buttonGreen,
@@ -351,7 +432,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3, // Increased to 3 tabs
       child: Scaffold(
         backgroundColor: darkBackground,
         body: SafeArea(
@@ -360,12 +441,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             final balances = state is WalletLoaded ? state.balances : 
                            (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
             
-            // Ensure selectedCurrency is valid or default
-            if (balances.isNotEmpty && _currentBalancePage < balances.length) {
-              // Ensure we don't overwrite if user manually changed it, 
-              // but here the page view drives the currency selection logic in the original code.
-            }
-
             return Column(
               children: [
                 const SizedBox(height: 20),
@@ -384,7 +459,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          'Send to Another Wallet',
+                          'Send Money', // Generic title
                           textAlign: TextAlign.center,
                           style: TextStyle(fontFamily: 'Satoshi',
                             color: Colors.white,
@@ -416,12 +491,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       unselectedLabelColor: Colors.white70,
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
-                        fontSize: 14.sp,
+                        fontSize: 13.sp, // Slightly smaller font to fit 3 tabs
                         fontWeight: FontWeight.bold,
                       ),
                       tabs: const [
-                        Tab(text: 'Send to Email'),
-                        Tab(text: 'Transfer USDA'),
+                        Tab(text: 'Wallet'),
+                        Tab(text: 'Mobile'),
+                        Tab(text: 'USDA'),
                       ],
                     ),
                   ),
@@ -431,6 +507,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   child: TabBarView(
                     children: [
                       _buildSendToEmailTab(balances),
+                      _buildSendToMobileTab(balances), // New Tab
                       _buildTransferUSDATab(balances),
                     ],
                   ),
@@ -442,6 +519,177 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       ),
     ));
   }
+
+  // ... (existing _buildSendToEmailTab implementation)
+  
+  Widget _buildSendToMobileTab(List<Map<String, dynamic>> balances) {
+    // Find balance for detected mobile currency
+    String mobileBalance = '0.00';
+    try {
+      final currencyWallet = balances.firstWhere(
+        (b) => b['currency'] == _mobileCurrency,
+        orElse: () => {'amount': '0.00'},
+      );
+      mobileBalance = currencyWallet['amount'].toString();
+    } catch (_) {}
+
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Balance Section at Top (Dynamic based on phone number)
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    'Available Balance',
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: Colors.white70,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$_mobileCurrency ', // Dynamic currency
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: buttonGreen,
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        FormatUtils.formatAmount(double.tryParse(mobileBalance) ?? 0.0),
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: buttonGreen,
+                          fontSize: 36.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 32.h),
+            
+            // Title
+            Text(
+              'Send to Mobile Money',
+              style: TextStyle(
+                fontFamily: 'Satoshi',
+                color: Colors.white,
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 24.h),
+            
+            // Phone Number
+            Text(
+              'Recipient Phone Number',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              decoration: buildUnderlineInputDecoration(
+                context: context,
+                label: '',
+                hintText: 'e.g. +2547...',
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              'Currency detected: $_mobileCurrency',
+              style: TextStyle(
+                color: Colors.white54,
+                fontSize: 12.sp,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            SizedBox(height: 24.h),
+            
+            // Amount
+            Text(
+              'Amount',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            TextFormField(
+              controller: _mobileAmountController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              decoration: buildUnderlineInputDecoration(
+                context: context,
+                label: '',
+                hintText: 'Enter amount',
+              ),
+            ),
+            SizedBox(height: 48.h),
+
+            // Send Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _handleMobileTransfer,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonGreen,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text(
+                        'Send to Mobile',
+                        style: TextStyle(fontFamily: 'Satoshi',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+            SizedBox(height: 40.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ... (existing _buildTransferUSDATab implementation)
 
   Widget _buildSendToEmailTab(List<Map<String, dynamic>> balances) {
     return SingleChildScrollView(

@@ -33,14 +33,14 @@ class AuthService {
     try {
       final requestBody = {
         'user': {
-          'email': email,
-          'password': password,
           'name': name,
+          'email': email,
           'phone': phoneNumber,
+          'password': password,
           'role': 8,
+          'pin': pin,
           'status': 'active',
           'location': location,
-          'pin': pin,
         }
       };
 
@@ -72,40 +72,43 @@ class AuthService {
           response: jsonResponse,
         );
 
-
-        // Handle response structure where User might be capitalized
-        final userObj = jsonResponse['user'] ?? jsonResponse['User'];
+        // Handle response structure where User might be capitalized or lowercase
+        // Check for "User" first as per requirement
+        final userObj = jsonResponse['User'] ?? jsonResponse['user'];
         
         // Try to find token at root or inside userObj
+        // In the example response, there is no root token, and internal token is empty string
+        // But we should check anyway
         String token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
         if (token.isEmpty && userObj != null) {
           token = userObj['token'] ?? userObj['access_token'] ?? '';
         }
 
         if (userObj != null) {
-          final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
-          final userEmail = userObj?['email'] ?? email ?? '';
-          final phone = userObj?['phone'] ?? jsonResponse['phone'] ?? '';
-          final userName = userObj?['name'] ?? name ?? '';
+          final userId = userObj['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
+          final userEmail = userObj['email'] ?? email;
+          final phone = userObj['phone'] ?? phoneNumber;
+          final userName = userObj['name'] ?? name;
           
-          // Save what we have, even if token is empty
-          final cardanoAddress = userObj?['cardano_address'];
-          final balanceAda = (userObj?['balance_ada'] ?? 0.0).toDouble();
-          final balanceUsda = (userObj?['balance_usda'] ?? 0.0).toDouble();
-          final balanceUsdaRaw = userObj?['balance_usda_raw'];
+          final cardanoAddress = userObj['cardano_address'];
+          final balanceAda = (userObj['balance_ada'] ?? 0.0).toDouble();
+          final balanceUsda = (userObj['balance_usda'] ?? 0.0).toDouble();
+          final balanceUsdaRaw = userObj['balance_usda_raw'];
 
-          // Save what we have, even if token is empty
-          await TokenService.saveExtendedUserData(
-            token: token,
-            userId: userId,
-            email: userEmail,
-            phoneNumber: phone,
-            name: userName,
-            cardanoAddress: cardanoAddress,
-            balanceAda: balanceAda,
-            balanceUsda: balanceUsda,
-            balanceUsdaRaw: balanceUsdaRaw,
-          );
+          // Save what we have, even if token is empty (waiting for login)
+          if (token.isNotEmpty) {
+             await TokenService.saveExtendedUserData(
+              token: token,
+              userId: userId,
+              email: userEmail,
+              phoneNumber: phone,
+              name: userName,
+              cardanoAddress: cardanoAddress,
+              balanceAda: balanceAda,
+              balanceUsda: balanceUsda,
+              balanceUsdaRaw: balanceUsdaRaw,
+            );
+          }
         }
 
         return jsonResponse;
@@ -185,8 +188,10 @@ class AuthService {
         // User data is in response['user']
         final token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
         final userObj = jsonResponse['user'];
+        
+        // Handle various ID fields if present
         final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
-        final userEmail = userObj?['email'] ?? email ?? '';
+        final userEmail = userObj?['email'] ?? email;
         final phone = userObj?['phone'] ?? jsonResponse['phone'] ?? '';
         final name = userObj?['name'] ?? '';
         

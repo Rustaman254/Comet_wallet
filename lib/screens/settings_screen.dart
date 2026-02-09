@@ -9,6 +9,7 @@ import '../services/token_service.dart';
 import 'sign_in_screen.dart';
 import '../services/logger_service.dart';
 import '../utils/component_styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -29,9 +30,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
     final vibrationEnabled = await VibrationService.isEnabled();
+    final biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
+    
     setState(() {
       _vibrationEnabled = vibrationEnabled;
+      _biometricsEnabled = biometricEnabled;
     });
   }
 
@@ -167,11 +172,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Biometric',
                 HeroIcons.faceSmile,
                 _biometricsEnabled,
-                (val) {
+                (val) async {
                   VibrationService.selectionClick();
                   setState(() {
                     _biometricsEnabled = val;
                   });
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('biometric_enabled', val);
                 },
                 isDark: isDark,
               ),

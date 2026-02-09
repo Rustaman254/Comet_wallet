@@ -89,35 +89,46 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       // Create balance cards for each wallet
       final balances = <Map<String, dynamic>>[];
       
+      // Use a Set to keep track of added currencies to avoid duplicates
+      final addedCurrencies = <String>{};
+
+      // First, add from wallets list (more detailed)
       if (walletsList.isNotEmpty) {
-        // Use wallets array if available
         for (var wallet in walletsList) {
           final currency = wallet['currency'] as String? ?? 'USD';
           final balance = wallet['balance']?.toString() ?? '0.00';
           
-          balances.add({
-            'currency': currency,
-            'symbol': _getCurrencySymbol(currency),
-            'amount': balance,
-            'date': 'Today',
-            'change': '+0.00',
-          });
-        }
-      } else if (balancesMap.isNotEmpty) {
-        // Fallback to balances map if wallets array is empty
-        balancesMap.forEach((currency, balance) {
-          if (balance != null && balance != 0) {
+          if (!addedCurrencies.contains(currency)) {
             balances.add({
               'currency': currency,
               'symbol': _getCurrencySymbol(currency),
-              'amount': balance.toString(),
+              'amount': balance,
               'date': 'Today',
               'change': '+0.00',
             });
+            addedCurrencies.add(currency);
+          }
+        }
+      }
+
+      // Then add remaining from balances map (even if zero)
+      if (balancesMap.isNotEmpty) {
+        balancesMap.forEach((currency, balance) {
+          if (!addedCurrencies.contains(currency)) {
+            balances.add({
+              'currency': currency,
+              'symbol': _getCurrencySymbol(currency),
+              'amount': balance?.toString() ?? '0.00',
+              'date': 'Today',
+              'change': '+0.00',
+            });
+            addedCurrencies.add(currency);
           }
         });
-      } else {
-        // Default empty balance
+      }
+
+      // Fallback if absolutely nothing
+      if (balances.isEmpty) {
         balances.add({
           'currency': 'USD',
           'symbol': '\$',
@@ -159,23 +170,23 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
   String _getCurrencySymbol(String currency) {
     switch (currency) {
       case 'USD':
-        return '\$';
+        return 'USD';
       case 'EUR':
-        return '€';
+        return 'EUR';
       case 'GBP':
-        return '£';
+        return 'GBP';
       case 'KES':
         return 'KSH';
       case 'UGX':
         return 'USh';
       case 'TZS':
-        return 'TSh';
+        return 'TSH ';
       case 'RWF':
-        return 'FRw';
+        return 'FRW';
       case 'ZAR':
-        return 'R';
+        return 'ZAR';
       case 'USDA':
-        return '\u20B3'; // Cardano-ish symbol or just USDA
+        return 'USDA';
       default:
         return currency;
     }
