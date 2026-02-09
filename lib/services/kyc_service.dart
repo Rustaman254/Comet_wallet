@@ -4,6 +4,7 @@ import 'dart:convert';
 import '../constants/api_constants.dart';
 import '../models/kyc_model.dart';
 import 'logger_service.dart';
+import 'authenticated_http_client.dart';
 
 class KYCService {
   static const String _uploadEndpoint = '${ApiConstants.imageUploadUrl}uploads';
@@ -159,12 +160,8 @@ class KYCService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(ApiConstants.kycCreateEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
         body: jsonEncode(requestBody),
       );
 

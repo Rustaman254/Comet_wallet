@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
 import '../services/vibration_service.dart';
+import '../services/biometric_service.dart';
 import 'main_wrapper.dart';
 import '../services/token_service.dart';
 import '../services/auth_service.dart';
@@ -23,11 +24,15 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
   bool _isVerifying = false;
+  bool _biometricsAvailable = false;
+  bool _hasFaceID = false;
+  bool _hasFingerprint = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _checkBiometrics();
     _shakeController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -52,6 +57,29 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       setState(() {
         _userName = name;
       });
+    }
+  }
+
+  Future<void> _checkBiometrics() async {
+    final isAvailable = await BiometricService.isAvailable();
+    final hasFace = await BiometricService.hasFaceID();
+    final hasFingerprint = await BiometricService.hasFingerprint();
+    
+    if (mounted) {
+      setState(() {
+        _biometricsAvailable = isAvailable;
+        _hasFaceID = hasFace;
+        _hasFingerprint = hasFingerprint;
+      });
+      
+      // Auto-prompt biometric authentication if available
+      if (_biometricsAvailable) {
+        // Small delay to let UI settle
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) {
+          _onBiometric();
+        }
+      }
     }
   }
 
@@ -184,10 +212,20 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     }
   }
 
-  void _onBiometric() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainWrapper()),
+  Future<void> _onBiometric() async {
+    if (!_biometricsAvailable || _isVerifying) return;
+    
+    final authenticated = await BiometricService.authenticate(
+      localizedReason: 'Authenticate to access your wallet',
+      useErrorDialogs: true,
+      stickyAuth: true,
     );
+    
+    if (authenticated && mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
+      );
+    }
   }
 
   String getInitials(String name) {
@@ -329,13 +367,16 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 ),
               ),
             ),
-            _buildKeypadButton(
-              onPressed: _onBiometric,
-              child: const Icon(
-                Icons.fingerprint,
-                color: Colors.white,
-              ),
-            ),
+            _biometricsAvailable
+                ? _buildKeypadButton(
+                    onPressed: _onBiometric,
+                    child: Icon(
+                      _hasFaceID ? Icons.face : Icons.fingerprint,
+                      color: buttonGreen,
+                      size: 28,
+                    ),
+                  )
+                : SizedBox(width: 70.r, height: 70.r),
           ],
         ),
       ],
@@ -345,100 +386,112 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // match login page
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(24.r),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 40.h),
-              Center(
-                child: Container(
-                  width: 80.r,
-                  height: 80.r,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: buttonGreen, width: 3.w),
-                    color: Colors.grey[800],
-                  ),
-                  child: Center(
-                    child: Text(
-                      getInitials(_userName),
-                      style: TextStyle(
-                        fontFamily: 'Satoshi',
-                        color: Colors.white,
-                        fontSize: 32.sp,
-                        fontWeight: FontWeight.bold,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.r, vertical: 12.h),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 24.h,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
+                      Center(
+                        child: Container(
+                          width: 80.r,
+                          height: 80.r,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: buttonGreen, width: 3.w),
+                            color: Colors.grey[800],
+                          ),
+                          child: Center(
+                            child: Text(
+                              getInitials(_userName),
+                              style: TextStyle(
+                                fontFamily: 'Satoshi',
+                                color: Colors.white,
+                                fontSize: 32.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Welcome back,',
-                      style: TextStyle(
-                        fontFamily: 'Satoshi',
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
+                      SizedBox(height: 20.h),
+                      Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              'Welcome back,',
+                              style: TextStyle(
+                                fontFamily: 'Satoshi',
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            Text(
+                              _userName,
+                              style: TextStyle(
+                                fontFamily: 'Satoshi',
+                                color: Colors.white,
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      _userName,
-                      style: TextStyle(
-                        fontFamily: 'Satoshi',
-                        color: Colors.white,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.bold,
+                      SizedBox(height: 30.h),
+                      Center(
+                        child: Text(
+                          'Enter your PIN',
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
+                            color: Colors.white,
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 50.h),
-              Center(
-                child: Text(
-                  'Enter your PIN',
-                  style: TextStyle(
-                    fontFamily: 'Satoshi',
-                    color: Colors.white,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w500,
+                      SizedBox(height: 20.h),
+                      _buildDashPin(),
+                      const Spacer(),
+                      SizedBox(height: 20.h),
+                      _buildKeypad(),
+                      SizedBox(height: 16.h),
+                      Center(
+                        child: TextButton(
+                          onPressed: _isVerifying
+                              ? null
+                              : () {
+                                  // TODO: forgot PIN flow
+                                },
+                          child: Text(
+                            'Forgot PIN?',
+                            style: TextStyle(
+                              fontFamily: 'Satoshi',
+                              color: buttonGreen,
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                    ],
                   ),
                 ),
               ),
-              SizedBox(height: 30.h),
-              _buildDashPin(),
-              const Spacer(),
-              _buildKeypad(),
-              SizedBox(height: 20.h),
-              Center(
-                child: TextButton(
-                  onPressed: _isVerifying
-                      ? null
-                      : () {
-                          // TODO: forgot PIN flow
-                        },
-                  child: Text(
-                    'Forgot PIN?',
-                    style: TextStyle(
-                      fontFamily: 'Satoshi',
-                      color: buttonGreen,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20.h),
-            ],
-          ),
+            );
+          }
         ),
       ),
     );

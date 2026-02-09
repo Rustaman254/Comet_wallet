@@ -33,6 +33,7 @@ class Transaction {
   final int? ownershipID;
   final dynamic ownership;
   final TransactionUser? user;
+  final String? explorerLink;
 
   Transaction({
     required this.id,
@@ -44,6 +45,7 @@ class Transaction {
     this.ownershipID,
     this.ownership,
     this.user,
+    this.explorerLink,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class Transaction {
       ownershipID: json['OwnershipID'],
       ownership: json['ownership'],
       user: json['user'] != null ? TransactionUser.fromJson(json['user']) : null,
+      explorerLink: json['explorerLink'],
     );
   }
 }

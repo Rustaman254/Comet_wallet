@@ -79,3 +79,31 @@ class StartAutoRefresh extends WalletEvent {
 class StopAutoRefresh extends WalletEvent {
   const StopAutoRefresh();
 }
+
+class SwapCurrencies extends WalletEvent {
+  final String fromCurrency;
+  final String toCurrency;
+  final double amount;
+
+  const SwapCurrencies({
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.amount,
+  });
+
+  @override
+  List<Object?> get props => [fromCurrency, toCurrency, amount];
+}
+
+class TransferUSDA extends WalletEvent {
+  final String recipientAddress;
+  final double amount;
+
+  const TransferUSDA({
+    required this.recipientAddress,
+    required this.amount,
+  });
+
+  @override
+  List<Object?> get props => [recipientAddress, amount];
+}

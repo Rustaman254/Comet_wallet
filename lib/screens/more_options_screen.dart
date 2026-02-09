@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
 import 'ecitizen_services_screen.dart';
+import 'swap_screen.dart';
 import '../services/toast_service.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
@@ -101,8 +102,18 @@ class MoreOptionsScreen extends StatelessWidget {
                   );
                 },
               ),
-              // Empty placeholder for alignment
-              const SizedBox(width: 60),
+              _buildCircularOption(
+                Icons.swap_horiz,
+                'Swap',
+                () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SwapScreen(),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 32),

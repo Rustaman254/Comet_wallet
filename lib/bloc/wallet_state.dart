@@ -98,3 +98,24 @@ class WalletBalanceUpdated extends WalletState {
     completedCount,
   ];
 }
+
+class WalletSwapLoading extends WalletState {
+  const WalletSwapLoading();
+}
+
+class WalletSwapSuccess extends WalletState {
+  final String message;
+  final double amountCredited;
+  final String fromCurrency;
+  final String toCurrency;
+
+  const WalletSwapSuccess({
+    required this.message,
+    required this.amountCredited,
+    required this.fromCurrency,
+    required this.toCurrency,
+  });
+
+  @override
+  List<Object?> get props => [message, amountCredited, fromCurrency, toCurrency];
+}

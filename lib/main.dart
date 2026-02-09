@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smile_id/smile_id.dart';
+import 'package:smile_id/generated/smileid_messages.g.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heroicons/heroicons.dart';
@@ -11,6 +12,7 @@ import 'screens/sign_in_screen.dart';
 import 'screens/verify_pin_screen.dart';
 import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
+import 'services/authenticated_http_client.dart';
 import 'bloc/wallet_bloc.dart';
 import 'bloc/wallet_event.dart';
 
@@ -18,15 +20,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize SmileID with error handling
+  // Give the native side time to fully initialize
+  await Future.delayed(const Duration(seconds: 1));
+  
   try {
-    SmileID.initialize(
+    debugPrint("Starting SmileID Dart initialization");
+    SmileID.initializeWithConfig(
       useSandbox: true,
+      config: FlutterConfig(
+        partnerId: "6482",
+        authToken: "7bd88c7b-801b-420a-b35b-86d7a232ba70",
+        prodBaseUrl: "https://api.smileidentity.com/v1",
+        sandboxBaseUrl: "https://testapi.smileidentity.com/v1",
+      ),
       enableCrashReporting: true,
     );
+    debugPrint("SmileID Dart initialization completed successfully");
   } catch (e) {
-    // Log error but don't crash the app
-    print('SmileID initialization warning: $e');
-    // App will continue to work, KYC features may be limited
+    debugPrint("SmileID initialization failed: $e");
   }
   
   runApp(const MyApp());
@@ -47,6 +58,20 @@ class MyApp extends StatelessWidget {
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
+            // Initialize authenticated HTTP client
+            AuthenticatedHttpClient.initialize(
+              onTokenExpired: () {
+                // Navigate to login screen when token expires
+                final navigator = Navigator.of(context);
+                if (navigator.mounted) {
+                  navigator.pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const SignInScreen()),
+                    (route) => false,
+                  );
+                }
+              },
+            );
+            
             return BlocProvider(
               create: (context) => WalletBloc()
                 ..add(const FetchWalletDataFromServer())

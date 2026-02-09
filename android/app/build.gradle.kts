@@ -64,6 +64,10 @@ android {
     }
 }
 
+dependencies {
+    implementation("com.smileidentity:android-sdk:11.1.7")
+}
+
 flutter {
     source = "../.."
 }

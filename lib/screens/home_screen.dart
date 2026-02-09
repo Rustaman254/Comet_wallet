@@ -12,6 +12,7 @@ import 'send_options_screen.dart';
 import 'qr_scan_screen.dart';
 import 'more_options_screen.dart';
 import 'receive_money_screen.dart';
+import 'swap_screen.dart';
 import 'withdraw_money_screen.dart';
 import 'settings_screen.dart';
 import 'profile_screen.dart';
@@ -101,7 +102,11 @@ class _HomeScreenState extends State<HomeScreen> {
           kycVerified: false,
           isAccountActivated: false,
           activationFeePaid: false,
-          walletBalances: {},
+          walletBalances: [],
+          cardanoAddress: '',
+          balanceAda: 0.0,
+          balanceUsda: 0.0,
+          balanceUsdaRaw: 0,
           status: '',
         );
       });
@@ -562,8 +567,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         TextBaseline.alphabetic,
                                                     children: [
                                                       Text(
-                                                        balance['currency'] ??
-                                                            'KES',
+                                                        balance['symbol'] ?? balance['currency'] ?? 'KES',
                                                         style: TextStyle(
                                                           fontFamily:
                                                               'Satoshi',
@@ -576,9 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       SizedBox(width: 8.w),
                                                       Text(
                                                         _isBalanceVisible
-                                                            ? (balance['amount']
-                                                                    ?.toString() ??
-                                                                '0.00')
+                                                        ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
                                                             : '••••••',
                                                         style: TextStyle(
                                                           fontFamily:
@@ -1222,5 +1224,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     );
+  }
+
+  String _formatAmount(double amount) {
+    if (amount % 1 == 0) {
+      return amount.toInt().toString();
+    }
+    return amount.toStringAsFixed(2);
   }
 }

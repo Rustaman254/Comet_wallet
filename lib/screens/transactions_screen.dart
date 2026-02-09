@@ -7,7 +7,14 @@ import '../utils/responsive_utils.dart';
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
 import '../models/transaction.dart';
-import '../services/vibration_service.dart';
+import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:csv/csv.dart';
+import 'package:intl/intl.dart'; 
+import 'package:webview_flutter/webview_flutter.dart';
+import '../utils/format_utils.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -43,9 +50,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     final state = context.read<WalletBloc>().state;
     List<Transaction> sourceList = [];
     if (state is WalletLoaded) {
-      sourceList = state.transactions;
+      sourceList = List.from(state.transactions)..sort((a, b) => b.id.compareTo(a.id));
     } else if (state is WalletBalanceUpdated) {
-      sourceList = state.transactions;
+      sourceList = List.from(state.transactions)..sort((a, b) => b.id.compareTo(a.id));
     }
 
     List<Transaction> results = [];
@@ -75,6 +82,57 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     }
   }
 
+  Future<void> _exportTransactions() async {
+    if (_filteredTransactions.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No transactions to export')),
+      );
+      return;
+    }
+
+    try {
+      List<List<dynamic>> rows = [];
+      // Header
+      rows.add([
+        'ID',
+        'Type',
+        'Amount',
+        'Currency',
+        'Status',
+        'Phone Number',
+        'Explorer Link'
+      ]);
+
+      // Data
+      for (var tx in _filteredTransactions) {
+        rows.add([
+          tx.id,
+          tx.transactionType,
+          tx.amount,
+          'KES', // Placeholder
+          tx.status,
+          tx.phoneNumber,
+          tx.explorerLink ?? ''
+        ]);
+      }
+
+      String csv = const ListToCsvConverter().convert(rows);
+
+      final directory = await getTemporaryDirectory();
+      final path = '${directory.path}/transactions_${DateTime.now().millisecondsSinceEpoch}.csv';
+      final file = File(path);
+      await file.writeAsString(csv);
+
+      await Share.shareXFiles([XFile(path)], text: 'My Transactions History');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,11 +153,18 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.download, color: Theme.of(context).textTheme.bodyMedium?.color),
+            onPressed: _exportTransactions,
+            tooltip: 'Export Transactions',
+          ),
+        ],
       ),
       body: BlocBuilder<WalletBloc, WalletState>(
         builder: (context, state) {
-          final transactions = state is WalletLoaded ? state.transactions : 
-                             (state is WalletBalanceUpdated ? state.transactions : <Transaction>[]);
+          final transactions = state is WalletLoaded ? (List<Transaction>.from(state.transactions)..sort((a, b) => b.id.compareTo(a.id))) : 
+                             (state is WalletBalanceUpdated ? (List<Transaction>.from(state.transactions)..sort((a, b) => b.id.compareTo(a.id))) : <Transaction>[]);
           final query = _searchController.text;
           
           final filtered = transactions.where((tx) {
@@ -355,11 +420,45 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   ),
                 ],
               ),
+              if (transaction.explorerLink != null && transaction.explorerLink!.isNotEmpty) ...[
+                SizedBox(height: 4.h),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            title: const Text('Explorer', style: TextStyle(fontFamily: 'Satoshi')),
+                            backgroundColor: darkBackground,
+                            foregroundColor: Colors.white,
+                          ),
+                          body: WebViewWidget(
+                            controller: WebViewController()
+                              ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                              ..loadRequest(Uri.parse(transaction.explorerLink!)),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'View on Explorer',
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: Colors.blue,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
         Text(
-          'KES ${transaction.amount.toStringAsFixed(2)}',
+          'KES ${FormatUtils.formatAmount(transaction.amount)}',
           style: TextStyle(fontFamily: 'Satoshi',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 16.sp,
@@ -375,4 +474,5 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       word[0].toUpperCase() + word.substring(1).toLowerCase()
     ).join(' ');
   }
+
 }

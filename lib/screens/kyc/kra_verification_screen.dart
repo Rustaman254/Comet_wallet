@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smile_id/smile_id.dart';
 import '../../constants/colors.dart';
 import '../../services/toast_service.dart';
-import '../home_screen.dart';
+import '../sign_in_screen.dart';
 import '../../services/kyc_service.dart';
 import '../../models/kyc_model.dart';
 import '../../services/token_service.dart';
@@ -59,7 +59,7 @@ class _KRAVerificationScreenState extends State<KRAVerificationScreen> {
       if (mounted) {
         ToastService().showSuccess(context, "KRA Information verified successfully");
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const SignInScreen()),
           (route) => false,
         );
       }

@@ -6,6 +6,7 @@ import 'logger_service.dart';
 import 'token_service.dart';
 import '../utils/debug_utils.dart';
 import '../models/user_profile.dart';
+import 'authenticated_http_client.dart';
 
 class AuthService {
   /// User registration
@@ -81,21 +82,30 @@ class AuthService {
           token = userObj['token'] ?? userObj['access_token'] ?? '';
         }
 
-        if (token.isNotEmpty || userObj != null) {
+        if (userObj != null) {
           final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
           final userEmail = userObj?['email'] ?? email ?? '';
           final phone = userObj?['phone'] ?? jsonResponse['phone'] ?? '';
           final userName = userObj?['name'] ?? name ?? '';
           
-          if (token.isNotEmpty) {
-            await TokenService.saveUserData(
-              token: token,
-              userId: userId,
-              email: userEmail,
-              phoneNumber: phone,
-              name: userName,
-            );
-          }
+          // Save what we have, even if token is empty
+          final cardanoAddress = userObj?['cardano_address'];
+          final balanceAda = (userObj?['balance_ada'] ?? 0.0).toDouble();
+          final balanceUsda = (userObj?['balance_usda'] ?? 0.0).toDouble();
+          final balanceUsdaRaw = userObj?['balance_usda_raw'];
+
+          // Save what we have, even if token is empty
+          await TokenService.saveExtendedUserData(
+            token: token,
+            userId: userId,
+            email: userEmail,
+            phoneNumber: phone,
+            name: userName,
+            cardanoAddress: cardanoAddress,
+            balanceAda: balanceAda,
+            balanceUsda: balanceUsda,
+            balanceUsdaRaw: balanceUsdaRaw,
+          );
         }
 
         return jsonResponse;
@@ -193,12 +203,21 @@ class AuthService {
         );
         
         if (token.isNotEmpty) {
-          await TokenService.saveUserData(
+          final cardanoAddress = userObj?['cardano_address'];
+          final balanceAda = (userObj?['balance_ada'] ?? 0.0).toDouble();
+          final balanceUsda = (userObj?['balance_usda'] ?? 0.0).toDouble();
+          final balanceUsdaRaw = userObj?['balance_usda_raw'];
+
+          await TokenService.saveExtendedUserData(
             token: token,
             userId: userId,
             email: userEmail,
             phoneNumber: phone,
             name: name,
+            cardanoAddress: cardanoAddress,
+            balanceAda: balanceAda,
+            balanceUsda: balanceUsda,
+            balanceUsdaRaw: balanceUsdaRaw,
           );
 
           AppLogger.debug(
@@ -305,13 +324,8 @@ class AuthService {
         method: 'GET',
       );
 
-      final response = await http.get(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse(ApiConstants.userProfileEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
       );
 
       final duration = DateTime.now().difference(startTime);
@@ -380,9 +394,8 @@ class AuthService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(ApiConstants.verifyPinEndpoint),
-        headers: headers,
         body: jsonEncode(requestBody),
       );
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import '../constants/api_constants.dart';
 import 'token_service.dart';
 import 'logger_service.dart';
+import 'authenticated_http_client.dart';
 import '../models/transaction.dart';
 
 class WalletService {
@@ -79,13 +80,8 @@ class WalletService {
         },
       );
 
-      final response = await http.post(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(ApiConstants.walletTopupEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': authorizationHeader, // Consuming the Bearer token here
-        },
         body: jsonEncode(requestBody),
       );
 
@@ -188,48 +184,58 @@ class WalletService {
         'Fetching wallet balance',
       );
 
-      final response = await http.get(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse(ApiConstants.walletBalanceEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
       );
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         
-        // Extract balance from the first wallet in the list, or defaults
-        double balance = 0.0;
-        String currency = 'KES';
+        // Parse wallets list
+        final walletsList = (jsonResponse['wallets'] as List?)
+            ?.map((w) => {
+                  'id': w['ID'],
+                  'user_id': w['user_id'],
+                  'currency': w['currency'],
+                  'balance': (w['balance'] ?? 0).toDouble(),
+                  'created_at': w['CreatedAt'],
+                  'updated_at': w['UpdatedAt'],
+                })
+            .toList() ?? [];
         
-        final wallets = jsonResponse['wallets'] as List?;
-        if (wallets != null && wallets.isNotEmpty) {
-          final wallet = wallets[0];
-          balance = double.tryParse(wallet['balance'].toString()) ?? 0.0;
-          currency = wallet['currency'] ?? 'KES';
-        } else if (jsonResponse['balances'] != null) {
-          // Fallback to balances map if wallets list is empty/missing
-          final balances = jsonResponse['balances'] as Map<String, dynamic>;
-          if (balances.isNotEmpty) {
-            currency = balances.keys.first;
-            balance = double.tryParse(balances[currency].toString()) ?? 0.0;
-          }
+        // Parse balances map
+        final balancesMap = jsonResponse['balances'] as Map<String, dynamic>? ?? {};
+        
+        // Get primary balance (first wallet or first balance)
+        double primaryBalance = 0.0;
+        String primaryCurrency = 'USD';
+        
+        if (walletsList.isNotEmpty) {
+          primaryBalance = walletsList[0]['balance'] as double;
+          primaryCurrency = walletsList[0]['currency'] as String;
+        } else if (balancesMap.isNotEmpty) {
+          primaryCurrency = balancesMap.keys.first;
+          primaryBalance = (balancesMap[primaryCurrency] ?? 0).toDouble();
         }
 
         AppLogger.success(
           LogTags.payment,
           'Wallet balance retrieved',
           data: {
-            'balance': balance,
-            'currency': currency,
+            'wallets_count': walletsList.length,
+            'currencies_count': balancesMap.length,
+            'primary_balance': primaryBalance,
+            'primary_currency': primaryCurrency,
           },
         );
 
         return {
-          'balance': balance,
-          'currency': currency,
+          'balance': primaryBalance,
+          'currency': primaryCurrency,
+          'wallets': walletsList,
+          'balances': balancesMap,
+          'user_id': jsonResponse['user_id'],
+          'status': jsonResponse['status'],
         };
       } else {
         throw Exception('Failed to fetch wallet balance');
@@ -257,13 +263,8 @@ class WalletService {
         'Fetching transaction history',
       );
 
-      final response = await http.get(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse(ApiConstants.walletTransactionsEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
       );
 
       if (response.statusCode == 200) {
@@ -305,13 +306,8 @@ class WalletService {
         'Fetching transactions list from new endpoint',
       );
 
-      final response = await http.get(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse(ApiConstants.transactionsListEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
       );
 
       if (response.statusCode == 200) {
@@ -371,13 +367,8 @@ class WalletService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(ApiConstants.walletTransferEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
         body: jsonEncode(requestBody),
       );
 
@@ -460,13 +451,8 @@ class WalletService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(ApiConstants.paymentLinksEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
         body: jsonEncode(requestBody),
       );
 
@@ -551,13 +537,8 @@ class WalletService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(ApiConstants.walletSendMoneyEndpoint),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
         body: jsonEncode(requestBody),
       );
 
@@ -625,13 +606,8 @@ class WalletService {
         data: {'token': token},
       );
 
-      final response = await http.get(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse('${ApiConstants.paymentLinksEndpoint}/$token'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $authToken',
-        },
       );
 
       final duration = DateTime.now().difference(startTime);
@@ -679,6 +655,169 @@ class WalletService {
         data: {'error': e.toString()},
       );
       throw Exception('Payment link details error: $e');
+    }
+  }
+
+  /// Swap currencies
+  static Future<Map<String, dynamic>> swapCurrencies({
+    required String fromCurrency,
+    required String toCurrency,
+    required double amount,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final requestBody = {
+        'from_currency': fromCurrency,
+        'to_currency': toCurrency,
+        'amount': amount,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: 'https://api.yeshara.network/api/v1/wallet/swap',
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await AuthenticatedHttpClient.post(
+        Uri.parse('https://api.yeshara.network/api/v1/wallet/swap'),
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Currency swap completed successfully',
+          data: {
+            'from_currency': fromCurrency,
+            'to_currency': toCurrency,
+            'amount': amount,
+            'amount_credited': jsonResponse['amount_credited'],
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: 'https://api.yeshara.network/api/v1/wallet/swap',
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Swap failed with status code: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Currency swap error',
+        data: {
+          'from_currency': fromCurrency,
+          'to_currency': toCurrency,
+          'amount': amount,
+          'error': e.toString(),
+        },
+      );
+      throw Exception('Swap error: $e');
+    }
+  }
+
+
+  /// Transfer USDA specific endpoint
+  static Future<Map<String, dynamic>> transferUSDA({
+    required String recipientAddress,
+    required double amount,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final requestBody = {
+        'recipient_address': recipientAddress,
+        'amount_usda_raw': amount,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: 'https://api.yeshara.network/api/v1/wallet/transfer-usda',
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await AuthenticatedHttpClient.post(
+        Uri.parse('https://api.yeshara.network/api/v1/wallet/transfer-usda'),
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'USDA transfer completed successfully',
+          data: {
+            'recipient_address': recipientAddress,
+            'amount': amount,
+            'response': jsonResponse,
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: 'https://api.yeshara.network/api/v1/wallet/transfer-usda',
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'USDA Transfer failed: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'USDA transfer error',
+        data: {'error': e.toString()},
+      );
+      throw Exception('USDA Transfer error: $e');
     }
   }
 }

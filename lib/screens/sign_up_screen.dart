@@ -8,7 +8,7 @@ import '../services/vibration_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
 import 'verify_pin_screen.dart';
-import 'kyc/kyc_intro_screen.dart';
+import 'kyc/id_upload_screen.dart';
 import '../services/auth_service.dart';
 import '../services/token_service.dart';
 
@@ -65,17 +65,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           });
           ToastService().showSuccess(context, "Account created successfully!");
           
-          final hasToken = await TokenService.getToken() != null;
-          
-          if (hasToken) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const VerifyPinScreen()),
-            );
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const SignInScreen()),
-            );
-          }
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const IDUploadScreen()),
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -96,7 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

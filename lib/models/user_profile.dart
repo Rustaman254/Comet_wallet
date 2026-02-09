@@ -1,3 +1,5 @@
+import 'wallet.dart';
+
 class UserProfile {
   final int id;
   final String name;
@@ -7,7 +9,11 @@ class UserProfile {
   final bool kycVerified;
   final bool isAccountActivated;
   final bool activationFeePaid;
-  final Map<String, dynamic> walletBalances;
+  final List<Wallet> walletBalances;
+  final String cardanoAddress;
+  final double balanceAda;
+  final double balanceUsda;
+  final int balanceUsdaRaw;
   final String status;
   final UserRole? role;
 
@@ -21,6 +27,10 @@ class UserProfile {
     required this.isAccountActivated,
     required this.activationFeePaid,
     required this.walletBalances,
+    required this.cardanoAddress,
+    required this.balanceAda,
+    required this.balanceUsda,
+    required this.balanceUsdaRaw,
     required this.status,
     this.role,
   });
@@ -35,9 +45,13 @@ class UserProfile {
       kycVerified: json['kyc_verified'] ?? false,
       isAccountActivated: json['is_account_activated'] ?? false,
       activationFeePaid: json['activation_fee_paid'] ?? false,
-      walletBalances: json['wallet_balances'] != null 
-          ? Map<String, dynamic>.from(json['wallet_balances']) 
-          : {},
+      walletBalances: (json['wallets'] as List?)
+          ?.map((w) => Wallet.fromJson(w))
+          .toList() ?? [],
+      cardanoAddress: json['cardano_address'] ?? '',
+      balanceAda: (json['balance_ada'] ?? 0.0).toDouble(),
+      balanceUsda: (json['balance_usda'] ?? 0.0).toDouble(),
+      balanceUsdaRaw: json['balance_usda_raw'] ?? 0,
       status: json['status'] ?? '',
       role: json['role'] != null ? UserRole.fromJson(json['role']) : null,
     );

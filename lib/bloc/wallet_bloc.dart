@@ -23,6 +23,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     on<RefreshWallet>(_onRefreshWallet);
     on<StartAutoRefresh>(_onStartAutoRefresh);
     on<StopAutoRefresh>(_onStopAutoRefresh);
+    on<SwapCurrencies>(_onSwapCurrencies);
+    on<TransferUSDA>(_onTransferUSDA);
   }
 
   @override
@@ -80,18 +82,50 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       final balanceData = results[0] as Map<String, dynamic>;
       final transactionsList = results[1] as List<Transaction>;
 
-      // Format balance for UI
-      final currency = balanceData['currency'] as String? ?? 'KES';
-      final amount = balanceData['balance']?.toString() ?? '0.00';
-
-      final balances = [
-        {
-          'currency': currency,
-          'amount': amount,
+      // Parse wallets from the response
+      final walletsList = balanceData['wallets'] as List<dynamic>? ?? [];
+      final balancesMap = balanceData['balances'] as Map<String, dynamic>? ?? {};
+      
+      // Create balance cards for each wallet
+      final balances = <Map<String, dynamic>>[];
+      
+      if (walletsList.isNotEmpty) {
+        // Use wallets array if available
+        for (var wallet in walletsList) {
+          final currency = wallet['currency'] as String? ?? 'USD';
+          final balance = wallet['balance']?.toString() ?? '0.00';
+          
+          balances.add({
+            'currency': currency,
+            'symbol': _getCurrencySymbol(currency),
+            'amount': balance,
+            'date': 'Today',
+            'change': '+0.00',
+          });
+        }
+      } else if (balancesMap.isNotEmpty) {
+        // Fallback to balances map if wallets array is empty
+        balancesMap.forEach((currency, balance) {
+          if (balance != null && balance != 0) {
+            balances.add({
+              'currency': currency,
+              'symbol': _getCurrencySymbol(currency),
+              'amount': balance.toString(),
+              'date': 'Today',
+              'change': '+0.00',
+            });
+          }
+        });
+      } else {
+        // Default empty balance
+        balances.add({
+          'currency': 'USD',
+          'symbol': '\$',
+          'amount': '0.00',
           'date': 'Today',
           'change': '+0.00',
-        }
-      ];
+        });
+      }
 
       final summaries = _calculateSummaries(transactionsList);
 
@@ -99,36 +133,54 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         LogTags.payment,
         'Wallet data fetched successfully',
         data: {
-          'balance': amount,
-          'currency': currency,
-          'transactions_count': transactionsList.length,
+          'balance_cards': balances.length,
+          'transactions': transactionsList.length,
         },
       );
 
       emit(WalletLoaded(
         balances: balances,
         transactions: transactionsList,
-        totalIncome: summaries['income'] as double,
-        totalExpense: summaries['expense'] as double,
-        pendingCount: summaries['pending'] as int,
-        completedCount: summaries['completed'] as int,
+        totalIncome: summaries['income']!,
+        totalExpense: summaries['expense']!,
+        pendingCount: summaries['pending']!.toInt(),
+        completedCount: summaries['completed']!.toInt(),
       ));
     } catch (e) {
       AppLogger.error(
         LogTags.payment,
-        'Failed to fetch wallet data from server',
+        'Error fetching wallet data',
         data: {'error': e.toString()},
       );
-      
-      // If we have existing data, keep it and just log the error
-      if (state is WalletLoaded) {
-        final currentState = state as WalletLoaded;
-        emit(currentState.copyWith());
-      } else {
-        emit(WalletError(message: 'Failed to fetch wallet data: $e'));
-      }
+      emit(WalletError(message: 'Failed to fetch wallet data: $e'));
     }
   }
+
+  String _getCurrencySymbol(String currency) {
+    switch (currency) {
+      case 'USD':
+        return '\$';
+      case 'EUR':
+        return '€';
+      case 'GBP':
+        return '£';
+      case 'KES':
+        return 'KSH';
+      case 'UGX':
+        return 'USh';
+      case 'TZS':
+        return 'TSh';
+      case 'RWF':
+        return 'FRw';
+      case 'ZAR':
+        return 'R';
+      case 'USDA':
+        return '\u20B3'; // Cardano-ish symbol or just USDA
+      default:
+        return currency;
+    }
+  }
+
 
   Future<void> _onTopUpWallet(
     TopUpWallet event,
@@ -410,6 +462,114 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       'pending': pending,
       'completed': completed,
     };
+  }
+
+  Future<void> _onSwapCurrencies(
+    SwapCurrencies event,
+    Emitter<WalletState> emit,
+  ) async {
+    emit(const WalletSwapLoading());
+
+    try {
+      final result = await WalletService.swapCurrencies(
+        fromCurrency: event.fromCurrency,
+        toCurrency: event.toCurrency,
+        amount: event.amount,
+      );
+
+      if (result['status'] == 'success') {
+        emit(WalletSwapSuccess(
+          message: result['message'] ?? 'Swap successful',
+          amountCredited: (result['amount_credited'] ?? 0).toDouble(),
+          fromCurrency: event.fromCurrency,
+          toCurrency: event.toCurrency,
+        ));
+        
+        // Refresh wallet data to update balances and transactions
+        add(const FetchWalletDataFromServer());
+      } else {
+        emit(WalletError(message: result['message'] ?? 'Swap failed'));
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Swap failed in BLoC',
+        data: {'error': e.toString()},
+      );
+      emit(WalletError(message: 'Swap failed: $e'));
+    }
+  }
+
+  Future<void> _onTransferUSDA(
+    TransferUSDA event,
+    Emitter<WalletState> emit,
+  ) async {
+    // Optimistic update not easy here as we don't know the fee or exact balance impact immediately 
+    // without more complex logic, so we'll rely on server response.
+    // However, we can show loading state if needed, or just let the UI handle loading.
+    // For consistency with other operations, let's emit loading or handle it in UI.
+    // Since UI handles loading state based on async call usually, but here we are in BLoC.
+    // We can emit a specific loading state or just proceed.
+    // Given the UI design likely waits for completion, we'll just process it.
+
+    try {
+      AppLogger.debug(
+        LogTags.payment,
+        'Processing USDA transfer in BLoC',
+        data: {
+          'amount': event.amount,
+          'recipient': event.recipientAddress,
+        },
+      );
+
+      final result = await WalletService.transferUSDA(
+        recipientAddress: event.recipientAddress,
+        amount: event.amount,
+      );
+
+      // Create transaction record for UI update
+      final timestamp = DateTime.now();
+      final newTransaction = Transaction(
+        id: timestamp.millisecondsSinceEpoch,
+        userID: 0,
+        amount: event.amount,
+        transactionType: 'transfer_usda',
+        status: 'complete',
+        phoneNumber: event.recipientAddress, // Using address as phone placeholder
+        explorerLink: result['explorerLink'], // Assuming API returns this or we construct it
+      );
+
+      // We need to fetch fresh data to get accurate balances (fees etc)
+      // But we can add the transaction to the list immediately
+      if (state is WalletLoaded) {
+        final currentState = state as WalletLoaded;
+        final updatedTransactions = [newTransaction, ...currentState.transactions];
+        final summaries = _calculateSummaries(updatedTransactions);
+        
+        // We might want to deduct balance optimistically if we know it's USDA
+        // But let's trigger a refresh
+        
+        emit(WalletBalanceUpdated(
+          balances: currentState.balances,
+          transactions: updatedTransactions,
+          totalIncome: summaries['income'] as double,
+          totalExpense: summaries['expense'] as double,
+          pendingCount: summaries['pending'] as int,
+          completedCount: summaries['completed'] as int,
+        ));
+      }
+
+      // Sync with server
+      add(const FetchWalletDataFromServer());
+
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'USDA Transfer failed in BLoC',
+        data: {'error': e.toString()},
+      );
+      emit(WalletError(message: 'USDA Transfer failed: $e'));
+    }
   }
 
   @override

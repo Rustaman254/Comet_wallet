@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
@@ -190,6 +191,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _buildField('Location', _locationController, Icons.location_on_outlined),
                     const SizedBox(height: 24),
                     _buildBirthDateField(),
+                    const SizedBox(height: 24),
+                    _buildWalletAddressField(),
                   ],
                 ),
               ),
@@ -227,6 +230,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildWalletAddressField() {
+    return FutureBuilder<String?>(
+      future: TokenService.getCardanoAddress(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data == null || snapshot.data!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final address = snapshot.data!;
+        
+        if (_isEditing) return const SizedBox.shrink(); // Don't show in edit mode
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.account_balance_wallet_outlined, color: Colors.white30, size: 20),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cardano Wallet Address',
+                    style: TextStyle(fontFamily: 'Satoshi',
+                      color: Colors.white30,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: address));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Address copied to clipboard'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            address,
+                            style: TextStyle(fontFamily: 'Satoshi',
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(Icons.copy, color: buttonGreen, size: 16),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

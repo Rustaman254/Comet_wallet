@@ -7,6 +7,10 @@ class TokenService {
   static const String _userEmailKey = 'user_email';
   static const String _phoneNumberKey = 'phone_number';
   static const String _userNameKey = 'user_name';
+  static const String _cardanoAddressKey = 'cardano_address';
+  static const String _balanceAdaKey = 'balance_ada';
+  static const String _balanceUsdaKey = 'balance_usda';
+  static const String _balanceUsdaRawKey = 'balance_usda_raw';
 
   /// Save authentication token
   static Future<void> saveToken(String token) async {
@@ -69,6 +73,40 @@ class TokenService {
     return prefs.getString(_userNameKey);
   }
 
+  /// Save cardano address
+  static Future<void> saveCardanoAddress(String address) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_cardanoAddressKey, address);
+  }
+
+  /// Get cardano address
+  static Future<String?> getCardanoAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_cardanoAddressKey);
+  }
+
+  /// Save balances
+  static Future<void> saveBalances({
+    required double ada,
+    required double usda,
+    required int usdaRaw,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_balanceAdaKey, ada);
+    await prefs.setDouble(_balanceUsdaKey, usda);
+    await prefs.setInt(_balanceUsdaRawKey, usdaRaw);
+  }
+
+  /// Get balances
+  static Future<Map<String, dynamic>> getBalances() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'ada': prefs.getDouble(_balanceAdaKey) ?? 0.0,
+      'usda': prefs.getDouble(_balanceUsdaKey) ?? 0.0,
+      'usda_raw': prefs.getInt(_balanceUsdaRawKey) ?? 0,
+    };
+  }
+
   /// Check if user is authenticated
   static Future<bool> isAuthenticated() async {
     final token = await getToken();
@@ -83,6 +121,10 @@ class TokenService {
     await prefs.remove(_userEmailKey);
     await prefs.remove(_phoneNumberKey);
     await prefs.remove(_userNameKey);
+    await prefs.remove(_cardanoAddressKey);
+    await prefs.remove(_balanceAdaKey);
+    await prefs.remove(_balanceUsdaKey);
+    await prefs.remove(_balanceUsdaRawKey);
   }
 
   /// Save all user data at once
@@ -102,6 +144,47 @@ class TokenService {
     ];
     if (name != null) {
       futures.add(prefs.setString(_userNameKey, name));
+    }
+    // Note: cardano address and balances are not saved here by default unless passed
+    // But to keep signature compatible, we'll leave this as is and use specific methods or
+    // update this signature if needed. The user request implies saving new fields.
+    // I will update this method signature to optionally accept them.
+    await Future.wait(futures);
+  }
+
+  /// Save all user data including extended fields
+  static Future<void> saveExtendedUserData({
+    required String token,
+    required String userId,
+    required String email,
+    required String phoneNumber,
+    String? name,
+    String? cardanoAddress,
+    double? balanceAda,
+    double? balanceUsda,
+    int? balanceUsdaRaw,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<Future<bool>> futures = [
+      prefs.setString(_tokenKey, token),
+      prefs.setString(_userIdKey, userId),
+      prefs.setString(_userEmailKey, email),
+      prefs.setString(_phoneNumberKey, phoneNumber),
+    ];
+    if (name != null) {
+      futures.add(prefs.setString(_userNameKey, name));
+    }
+    if (cardanoAddress != null) {
+      futures.add(prefs.setString(_cardanoAddressKey, cardanoAddress));
+    }
+    if (balanceAda != null) {
+      futures.add(prefs.setDouble(_balanceAdaKey, balanceAda));
+    }
+    if (balanceUsda != null) {
+      futures.add(prefs.setDouble(_balanceUsdaKey, balanceUsda));
+    }
+    if (balanceUsdaRaw != null) {
+      futures.add(prefs.setInt(_balanceUsdaRawKey, balanceUsdaRaw));
     }
     await Future.wait(futures);
   }
