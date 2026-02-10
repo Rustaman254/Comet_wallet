@@ -23,12 +23,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Matching the app's dark theme
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -42,7 +42,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 'Forgot Password',
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                   fontSize: 28.sp,
                   fontWeight: FontWeight.bold,
                 ),
@@ -52,7 +52,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 'Enter your email address to reset your password',
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.white.withOpacity(0.6),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
                   fontSize: 14.sp,
                 ),
               ),
@@ -66,14 +66,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       'Email Address',
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                     TextFormField(
                       controller: _emailController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                       decoration: buildUnderlineInputDecoration(
                         context: context,
                         label: '',

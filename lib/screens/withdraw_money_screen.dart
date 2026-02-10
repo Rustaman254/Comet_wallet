@@ -70,7 +70,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
         }
 
         return Scaffold(
-          backgroundColor: darkBackground,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -88,12 +88,12 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                             width: 40.r,
                             height: 40.r,
                             decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3) : Colors.grey[200],
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.arrow_back_outlined,
-                              color: Colors.white,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                               size: 20.r,
                             ),
                           ),
@@ -103,7 +103,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                             'Withdraw Money',
                             textAlign: TextAlign.center,
                             style: TextStyle(fontFamily: 'Satoshi',
-                              color: Colors.white,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                               fontSize: 24.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -172,7 +172,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                         Text(
                           'Withdrawal Method',
                           style: TextStyle(fontFamily: 'Satoshi',
-                            color: Colors.white,
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -207,14 +207,14 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                   padding: EdgeInsets.symmetric(vertical: 16.h),
                                   decoration: BoxDecoration(
                                     border: Border(
-                                      bottom: BorderSide(color: Colors.white12, width: 0.5.h),
+                                      bottom: BorderSide(color: Theme.of(context).brightness == Brightness.dark ? Colors.white12 : Colors.grey[300]!, width: 0.5.h),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         method['icon'],
-                                        color: isSelected ? buttonGreen : Colors.white70,
+                                        color: isSelected ? buttonGreen : (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54),
                                         size: 24.r,
                                       ),
                                       SizedBox(width: 16.w),
@@ -225,16 +225,16 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                             Text(
                                               method['name'],
                                               style: TextStyle(fontFamily: 'Satoshi',
-                                                color: Colors.white,
-                                                fontSize: 16.sp,
-                                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                              fontSize: 16.sp,
+                                              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                               ),
                                             ),
                                           const SizedBox(height: 4),
                                           Text(
                                             method['account'],
                                             style: TextStyle(fontFamily: 'Satoshi',
-                                              color: isAvailable ? Colors.white54 : buttonGreen,
+                                              color: isAvailable ? (Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45) : buttonGreen,
                                               fontSize: 12,
                                               fontWeight: !isAvailable ? FontWeight.bold : FontWeight.normal,
                                             ),
@@ -245,7 +245,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                     if (isSelected && isAvailable)
                                       const Icon(
                                         Icons.arrow_forward_ios,
-                                        color: Colors.white54,
+                                        color: Colors.grey,
                                         size: 16,
                                       ),
                                   ],

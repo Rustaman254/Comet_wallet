@@ -11,18 +11,19 @@ import 'my_cards_screen.dart';
 import 'send_options_screen.dart';
 import 'qr_scan_screen.dart';
 import 'more_options_screen.dart';
-import 'receive_money_screen.dart';
-import 'swap_screen.dart';
-import 'withdraw_money_screen.dart';
-import 'settings_screen.dart';
+import 'package:comet_wallet/screens/receive_money_screen.dart';
+import 'package:comet_wallet/screens/withdraw_money_screen.dart';
+import 'package:comet_wallet/screens/wallet_topup_screen.dart';
+import 'package:comet_wallet/screens/settings_screen.dart';
+import 'package:comet_wallet/screens/swap_screen.dart';
 import 'profile_screen.dart';
-import 'wallet_topup_screen.dart';
 import 'transactions_screen.dart';
 import '../services/toast_service.dart';
 import '../models/transaction.dart';
 import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
+import '../widgets/usda_logo.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -276,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   'Welcome back,',
                                   style: TextStyle(
                                     fontFamily: 'Satoshi',
-                                    color: Colors.grey[400],
+                                    color: getSecondaryTextColor(context),
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w400,
                                   ),
@@ -285,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   _userProfile?.name ?? 'Anwar Sadatt',
                                   style: TextStyle(
                                     fontFamily: 'Satoshi',
-                                    color: Colors.white,
+                                    color: getTextColor(context),
                                     fontSize: 21.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -295,19 +296,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const Spacer(),
                           // Search button
+                          // Search button removed as per request
+                          /*
                           Container(
                             width: 40.r,
                             height: 40.r,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.1),
+                              color: getTextColor(context).withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.search_outlined,
-                              color: Colors.white,
+                              color: getTextColor(context),
                               size: 20.r,
                             ),
                           ),
+                          */
                           SizedBox(width: 12.w),
                           // QR code button with Badge
                           GestureDetector(
@@ -324,12 +328,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: 40.r,
                                   height: 40.r,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.1),
+                                    color: getTextColor(context).withOpacity(0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
                                     Icons.qr_code_scanner_outlined,
-                                    color: Colors.white,
+                                    color: getTextColor(context),
                                     size: 20.r,
                                   ),
                                 ),
@@ -365,55 +369,85 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(height: 24.h),
                     // Action buttons - FIXED - Non-scrollable
+                      // Action buttons - Scrollable to fit all
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _buildActionButton(
-                            Icons.arrow_upward_outlined,
-                            'Send',
-                            () => _showSendOptions(context),
+                      padding: EdgeInsets.zero, // Removed padding here, added to SingleChildScrollView container
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        child: Padding(
+                           padding: EdgeInsets.symmetric(horizontal: 24.w),
+                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start, // Changed to start for scrollable
+                            children: [
+                              _buildActionButton(
+                                Icons.arrow_upward_outlined,
+                                'Send',
+                                () => _showSendOptions(context),
+                                backgroundColor: transactionSendColor,
+                              ),
+                              SizedBox(width: 16.w),
+                              _buildActionButton(
+                                Icons.swap_horiz_outlined,
+                                'Swap',
+                                () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SwapScreen(),
+                                    ),
+                                  );
+                                },
+                                backgroundColor: transactionSwapColor,
+                              ),
+                              SizedBox(width: 16.w),
+                              _buildActionButton(
+                                Icons.arrow_downward_outlined,
+                                'Receive',
+                                () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const ReceiveMoneyScreen(),
+                                    ),
+                                  );
+                                },
+                                backgroundColor: transactionReceiveColor,
+                              ),
+                              SizedBox(width: 16.w),
+                              _buildActionButton(
+                                Icons.add_circle_outline,
+                                'Top-up',
+                                () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const WalletTopupScreen(),
+                                    ),
+                                  );
+                                },
+                                backgroundColor: transactionTopupColor,
+                              ),
+                              SizedBox(width: 16.w),
+                              _buildActionButton(
+                                Icons.monetization_on_outlined,
+                                'Withdraw',
+                                () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const WithdrawMoneyScreen(),
+                                    ),
+                                  );
+                                },
+                                backgroundColor: transactionWithdrawColor,
+                              ),
+                              SizedBox(width: 16.w),
+                              _buildActionButton(
+                                Icons.more_horiz,
+                                'More',
+                                () => _showMoreOptions(context),
+                                backgroundColor: transactionDefaultColor,
+                              ),
+                            ],
                           ),
-                          _buildActionButton(
-                            Icons.arrow_downward_outlined,
-                            'Receive',
-                            () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const ReceiveMoneyScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildActionButton(
-                            Icons.add_circle_outline,
-                            'Top-up',
-                            () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const WalletTopupScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildActionButton(
-                            Icons.monetization_on_outlined,
-                            'Withdraw',
-                            () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const WithdrawMoneyScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildActionButton(
-                            Icons.more_horiz,
-                            'More',
-                            () => _showMoreOptions(context),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 24.h),
@@ -468,17 +502,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 gradient: LinearGradient(
                                                   begin: Alignment.topLeft,
                                                   end: Alignment.bottomRight,
-                                                  colors: [
-                                                    darkGreen,
-                                                    darkGreen.withValues(
-                                                        alpha: 0.8),
-                                                    lightGreen.withValues(
-                                                        alpha: 0.3),
-                                                  ],
+                                                  colors: Theme.of(context).brightness == Brightness.dark
+                                                    ? [
+                                                        darkGreen,
+                                                        darkGreen.withValues(alpha: 0.8),
+                                                        lightGreen.withValues(alpha: 0.3),
+                                                      ]
+                                                    : [
+                                                        const Color(0xFF2563EB), // Bright blue
+                                                        const Color(0xFF3B82F6), // Medium blue
+                                                        const Color(0xFF60A5FA), // Light blue
+                                                      ],
                                                 ),
-                                                // remove border to keep it clean
-                                                borderRadius:
-                                                    BorderRadius.circular(20.r),
+                                                borderRadius: BorderRadius.circular(20.r),
                                               ),
                                               child: Column(
                                                 crossAxisAlignment:
@@ -548,12 +584,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           balance['currency'] ??
                                                               'KES',
                                                           style: TextStyle(
-                                                            fontFamily:
-                                                                'Satoshi',
+                                                            fontFamily: 'Satoshi',
                                                             color: Colors.white,
                                                             fontSize: 12.sp,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                            fontWeight: FontWeight.bold,
                                                           ),
                                                         ),
                                                       ),
@@ -566,6 +600,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     textBaseline:
                                                         TextBaseline.alphabetic,
                                                     children: [
+                                                      if (balance['currency'] == 'USDA') ...[
+                                                        const USDALogo(size: 24),
+                                                        SizedBox(width: 8.w),
+                                                      ],
                                                       Text(
                                                         balance['symbol'] ?? balance['currency'] ?? 'KES',
                                                         style: TextStyle(
@@ -761,7 +799,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   'Transaction',
                                   style: TextStyle(
                                     fontFamily: 'Satoshi',
-                                    color: Colors.white,
+                                    color: getTextColor(context),
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -840,7 +878,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildActionButton(
-      IconData icon, String label, VoidCallback onTap) {
+      IconData icon, String label, VoidCallback onTap, {Color? backgroundColor}) {
     return GestureDetector(
       onTap: () {
         VibrationService.selectionClick();
@@ -852,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 60.r,
             height: 60.r,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
+              color: backgroundColor ?? Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -866,7 +904,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label,
             style: TextStyle(
               fontFamily: 'Satoshi',
-              color: Colors.white,
+              color: getTextColor(context),
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
@@ -1065,19 +1103,19 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (transaction.transactionType.toLowerCase()) {
       case 'wallet_topup':
         iconData = Icons.add_circle_outline;
-        iconColor = Colors.blue;
+        iconColor = transactionTopupColor;
         break;
       case 'send_money':
         iconData = Icons.send_outlined;
-        iconColor = Colors.orange;
+        iconColor = transactionSendColor;
         break;
       case 'payment_link':
         iconData = Icons.link;
-        iconColor = Colors.purple;
+        iconColor = transactionSwapColor;
         break;
       default:
         iconData = Icons.swap_horiz;
-        iconColor = Colors.grey;
+        iconColor = getTransactionColor(transaction.transactionType);
     }
 
     return Row(
@@ -1104,7 +1142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _formatTransactionType(transaction.transactionType),
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.white,
+                  color: getTextColor(context),
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1118,7 +1156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         : 'N/A',
                     style: TextStyle(
                       fontFamily: 'Satoshi',
-                      color: Colors.white70,
+                      color: getSecondaryTextColor(context),
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -1128,7 +1166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: 4.r,
                     height: 4.r,
                     decoration: BoxDecoration(
-                      color: Colors.grey[600],
+                      color: getTertiaryTextColor(context),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -1151,7 +1189,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'KES ${transaction.amount.toStringAsFixed(2)}',
           style: TextStyle(
             fontFamily: 'Satoshi',
-            color: Colors.white,
+            color: getTextColor(context),
             fontSize: 16.sp,
             fontWeight: FontWeight.bold,
           ),

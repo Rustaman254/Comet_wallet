@@ -90,7 +90,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Text(
                     'Welcome back',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
@@ -99,7 +99,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Text(
                     'Sign in to continue. Remember, your password is yours, do not share it with anyone.',
                     style: TextStyle(
-                      color: Colors.grey[400],
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
                       fontSize: 14.sp,
                     ),
                   ),
@@ -108,7 +108,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Text(
                     'Email address or mobile number',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -116,8 +116,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _emailController,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
@@ -137,7 +137,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Text(
                     'Password',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -146,8 +146,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
@@ -239,7 +239,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   text: TextSpan(
                     style: TextStyle(
                       fontFamily: 'Satoshi',
-                      color: Colors.white.withOpacity(0.7),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.7),
                       fontSize: 14.sp,
                     ),
                     children: [

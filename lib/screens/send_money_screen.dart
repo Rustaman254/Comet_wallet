@@ -13,7 +13,9 @@ import '../services/wallet_service.dart';
 import '../services/token_service.dart';
 import '../services/logger_service.dart';
 import '../services/toast_service.dart';
+import '../services/session_service.dart';
 import '../utils/input_decoration.dart';
+import '../widgets/usda_logo.dart';
 
 class SendMoneyScreen extends StatefulWidget {
   final String? initialEmail;
@@ -119,6 +121,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   }
 
   void _onAmountChanged(String value) {
+    SessionService.recordActivity();
     setState(() {});
   }
 
@@ -145,6 +148,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   }
 
   Future<void> _handleTransfer() async {
+    SessionService.recordActivity();
+    
     final email = _emailController.text.trim();
     final amountText = _amountController.text.trim();
     
@@ -200,6 +205,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   }
 
   Future<void> _handleMobileTransfer() async {
+    SessionService.recordActivity();
+    
     final phone = _phoneController.text.trim();
     final amountText = _mobileAmountController.text.trim();
     
@@ -256,6 +263,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   }
 
   Future<void> _handleUSDATransfer() async {
+    SessionService.recordActivity();
+    
     final address = _addressController.text.trim();
     final amountText = _amountController.text.trim();
     
@@ -312,7 +321,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       builder: (context) => Container(
         padding: EdgeInsets.all(24.r),
         decoration: BoxDecoration(
-          color: darkBackground,
+          color: Theme.of(context).brightness == Brightness.dark ? darkBackground : lightCardBackground,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30.r),
             topRight: Radius.circular(30.r),
@@ -334,7 +343,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               response['message'] ?? 'Transfer Successful',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -374,8 +383,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white70, fontSize: 14.sp)),
-          Text(value, style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54, fontSize: 14.sp)),
+          Text(value, style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -395,12 +404,12 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: cardBackground,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark ? cardBackground : lightCardBackground,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Select Currency',
           style: TextStyle(fontFamily: 'Satoshi',
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -411,7 +420,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             return ListTile(
               title: Text(
                 balance['currency'],
-                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
               ),
               onTap: () {
                 final index = balances.indexOf(balance);
@@ -432,9 +441,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3, // Increased to 3 tabs
+      length: 2, // Changed to 2 tabs (Wallet and USDA)
       child: Scaffold(
-        backgroundColor: darkBackground,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: BlocBuilder<WalletBloc, WalletState>(
           builder: (context, state) {
@@ -451,9 +460,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     children: [
                       IconButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_back,
-                          color: Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                           size: 24,
                         ),
                       ),
@@ -462,7 +471,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                           'Send Money', // Generic title
                           textAlign: TextAlign.center,
                           style: TextStyle(fontFamily: 'Satoshi',
-                            color: Colors.white,
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
@@ -478,25 +487,21 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Container(
                     height: 45.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(12.r),
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent, // Removed background color
                     ),
                     child: TabBar(
-                      indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.r),
-                        color: buttonGreen,
-                      ),
-                      labelColor: Colors.white,
-                      unselectedLabelColor: Colors.white70,
+                      indicatorColor: buttonGreen, // Primary color for indicator
+                      indicatorWeight: 2,
+                      labelColor: buttonGreen, // Primary color for active text
+                      unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
-                        fontSize: 13.sp, // Slightly smaller font to fit 3 tabs
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                       ),
                       tabs: const [
                         Tab(text: 'Wallet'),
-                        Tab(text: 'Mobile'),
                         Tab(text: 'USDA'),
                       ],
                     ),
@@ -507,7 +512,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   child: TabBarView(
                     children: [
                       _buildSendToEmailTab(balances),
-                      _buildSendToMobileTab(balances), // New Tab
                       _buildTransferUSDATab(balances),
                     ],
                   ),
@@ -599,7 +603,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Recipient Phone Number',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
@@ -608,8 +612,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 16,
               ),
               decoration: buildUnderlineInputDecoration(
@@ -622,7 +626,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Currency detected: $_mobileCurrency',
               style: TextStyle(
-                color: Colors.white54,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45,
                 fontSize: 12.sp,
                 fontStyle: FontStyle.italic,
               ),
@@ -633,7 +637,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Amount',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
@@ -642,8 +646,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             TextFormField(
               controller: _mobileAmountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 16,
               ),
               decoration: buildUnderlineInputDecoration(
@@ -708,7 +712,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     'Available Balance',
                     style: TextStyle(
                       fontFamily: 'Satoshi',
-                      color: Colors.white70,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -759,7 +763,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               'Please enter the payment details',
               style: TextStyle(
                 fontFamily: 'Satoshi',
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -770,7 +774,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Recipient Email',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
@@ -778,8 +782,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             SizedBox(height: 8.h),
             TextFormField(
               controller: _emailController,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 16,
               ),
               decoration: buildUnderlineInputDecoration(
@@ -787,7 +791,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 label: '',
                 hintText: 'Enter recipient email address',
               ),
-              onChanged: (v) => setState(() {}),
+              onChanged: (v) {
+                SessionService.recordActivity();
+                setState(() {});
+              },
             ),
             SizedBox(height: 24.h),
             
@@ -795,7 +802,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Currency',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
@@ -808,7 +815,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: Colors.grey[700]!,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[700]! : Colors.grey[400]!,
                       width: 1,
                     ),
                   ),
@@ -820,11 +827,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       selectedCurrency,
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16.sp,
                       ),
                     ),
-                    const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 20),
+                    Icon(Icons.keyboard_arrow_down, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, size: 20),
                   ],
                 ),
               ),
@@ -844,8 +851,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             TextFormField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 16,
               ),
               decoration: buildUnderlineInputDecoration(
@@ -910,29 +917,37 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Center(
               child: Column(
                 children: [
-                  Text(
-                    'Available USDA Balance',
-                    style: TextStyle(
-                      fontFamily: 'Satoshi',
-                      color: Colors.white70,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Available ',
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      const USDABadge(height: 20),
+                      Text(
+                        ' Balance',
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 8.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'USDA ',
-                        style: TextStyle(
-                          fontFamily: 'Satoshi',
-                          color: buttonGreen,
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      const USDALogo(size: 28),
+                      SizedBox(width: 8.w),
                       Text(
                         FormatUtils.formatAmount(double.tryParse(usdABalance) ?? 0.0),
                         style: TextStyle(
@@ -954,7 +969,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               'Transfer USDA to Address',
               style: TextStyle(
                 fontFamily: 'Satoshi',
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -965,7 +980,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Recipient Cardano Address',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
@@ -973,8 +988,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             SizedBox(height: 8.h),
             TextFormField(
               controller: _addressController,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 16,
               ),
               decoration: buildUnderlineInputDecoration(
@@ -990,7 +1005,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Amount in USDA',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
               ),
@@ -999,8 +1014,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             TextFormField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 16,
               ),
               decoration: buildUnderlineInputDecoration(
@@ -1061,16 +1076,16 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             width: 60.r,
             height: 60.r,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.1) : Colors.grey[200],
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.white.withOpacity(0.3),
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.3) : Colors.grey[400]!,
                 width: 2.w,
               ),
             ),
             child: Icon(
               Icons.add_outlined,
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               size: 30.r,
             ),
           ),
@@ -1078,7 +1093,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           Text(
             'Add',
             style: TextStyle(fontFamily: 'Satoshi',
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
@@ -1103,7 +1118,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             child: Text(
               name[0],
               style: TextStyle(fontFamily: 'Satoshi',
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -1114,7 +1129,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         Text(
           name,
           style: TextStyle(fontFamily: 'Satoshi',
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
           ),

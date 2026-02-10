@@ -6,7 +6,9 @@ import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
+import '../services/session_service.dart';
 import '../utils/input_decoration.dart';
+import '../widgets/usda_logo.dart';
 
 class SwapScreen extends StatefulWidget {
   const SwapScreen({super.key});
@@ -28,7 +30,53 @@ class _SwapScreenState extends State<SwapScreen> {
   @override
   void initState() {
     super.initState();
-    _amountController.addListener(() => setState(() {}));
+    _amountController.addListener(() {
+      SessionService.recordActivity();
+      setState(() {});
+    });
+  }
+
+  // Get balance for a specific currency from wallet state
+  double _getBalanceForCurrency(String currency, WalletState state) {
+    if (state is WalletLoaded) {
+      final balance = state.balances.firstWhere(
+        (b) => b['currency'] == currency,
+        orElse: () => {'balance': 0.0},
+      );
+      return (balance['balance'] ?? 0.0).toDouble();
+    }
+    return 0.0;
+  }
+
+  // Get exchange rate between two currencies
+  // Using approximate rates - in production, fetch from API
+  double _getExchangeRate(String from, String to) {
+    if (from == to) return 1.0;
+    
+    // Base rates to USD
+    final Map<String, double> toUSD = {
+      'KES': 0.0077,  // 1 KES = 0.0077 USD
+      'USD': 1.0,
+      'TZS': 0.00039, // 1 TZS = 0.00039 USD
+      'UGX': 0.00027, // 1 UGX = 0.00027 USD
+      'EUR': 1.09,    // 1 EUR = 1.09 USD
+      'GBP': 1.27,    // 1 GBP = 1.27 USD
+      'ZAR': 0.055,   // 1 ZAR = 0.055 USD
+      'RWF': 0.00078, // 1 RWF = 0.00078 USD
+      'USDA': 1.0,    // 1 USDA = 1 USD
+    };
+    
+    final fromRate = toUSD[from] ?? 1.0;
+    final toRate = toUSD[to] ?? 1.0;
+    
+    return fromRate / toRate;
+  }
+
+  // Calculate estimated receive amount
+  double _calculateEstimatedAmount() {
+    final amount = double.tryParse(_amountController.text) ?? 0.0;
+    final rate = _getExchangeRate(_fromCurrency, _toCurrency);
+    return amount * rate;
   }
 
   @override
@@ -38,6 +86,8 @@ class _SwapScreenState extends State<SwapScreen> {
   }
 
   void _handleSwap() {
+    SessionService.recordActivity();
+    
     if (_formKey.currentState!.validate()) {
       if (_fromCurrency == _toCurrency) {
         ToastService().showError(context, 'Please select different currencies');
@@ -66,12 +116,12 @@ class _SwapScreenState extends State<SwapScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: darkBackground,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
@@ -80,7 +130,7 @@ class _SwapScreenState extends State<SwapScreen> {
               fontFamily: 'Satoshi',
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
             ),
           ),
           centerTitle: true,
@@ -100,9 +150,14 @@ class _SwapScreenState extends State<SwapScreen> {
                     Container(
                       padding: EdgeInsets.all(16.r),
                       decoration: BoxDecoration(
-                        color: buttonGreen.withOpacity(0.1),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? buttonGreen.withOpacity(0.1)
+                            : buttonGreen.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(12.r),
-                        border: Border.all(color: buttonGreen, width: 1.w),
+                        border: Border.all(
+                          color: buttonGreen,
+                          width: 1.w,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +168,7 @@ class _SwapScreenState extends State<SwapScreen> {
                               fontFamily: 'Satoshi',
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: getTextColor(context),
                             ),
                           ),
                           SizedBox(height: 8.h),
@@ -122,7 +177,7 @@ class _SwapScreenState extends State<SwapScreen> {
                             style: TextStyle(
                               fontFamily: 'Satoshi',
                               fontSize: 12.sp,
-                              color: Colors.white.withOpacity(0.7),
+                              color: getSecondaryTextColor(context),
                             ),
                           ),
                         ],
@@ -134,15 +189,63 @@ class _SwapScreenState extends State<SwapScreen> {
                     _buildCurrencyDropdown(
                       label: 'From',
                       value: _fromCurrency,
-                      onChanged: (val) => setState(() => _fromCurrency = val!),
+                      onChanged: (val) {
+                        SessionService.recordActivity();
+                        setState(() => _fromCurrency = val!);
+                      },
+                    ),
+                    SizedBox(height: 8.h),
+
+                    // Available Balance
+                    Row(
+                      children: [
+                        if (_fromCurrency == 'USDA') ...[
+                          const USDALogo(size: 16),
+                          SizedBox(width: 6.w),
+                        ],
+                        Text(
+                          'Available: ${_getBalanceForCurrency(_fromCurrency, state).toStringAsFixed(2)} $_fromCurrency',
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
+                            fontSize: 12.sp,
+                            color: buttonGreen,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 24.h),
+
+                    // Conversion Rate Display
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '1 $_fromCurrency = ${_getExchangeRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
+                            style: TextStyle(
+                              fontFamily: 'Satoshi',
+                              fontSize: 13.sp,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.8) : Colors.black87,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
 
                     // Swap Icon
                     Center(
                       child: IconButton(
                         icon: Icon(Icons.swap_vert, color: buttonGreen, size: 32.r),
                         onPressed: () {
+                          SessionService.recordActivity();
                           setState(() {
                             final temp = _fromCurrency;
                             _fromCurrency = _toCurrency;
@@ -157,7 +260,10 @@ class _SwapScreenState extends State<SwapScreen> {
                     _buildCurrencyDropdown(
                       label: 'To',
                       value: _toCurrency,
-                      onChanged: (val) => setState(() => _toCurrency = val!),
+                      onChanged: (val) {
+                        SessionService.recordActivity();
+                        setState(() => _toCurrency = val!);
+                      },
                     ),
                     SizedBox(height: 32.h),
 
@@ -166,7 +272,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       'Amount to Swap',
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        color: Colors.white.withOpacity(0.7),
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black54,
                         fontSize: 14.sp,
                       ),
                     ),
@@ -176,7 +282,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -189,7 +295,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           child: Text(
                             _fromCurrency,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                               fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                             ),
@@ -200,10 +306,50 @@ class _SwapScreenState extends State<SwapScreen> {
                         if (value == null || value.isEmpty) return 'Required';
                         if (double.tryParse(value) == null) return 'Invalid amount';
                         if (double.parse(value) <= 0) return 'Must be > 0';
+                        
+                        // Check if user has sufficient balance
+                        final amount = double.parse(value);
+                        final balance = _getBalanceForCurrency(_fromCurrency, state);
+                        if (amount > balance) return 'Insufficient balance';
+                        
                         return null;
                       },
                     ),
-                    SizedBox(height: 48.h),
+                    SizedBox(height: 16.h),
+
+                    // Estimated Receive Amount
+                    if (_amountController.text.isNotEmpty && double.tryParse(_amountController.text) != null)
+                      Container(
+                        padding: EdgeInsets.all(12.r),
+                        decoration: BoxDecoration(
+                          color: buttonGreen.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8.r),
+                          border: Border.all(color: buttonGreen.withOpacity(0.3), width: 1.w),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'You will receive:',
+                              style: TextStyle(
+                                fontFamily: 'Satoshi',
+                                fontSize: 13.sp,
+                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black54,
+                              ),
+                            ),
+                            Text(
+                              '${_calculateEstimatedAmount().toStringAsFixed(2)} $_toCurrency',
+                              style: TextStyle(
+                                fontFamily: 'Satoshi',
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.bold,
+                                color: buttonGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: 32.h),
 
                     // Swap Button
                     ElevatedButton(
@@ -257,7 +403,7 @@ class _SwapScreenState extends State<SwapScreen> {
           label,
           style: TextStyle(
             fontFamily: 'Satoshi',
-            color: Colors.white.withOpacity(0.7),
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black54,
             fontSize: 14.sp,
           ),
         ),
@@ -265,15 +411,15 @@ class _SwapScreenState extends State<SwapScreen> {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.grey[200],
             borderRadius: BorderRadius.circular(12.r),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: value,
               isExpanded: true,
-              dropdownColor: cardBackground,
-              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+              dropdownColor: Theme.of(context).brightness == Brightness.dark ? cardBackground : lightCardBackground,
+              icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
               items: _availableCurrencies.map((String currency) {
                 return DropdownMenuItem<String>(
                   value: currency,
@@ -281,7 +427,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     currency,
                     style: TextStyle(
                       fontFamily: 'Satoshi',
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16.sp,
                       fontWeight: FontWeight.bold,
                     ),

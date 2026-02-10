@@ -66,7 +66,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -74,17 +74,17 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3) : Colors.grey[200],
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+            child: Icon(Icons.arrow_back, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, size: 20),
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Mobile Money',
           style: TextStyle(fontFamily: 'Satoshi',
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -100,7 +100,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               Text(
                 'Phone Number',
                 style: TextStyle(fontFamily: 'Satoshi',
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black54,
                   fontSize: 14,
                 ),
               ),
@@ -108,7 +108,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
+                style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
                 decoration: buildUnderlineInputDecoration(
                   context: context,
                   label: '',
@@ -121,7 +121,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
               Text(
                 'Enter Amount',
                 style: TextStyle(fontFamily: 'Satoshi',
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black54,
                   fontSize: 14,
                 ),
               ),
@@ -135,7 +135,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.3),
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.3) : Colors.grey[400]!,
                           width: 1,
                         ),
                       ),
@@ -144,7 +144,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     child: Text(
                       widget.currency,
                       style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -157,7 +157,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                       controller: _amountController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),

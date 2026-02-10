@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
@@ -7,7 +8,7 @@ import '../services/biometric_service.dart';
 import 'main_wrapper.dart';
 import '../services/token_service.dart';
 import '../services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'sign_in_screen.dart';
 
 class VerifyPinScreen extends StatefulWidget {
   final Widget? nextScreen;
@@ -234,6 +235,18 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           }
         });
       }
+    } on TokenExpiredException catch (e) {
+      // Token expired - redirect to login
+      if (!mounted) return;
+      await _hideLoaderDialog();
+      
+      if (mounted && context.mounted) {
+        // Navigate to login screen
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const SignInScreen()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       await _hideLoaderDialog();
@@ -273,16 +286,24 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       if (authenticated) {
         // Stop animation immediately on success
         _biometricPulseController.stop();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
-        );
+        
+        // Use WidgetsBinding to ensure navigation happens in next frame with valid context
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && context.mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => widget.nextScreen ?? const MainWrapper()),
+            );
+          }
+        });
       } else {
         // Handle failure/cancel
         VibrationService.errorVibrate();
-        // Optional: show message
       }
     } catch (e) {
       debugPrint('Biometric error: $e');
+      if (mounted) {
+        VibrationService.errorVibrate();
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -309,6 +330,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
 
   /// Dashes + asterisk for filled ones
   Widget _buildDashPin() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AnimatedBuilder(
       animation: _shakeAnimation,
       builder: (context, child) {
@@ -340,7 +362,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                         borderRadius: BorderRadius.circular(999.r),
                         color: isFilled
                             ? buttonGreen
-                            : Colors.white.withValues(alpha: 0.3),
+                            : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withOpacity(0.3)),
                       ),
                     ),
                   ),
@@ -350,7 +372,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                       '*',
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: isDark ? Colors.white : Colors.black,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -365,6 +387,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
   }
 
   Widget _buildKeypadRow(List<String> numbers) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: numbers.map((number) {
@@ -374,7 +397,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
             number,
             style: TextStyle(
               fontFamily: 'Satoshi',
-              color: Colors.white,
+              color: isDark ? Colors.white : Colors.black,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,
             ),
@@ -388,13 +411,14 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     required VoidCallback onPressed,
     required Widget child,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: _isVerifying ? null : onPressed,
       child: Container(
         width: 70.r,
         height: 70.r,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFF6F6F6),
           shape: BoxShape.circle,
         ),
         child: Center(child: child),
@@ -456,9 +480,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           children: [
             _buildKeypadButton(
               onPressed: _onBackspace,
-              child: const Icon(
+              child: Icon(
                 Icons.backspace_outlined,
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               ),
             ),
             _buildKeypadButton(
@@ -467,7 +491,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 '0',
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w500,
                 ),
@@ -506,15 +530,18 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                           height: 80.r,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: buttonGreen, width: 3.w),
-                            color: Colors.grey[800],
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.grey[800] 
+                                : const Color(0xFFF6F6F6),
                           ),
                           child: Center(
                             child: Text(
                               getInitials(_userName),
                               style: TextStyle(
                                 fontFamily: 'Satoshi',
-                                color: Colors.white,
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.white 
+                                    : Colors.black,
                                 fontSize: 32.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -530,7 +557,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                               'Welcome back,',
                               style: TextStyle(
                                 fontFamily: 'Satoshi',
-                                color: Colors.white.withOpacity(0.7),
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.white.withOpacity(0.7) 
+                                    : Colors.black.withOpacity(0.7),
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -540,7 +569,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                               _userName,
                               style: TextStyle(
                                 fontFamily: 'Satoshi',
-                                color: Colors.white,
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.white 
+                                    : Colors.black,
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -554,7 +585,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                           'Enter your PIN',
                           style: TextStyle(
                             fontFamily: 'Satoshi',
-                            color: Colors.white,
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.white 
+                                : Colors.black,
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w500,
                           ),

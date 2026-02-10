@@ -244,7 +244,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -252,7 +252,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           style: TextStyle(fontFamily: 'Satoshi',
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
           ),
         ),
         centerTitle: true,
@@ -280,7 +280,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -288,7 +288,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       'Enter the amount you want to add to your wallet. Funds will be transferred immediately upon successful payment.',
                       style: TextStyle(fontFamily: 'Satoshi',
                         fontSize: 12,
-                        color: Colors.white.withOpacity(0.7),
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.7),
                       ),
                     ),
                   ],
@@ -323,11 +323,11 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: _selectedCountryCode,
-                        dropdownColor: cardBackground,
-                        icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
+                        dropdownColor: Theme.of(context).brightness == Brightness.dark ? cardBackground : lightCardBackground,
+                        icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54, size: 20),
                         isExpanded: true,
                         style: TextStyle(fontFamily: 'Satoshi',
-                          color: Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
@@ -354,7 +354,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -505,7 +505,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.05) : Colors.grey[200],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -516,7 +516,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                         Text(
                           'Amount',
                           style: TextStyle(fontFamily: 'Satoshi',
-                            color: Colors.white.withOpacity(0.7),
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black54,
                           ),
                         ),
                         Text(
@@ -595,7 +595,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontFamily: 'Satoshi',
                   fontSize: 12,
-                  color: Colors.white.withOpacity(0.5),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.5) : Colors.black45,
                 ),
               ),
             ],

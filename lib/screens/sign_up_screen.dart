@@ -30,6 +30,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscurePin = true;
   bool _isLoading = false;
+  
+  // Country code for phone number
+  String _selectedCountryCode = '+254'; // Default to Kenya
+  
+  // East African country codes that should be converted to 0 prefix
+  final Map<String, String> _countryCodeMap = {
+    '+254': 'Kenya',
+    '+256': 'Uganda',
+    '+255': 'Tanzania',
+    '+250': 'Rwanda',
+  };
+  
+  final Set<String> _eastAfricanCodes = {'+254', '+256', '+255', '+250'};
+  
+  /// Convert phone number based on country code
+  String _formatPhoneNumber(String phone, String countryCode) {
+    // Remove any leading zeros or spaces
+    phone = phone.trim().replaceAll(RegExp(r'^0+'), '');
+    
+    // For East African countries, convert to 0 prefix
+    if (_eastAfricanCodes.contains(countryCode)) {
+      return '0$phone';
+    }
+    
+    // For other countries, keep the country code
+    return '$countryCode$phone';
+  }
 
   @override
   void dispose() {
@@ -50,11 +77,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       try {
+        // Format phone number based on selected country code
+        final formattedPhone = _formatPhoneNumber(
+          _phoneController.text.trim(),
+          _selectedCountryCode,
+        );
+        
         await AuthService.register(
           email: _emailController.text.trim(),
           password: _passwordController.text,
           name: _nameController.text.trim(),
-          phoneNumber: _phoneController.text.trim(),
+          phoneNumber: formattedPhone,
           location: _locationController.text.trim(),
           pin: _pinController.text.trim(),
         );
@@ -103,7 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Register',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
                     ),
@@ -112,47 +145,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Create your profile',
                     style: TextStyle(
-                      color: Colors.grey[400],
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
                       fontSize: 16.sp,
                     ),
                   ),
                   SizedBox(height: 40.h),
                   
-                  // Location field
-                  Text(
-                    'Location',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  TextFormField(
-                    controller: _locationController,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                    decoration: buildUnderlineInputDecoration(
-                      context: context,
-                      label: '',
-                      hintText: 'Enter your location',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your location';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 24.h),
-                  
-                  // Name field
+                  // Name field (moved to first position)
                   Text(
                     'Full Name',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -160,8 +163,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(height: 8.h),
                   TextFormField(
                     controller: _nameController,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
@@ -182,7 +185,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Email address',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -191,8 +194,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
@@ -212,42 +215,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   SizedBox(height: 24.h),
                   
-                  // Phone field
-                  Text(
-                    'Phone number',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                    decoration: buildUnderlineInputDecoration(
-                      context: context,
-                      label: '',
-                      hintText: 'Enter your phone number',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 24.h),
-                  
-                  // Password field
+                  // Password field (moved before phone)
                   Text(
                     'Password',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -256,8 +228,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
@@ -267,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.white70,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                         ),
                         onPressed: () {
                           setState(() {
@@ -292,7 +264,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'PIN (4 digits)',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
@@ -303,8 +275,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: _obscurePin,
                     keyboardType: TextInputType.number,
                     maxLength: 4,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                       fontSize: 16,
                     ),
                     decoration: buildUnderlineInputDecoration(
@@ -314,7 +286,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePin ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.white70,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                         ),
                         onPressed: () {
                           setState(() {
@@ -329,6 +301,115 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                       if (value.length != 4) {
                         return 'PIN must be exactly 4 digits';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 24.h),
+                  
+                  // Phone field with country code selector
+                  Text(
+                    'Phone number',
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Country code dropdown
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white24 : Colors.black12, 
+                              width: 1
+                            ),
+                          ),
+                        ),
+                        child: DropdownButton<String>(
+                          value: _selectedCountryCode,
+                          dropdownColor: Theme.of(context).brightness == Brightness.dark ? cardBackground : lightCardBackground,
+                          underline: const SizedBox(),
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                            fontSize: 16.sp,
+                          ),
+                          items: _countryCodeMap.entries.map((entry) {
+                            return DropdownMenuItem<String>(
+                              value: entry.key,
+                              child: Text(entry.key),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedCountryCode = value;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 12.w),
+                      // Phone number input
+                      Expanded(
+                        child: TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                            fontSize: 16,
+                          ),
+                          decoration: buildUnderlineInputDecoration(
+                            context: context,
+                            label: '',
+                            hintText: 'e.g. 712345678',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your phone number';
+                            }
+                            // Remove leading zeros for validation
+                            final cleanNumber = value.trim().replaceAll(RegExp(r'^0+'), '');
+                            if (cleanNumber.length < 9) {
+                              return 'Phone number too short';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24.h),
+                  
+                  // Location field (moved to last position)
+                  Text(
+                    'Location',
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  TextFormField(
+                    controller: _locationController,
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      fontSize: 16,
+                    ),
+                    decoration: buildUnderlineInputDecoration(
+                      context: context,
+                      label: '',
+                      hintText: 'Enter your location',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your location';
                       }
                       return null;
                     },
@@ -418,7 +499,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   text: TextSpan(
                     style: TextStyle(
                       fontFamily: 'Satoshi',
-                      color: Colors.white.withOpacity(0.7),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.7),
                       fontSize: 14.sp,
                     ),
                     children: [

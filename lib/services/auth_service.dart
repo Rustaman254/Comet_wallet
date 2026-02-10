@@ -418,6 +418,16 @@ class AuthService {
         );
 
         return jsonResponse['verified'] == true;
+      } else if (response.statusCode == 401) {
+        // Token expired - AuthenticatedHttpClient already handled logout
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.verifyPinEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: {'error': 'Token expired'},
+        );
+        throw TokenExpiredException('Your session has expired. Please login again.');
       } else {
         AppLogger.logAPIResponse(
           endpoint: ApiConstants.verifyPinEndpoint,
@@ -429,8 +439,20 @@ class AuthService {
         return false;
       }
     } catch (e) {
+      if (e is TokenExpiredException) {
+        rethrow;
+      }
       AppLogger.error(LogTags.auth, 'PIN verification failed', data: {'error': e.toString()});
       rethrow;
     }
   }
+}
+
+/// Exception thrown when token has expired
+class TokenExpiredException implements Exception {
+  final String message;
+  TokenExpiredException(this.message);
+  
+  @override
+  String toString() => message;
 }

@@ -109,25 +109,32 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
       // Record activity on any tap
       onTap: () => SessionService.recordActivity(),
       behavior: HitTestBehavior.translucent,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        // We use IndexedStack to preserve state of each tab
-        body: Stack(
-          children: [
-            IndexedStack(
-              index: _currentIndex,
-              children: _pages,
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: CustomBottomNav(
-                currentIndex: _currentIndex,
-                onTap: onTabChanged,
+      child: NotificationListener<ScrollNotification>(
+        // Record activity on any scroll
+        onNotification: (ScrollNotification notification) {
+          SessionService.recordActivity();
+          return false; // Allow the notification to continue bubbling
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          // We use IndexedStack to preserve state of each tab
+          body: Stack(
+            children: [
+              IndexedStack(
+                index: _currentIndex,
+                children: _pages,
               ),
-            ),
-          ],
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: CustomBottomNav(
+                  currentIndex: _currentIndex,
+                  onTap: onTabChanged,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -40,6 +40,11 @@ void main() async {
     debugPrint("SmileID initialization failed: $e");
   }
   
+  // Load theme preference
+  final prefs = await SharedPreferences.getInstance();
+  final isDarkMode = prefs.getBool('isDarkMode') ?? true;
+  MyApp.themeNotifier.value = isDarkMode ? ThemeMode.dark : ThemeMode.light;
+
   runApp(const MyApp());
 }
 
@@ -84,11 +89,14 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.light,
             scaffoldBackgroundColor: lightBackground,
             cardColor: lightCardBackground,
+            dialogBackgroundColor: lightCardBackground,
             colorScheme: ColorScheme.fromSeed(
               seedColor: buttonGreen,
               brightness: Brightness.light,
               surface: lightCardBackground,
               outline: lightBorder,
+              onSurface: lightPrimaryText,
+              onPrimary: Colors.white,
             ),
             useMaterial3: true,
             fontFamily: 'Satoshi',

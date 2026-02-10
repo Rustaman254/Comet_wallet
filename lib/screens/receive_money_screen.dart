@@ -106,7 +106,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: darkBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -122,12 +122,12 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                       width: 40.r,
                       height: 40.r,
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.3),
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3) : Colors.grey[200],
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.arrow_back_outlined,
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         size: 20.r,
                       ),
                     ),
@@ -137,7 +137,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                       'Receive Money',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -155,7 +155,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   Text(
                     'Your Mobile Wallet Number',
                     style: TextStyle(fontFamily: 'Satoshi',
-                      color: Colors.white70,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       fontSize: 14,
                     ),
                   ),
@@ -172,7 +172,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                           child: Text(
                             walletAddress,
                             style: TextStyle(fontFamily: 'Satoshi',
-                              color: Colors.grey[600],
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[600] : Colors.black,
                               fontSize: 32.sp,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
@@ -210,14 +210,14 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   Text(
                     'Amount (KES)',
                     style: TextStyle(fontFamily: 'Satoshi',
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withOpacity(0.7),
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _amountController,
-                    style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                    style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -229,14 +229,14 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   Text(
                     'Description',
                     style: TextStyle(fontFamily: 'Satoshi',
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withOpacity(0.7),
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _descriptionController,
-                    style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+                    style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
