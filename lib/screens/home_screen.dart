@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
@@ -24,6 +25,7 @@ import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
 import '../widgets/usda_logo.dart';
+import 'package:heroicons/heroicons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,15 +46,32 @@ class _HomeScreenState extends State<HomeScreen> {
   int _completedCount = 0;
   
   bool _isBalanceVisible = true;
+  final Set<String> _addedCurrencies = {};
 
   @override
   void initState() {
     super.initState();
     _balancePageController = PageController();
     _balancePageController.addListener(_onBalancePageChanged);
+    _loadAddedCurrencies();
     _loadCachedUserData();
     _fetchUserProfile();
     // Data fetch is now handled by BLoC in main.dart
+  }
+
+  Future<void> _loadAddedCurrencies() async {
+    final prefs = await SharedPreferences.getInstance();
+    final added = prefs.getStringList('added_currencies') ?? [];
+    if (mounted) {
+      setState(() {
+        _addedCurrencies.addAll(added);
+      });
+    }
+  }
+
+  Future<void> _saveAddedCurrencies() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('added_currencies', _addedCurrencies.toList());
   }
 
   void _calculateSummaries(List<Transaction> transactions) {
@@ -164,6 +183,153 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return initials;
   }
+  String _getLandmarkAsset(String currency) {
+    switch (currency.toUpperCase()) {
+      case 'KES':
+        return 'assets/images/landmarks/kenya.png';
+      case 'USD':
+      case 'USDA':
+        return 'assets/images/landmarks/usa.png';
+      case 'UGX':
+        return 'assets/images/landmarks/uganda.png';
+      case 'TZS':
+        return 'assets/images/landmarks/tanzania.png';
+      case 'RWF':
+        return 'assets/images/landmarks/rwanda.png';
+      default:
+        return '';
+    }
+  }
+
+  Widget _getLandmarkWidget(String currency) {
+    final assetPath = _getLandmarkAsset(currency);
+    if (assetPath.isNotEmpty) {
+      return Image.asset(
+        assetPath,
+        width: 180.r,
+        height: 180.r,
+        fit: BoxFit.contain,
+      );
+    }
+
+    // Generic icons for other currencies
+    HeroIcons icon;
+    switch (currency.toUpperCase()) {
+      case 'EUR':
+        icon = HeroIcons.buildingLibrary;
+        break;
+      case 'GBP':
+        icon = HeroIcons.buildingOffice;
+        break;
+      case 'ZAR':
+        icon = HeroIcons.globeAlt;
+        break;
+      default:
+        icon = HeroIcons.buildingLibrary;
+    }
+
+    return HeroIcon(
+      icon,
+      size: 150.r,
+      color: Colors.white,
+    );
+  }
+
+  void _showAddCurrencyDialog() {
+    final List<String> availableCurrencies = [
+      'KES', 'USD', 'USDA', 'UGX', 'TZS', 'RWF', 'EUR', 'GBP', 'ZAR'
+    ];
+    
+    // Determine local currency same as in build method
+    final localCurrency = _userProfile?.location.toUpperCase() == 'KENYA' ? 'KES' : 
+                         (_userProfile?.location.toUpperCase() == 'UGANDA' ? 'UGX' : 
+                         (_userProfile?.location.toUpperCase() == 'TANZANIA' ? 'TZS' : 
+                         (_userProfile?.location.toUpperCase() == 'RWANDA' ? 'RWF' : 'KES')));
+
+    // Currencies currently visible on dashboard
+    final Set<String> visibleCurrencies = {
+      localCurrency,
+      'USDA',
+      ..._addedCurrencies,
+    };
+    
+    // Available currencies to add (those NOT visible)
+    final List<String> toAdd = availableCurrencies.where((c) => !visibleCurrencies.contains(c)).toList();
+
+    if (toAdd.isEmpty) {
+      ToastService().showSuccess(context, 'You have all available currencies on your dashboard!');
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: getCardColor(context),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Add New Currency',
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: getTextColor(context),
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: toAdd.length,
+                  separatorBuilder: (_, __) => Divider(color: getBorderColor(context)),
+                  itemBuilder: (context, index) {
+                    final currency = toAdd[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: buttonGreen.withOpacity(0.1),
+                        child: Text(
+                          currency.substring(0, 1),
+                          style: TextStyle(color: buttonGreen, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      title: Text(
+                        currency,
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: getTextColor(context),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () async {
+                        setState(() {
+                          _addedCurrencies.add(currency);
+                        });
+                        await _saveAddedCurrencies();
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                        context.read<WalletBloc>().add(UpdateBalance(
+                          currency: currency,
+                          amount: 0.0,
+                        ));
+                        ToastService().showSuccess(context, '$currency added to your wallet');
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,8 +347,31 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           builder: (context, state) {
             // Extract data from state
-            final balances = state is WalletLoaded ? state.balances : 
-                           (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
+            var rawBalances = state is WalletLoaded ? List<Map<String, dynamic>>.from(state.balances) : 
+                           (state is WalletBalanceUpdated ? List<Map<String, dynamic>>.from(state.balances) : <Map<String, dynamic>>[]);
+            
+            // Filter balances: Only show Local, USDA, and manually added ones
+            final localCurrency = _userProfile?.location.toUpperCase() == 'KENYA' ? 'KES' : 
+                                 (_userProfile?.location.toUpperCase() == 'UGANDA' ? 'UGX' : 
+                                 (_userProfile?.location.toUpperCase() == 'TANZANIA' ? 'TZS' : 
+                                 (_userProfile?.location.toUpperCase() == 'RWANDA' ? 'RWF' : 'KES')));
+            
+            final balances = rawBalances.where((b) {
+              final curr = b['currency']?.toString().toUpperCase() ?? '';
+              return curr == localCurrency || curr == 'USDA' || _addedCurrencies.contains(curr);
+            }).toList();
+            
+            balances.sort((a, b) {
+              final currencyA = a['currency']?.toString() ?? '';
+              final currencyB = b['currency']?.toString() ?? '';
+              
+              if (currencyA == localCurrency) return -1;
+              if (currencyB == localCurrency) return 1;
+              if (currencyA == 'USDA') return -1;
+              if (currencyB == 'USDA') return 1;
+              return currencyA.compareTo(currencyB);
+            });
+
             final transactions = state is WalletLoaded ? state.transactions : 
                                (state is WalletBalanceUpdated ? state.transactions : <Transaction>[]);
             final isLoading = state is WalletLoading;
@@ -388,19 +577,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
-                                Icons.swap_horiz_outlined,
-                                'Swap',
-                                () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => const SwapScreen(),
-                                    ),
-                                  );
-                                },
-                                backgroundColor: transactionSwapColor,
-                              ),
-                              SizedBox(width: 16.w),
-                              _buildActionButton(
                                 Icons.arrow_downward_outlined,
                                 'Receive',
                                 () {
@@ -427,16 +603,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
-                                Icons.monetization_on_outlined,
-                                'Withdraw',
+                                Icons.swap_horiz_outlined,
+                                'Swap',
                                 () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => const WithdrawMoneyScreen(),
+                                      builder: (_) => const SwapScreen(),
                                     ),
                                   );
                                 },
-                                backgroundColor: transactionWithdrawColor,
+                                backgroundColor: transactionSwapColor,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -490,236 +666,252 @@ class _HomeScreenState extends State<HomeScreen> {
                                       )
                                     : PageView(
                                         controller: _balancePageController,
-                                        children: balances
-                                            .map((balance) {
-                                          return Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 24.w,
-                                            ),
-                                            child: Container(
-                                              padding: EdgeInsets.all(24.r),
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: Theme.of(context).brightness == Brightness.dark
-                                                    ? [
-                                                        darkGreen,
-                                                        darkGreen.withValues(alpha: 0.8),
-                                                        lightGreen.withValues(alpha: 0.3),
-                                                      ]
-                                                    : [
-                                                        const Color(0xFF2563EB), // Bright blue
-                                                        const Color(0xFF3B82F6), // Medium blue
-                                                        const Color(0xFF60A5FA), // Light blue
-                                                      ],
+                                          children: [
+                                            ...balances.map((balance) {
+                                              final currency = balance['currency'] ?? '';
+                                              return Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 24.w,
                                                 ),
-                                                borderRadius: BorderRadius.circular(20.r),
-                                              ),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Text(
-                                                            'Total Balance',
-                                                            style: TextStyle(
-                                                              fontFamily:
-                                                                  'Satoshi',
-                                                              color: Colors
-                                                                  .white70,
-                                                              fontSize: 13.sp,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                            ),
-                                                          ),
-                                                          SizedBox(width: 8.w),
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              setState(() {
-                                                                _isBalanceVisible =
-                                                                    !_isBalanceVisible;
-                                                              });
-                                                              VibrationService
-                                                                  .lightImpact();
-                                                            },
-                                                            child: Icon(
-                                                              _isBalanceVisible
-                                                                  ? Icons
-                                                                      .visibility_outlined
-                                                                  : Icons
-                                                                      .visibility_off_outlined,
-                                                              color:
-                                                                  Colors.white70,
-                                                              size: 18.r,
-                                                            ),
-                                                          ),
-                                                        ],
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(20.r),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        begin: Alignment.topLeft,
+                                                        end: Alignment.bottomRight,
+                                                        colors: Theme.of(context).brightness == Brightness.dark
+                                                          ? [
+                                                              darkGreen,
+                                                              darkGreen.withValues(alpha: 0.8),
+                                                              lightGreen.withValues(alpha: 0.3),
+                                                            ]
+                                                          : [
+                                                              const Color(0xFF2563EB), // Bright blue
+                                                              const Color(0xFF3B82F6), // Medium blue
+                                                              const Color(0xFF60A5FA), // Light blue
+                                                            ],
                                                       ),
-                                                      Container(
-                                                        padding:
-                                                            EdgeInsets.symmetric(
-                                                          horizontal: 12.w,
-                                                          vertical: 6.h,
-                                                        ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: Colors.white
-                                                              .withValues(
-                                                                  alpha: 0.2),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                            20.r,
-                                                          ),
-                                                        ),
-                                                        child: Text(
-                                                          balance['currency'] ??
-                                                              'KES',
-                                                          style: TextStyle(
-                                                            fontFamily: 'Satoshi',
-                                                            color: Colors.white,
-                                                            fontSize: 12.sp,
-                                                            fontWeight: FontWeight.bold,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(height: 16.h),
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.baseline,
-                                                    textBaseline:
-                                                        TextBaseline.alphabetic,
-                                                    children: [
-                                                      if (balance['currency'] == 'USDA') ...[
-                                                        const USDALogo(size: 24),
-                                                        SizedBox(width: 8.w),
-                                                      ],
-                                                      Text(
-                                                        balance['symbol'] ?? balance['currency'] ?? 'KES',
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                              'Satoshi',
-                                                          color: Colors.white70,
-                                                          fontSize: 20.sp,
-                                                          fontWeight:
-                                                              FontWeight.w600,
-                                                        ),
-                                                      ),
-                                                      SizedBox(width: 8.w),
-                                                      Text(
-                                                        _isBalanceVisible
-                                                        ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
-                                                            : '••••••',
-                                                        style: TextStyle(
-                                                          fontFamily:
-                                                              'Satoshi',
-                                                          color: Colors.white,
-                                                          fontSize: 48.sp,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          letterSpacing: -1,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const Spacer(),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 0),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
+                                                    ),
+                                                    child: Stack(
                                                       children: [
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              'Date',
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    'Satoshi',
-                                                                color: Colors
-                                                                    .white70,
-                                                                fontSize: 12.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                                height: 2.h),
-                                                            Text(
-                                                              balance['date'] ??
-                                                                  'Today',
-                                                              style: TextStyle(
-                                                                fontFamily:
-                                                                    'Satoshi',
-                                                                color:
-                                                                    Colors.white,
-                                                                fontSize: 14.sp,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                              ),
-                                                            ),
-                                                          ],
+                                                        // LANDMARK IMAGE - Background Right (bleeding to edges)
+                                                        Positioned(
+                                                          bottom: -20,
+                                                          right: -20,
+                                                          child: Opacity(
+                                                            opacity: 0.15,
+                                                            child: _getLandmarkWidget(currency),
+                                                          ),
                                                         ),
-                                                        Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                            horizontal: 10.w,
-                                                            vertical: 4.h,
-                                                          ),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.white
-                                                                .withValues(
-                                                                    alpha: 0.15),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12.r),
-                                                          ),
-                                                          child: Row(
+                                                        // CONTENT
+                                                        Padding(
+                                                          padding: EdgeInsets.all(24.r),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment.start,
                                                             children: [
-                                                              Text(
-                                                                balance['change'] ??
-                                                                    '+0.00',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontFamily:
-                                                                      'Satoshi',
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize:
-                                                                      14.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                ),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        'Total Balance',
+                                                                        style: TextStyle(
+                                                                          fontFamily:
+                                                                              'Satoshi',
+                                                                          color: Colors
+                                                                              .white70,
+                                                                          fontSize: 13.sp,
+                                                                          fontWeight:
+                                                                              FontWeight
+                                                                                  .w400,
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(width: 8.w),
+                                                                      GestureDetector(
+                                                                        onTap: () {
+                                                                          setState(() {
+                                                                            _isBalanceVisible =
+                                                                                !_isBalanceVisible;
+                                                                          });
+                                                                          VibrationService
+                                                                              .lightImpact();
+                                                                        },
+                                                                        child: Icon(
+                                                                          _isBalanceVisible
+                                                                              ? Icons
+                                                                                  .visibility_outlined
+                                                                              : Icons
+                                                                                  .visibility_off_outlined,
+                                                                          color:
+                                                                              Colors.white70,
+                                                                          size: 18.r,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  Container(
+                                                                    padding:
+                                                                        EdgeInsets.symmetric(
+                                                                      horizontal: 12.w,
+                                                                      vertical: 6.h,
+                                                                    ),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: Colors.white
+                                                                          .withValues(
+                                                                              alpha: 0.2),
+                                                                      borderRadius:
+                                                                          BorderRadius
+                                                                              .circular(
+                                                                        20.r,
+                                                                      ),
+                                                                    ),
+                                                                    child: Text(
+                                                                      balance['currency'] ??
+                                                                          'KES',
+                                                                      style: TextStyle(
+                                                                        fontFamily: 'Satoshi',
+                                                                        color: Colors.white,
+                                                                        fontSize: 12.sp,
+                                                                        fontWeight: FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
                                                               ),
-                                                              SizedBox(
-                                                                  width: 4.w),
-                                                              Icon(
-                                                                Icons
-                                                                    .trending_up_outlined,
-                                                                color:
-                                                                    buttonGreen,
-                                                                size: 16.r,
+                                                              SizedBox(height: 16.h),
+                                                              if (currency == 'USDA') ...[
+                                                                const USDALogo(size: 40),
+                                                                SizedBox(height: 12.h),
+                                                              ],
+                                                              Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment.baseline,
+                                                                textBaseline:
+                                                                    TextBaseline.alphabetic,
+                                                                children: [
+                                                                  Text(
+                                                                    balance['symbol'] ?? balance['currency'] ?? 'KES',
+                                                                    style: TextStyle(
+                                                                      fontFamily:
+                                                                          'Satoshi',
+                                                                      color: Colors.white70,
+                                                                      fontSize: 20.sp,
+                                                                      fontWeight:
+                                                                          FontWeight.w600,
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 8.w),
+                                                                  Text(
+                                                                    _isBalanceVisible
+                                                                    ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
+                                                                        : '••••••',
+                                                                    style: TextStyle(
+                                                                      fontFamily:
+                                                                          'Satoshi',
+                                                                      color: Colors.white,
+                                                                      fontSize: 48.sp,
+                                                                      fontWeight:
+                                                                          FontWeight.bold,
+                                                                      letterSpacing: -1,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const Spacer(),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Text(
+                                                                        'Date',
+                                                                        style: TextStyle(
+                                                                          fontFamily:
+                                                                              'Satoshi',
+                                                                          color: Colors
+                                                                              .white70,
+                                                                          fontSize: 12.sp,
+                                                                          fontWeight:
+                                                                              FontWeight
+                                                                                  .w400,
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height: 2.h),
+                                                                      Text(
+                                                                        balance['date'] ??
+                                                                            'Today',
+                                                                        style: TextStyle(
+                                                                          fontFamily:
+                                                                              'Satoshi',
+                                                                          color:
+                                                                              Colors.white,
+                                                                          fontSize: 14.sp,
+                                                                          fontWeight:
+                                                                              FontWeight
+                                                                                  .w500,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  Container(
+                                                                    padding: EdgeInsets
+                                                                        .symmetric(
+                                                                      horizontal: 10.w,
+                                                                      vertical: 4.h,
+                                                                    ),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: Colors.white
+                                                                          .withValues(
+                                                                              alpha: 0.15),
+                                                                      borderRadius:
+                                                                          BorderRadius
+                                                                              .circular(
+                                                                                  12.r),
+                                                                    ),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Text(
+                                                                          balance['change'] ??
+                                                                              '+0.00',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontFamily:
+                                                                                'Satoshi',
+                                                                            color: Colors
+                                                                                .white,
+                                                                            fontSize:
+                                                                                14.sp,
+                                                                            fontWeight:
+                                                                                FontWeight
+                                                                                    .bold,
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                            width: 4.w),
+                                                                        Icon(
+                                                                          Icons
+                                                                              .trending_up_outlined,
+                                                                          color:
+                                                                              buttonGreen,
+                                                                          size: 16.r,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
                                                               ),
                                                             ],
                                                           ),
@@ -727,20 +919,75 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ],
                                                     ),
                                                   ),
-                                                ],
+                                                ),
+                                              );
+                                            }),
+                                            // ADD NEW CURRENCY CARD
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                                              child: GestureDetector(
+                                                onTap: _showAddCurrencyDialog,
+                                                child: Container(
+                                                  padding: EdgeInsets.all(24.r),
+                                                  decoration: BoxDecoration(
+                                                    color: getCardColor(context),
+                                                    borderRadius: BorderRadius.circular(20.r),
+                                                    border: Border.all(
+                                                      color: getBorderColor(context),
+                                                      width: 2,
+                                                      style: BorderStyle.solid,
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Container(
+                                                        padding: EdgeInsets.all(16.r),
+                                                        decoration: BoxDecoration(
+                                                          color: buttonGreen.withOpacity(0.1),
+                                                          shape: BoxShape.circle,
+                                                        ),
+                                                        child: Icon(
+                                                          Icons.add_rounded,
+                                                          color: buttonGreen,
+                                                          size: 40.r,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 16.h),
+                                                      Text(
+                                                        'Add New Currency',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Satoshi',
+                                                          color: getTextColor(context),
+                                                          fontSize: 18.sp,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 8.h),
+                                                      Text(
+                                                        'Get a multi-currency wallet in seconds',
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontFamily: 'Satoshi',
+                                                          color: getSecondaryTextColor(context),
+                                                          fontSize: 14.sp,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          );
-                                        }).toList(),
+                                          ],
                                       )),
                           ),
                           SizedBox(height: 12.h),
-                          // Page indicators for balance cards
+                           // Page indicators for balance cards
                           if (balances.isNotEmpty)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: List.generate(
-                                  balances.length, (index) {
+                                  balances.length + 1, (index) { // +1 for Add New card
                                 return Padding(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 3.w),

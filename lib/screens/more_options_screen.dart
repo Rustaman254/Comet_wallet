@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
 import 'ecitizen_services_screen.dart';
-import 'swap_screen.dart';
+import 'withdraw_money_screen.dart';
 import '../services/toast_service.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
@@ -12,7 +12,7 @@ class MoreOptionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: darkBackground,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
@@ -28,7 +28,7 @@ class MoreOptionsScreen extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.3) : Colors.grey[400],
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -37,7 +37,7 @@ class MoreOptionsScreen extends StatelessWidget {
           Text(
             'More Options',
             style: TextStyle(fontFamily: 'Satoshi',
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
@@ -48,6 +48,7 @@ class MoreOptionsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildCircularOption(
+                context,
                 Icons.phone_outlined,
                 'Buy Airtime',
                 () {
@@ -57,6 +58,7 @@ class MoreOptionsScreen extends StatelessWidget {
                 showComingSoon: true,
               ),
               _buildCircularOption(
+                context,
                 Icons.receipt_long_outlined,
                 'Pay Bills',
                 () {
@@ -66,6 +68,7 @@ class MoreOptionsScreen extends StatelessWidget {
                 showComingSoon: true,
               ),
               _buildCircularOption(
+                context,
                 Icons.request_page_outlined,
                 'Request Money',
                 () {
@@ -82,6 +85,7 @@ class MoreOptionsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildCircularOption(
+                context,
                 Icons.savings_outlined,
                 'Savings',
                 () {
@@ -91,6 +95,7 @@ class MoreOptionsScreen extends StatelessWidget {
                 showComingSoon: true,
               ),
               _buildCircularOption(
+                context,
                 Icons.public,
                 'E-Citizen',
                 () {
@@ -103,13 +108,14 @@ class MoreOptionsScreen extends StatelessWidget {
                 },
               ),
               _buildCircularOption(
-                Icons.swap_horiz,
-                'Swap',
+                context,
+                Icons.monetization_on_outlined,
+                'Withdraw',
                 () {
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => SwapScreen(),
+                      builder: (_) => const WithdrawMoneyScreen(),
                     ),
                   );
                 },
@@ -123,6 +129,7 @@ class MoreOptionsScreen extends StatelessWidget {
   }
 
   Widget _buildCircularOption(
+    BuildContext context,
     IconData icon,
     String label,
     VoidCallback onTap, {
@@ -139,10 +146,10 @@ class MoreOptionsScreen extends StatelessWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.1) : Colors.grey[200],
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: Colors.white, size: 28),
+                child: Icon(icon, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, size: 28),
               ),
               if (showComingSoon)
                 Positioned(
@@ -154,7 +161,7 @@ class MoreOptionsScreen extends StatelessWidget {
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                        color: darkBackground,
+                        color: Theme.of(context).brightness == Brightness.dark ? darkBackground : lightBackground,
                         width: 1.5,
                       ),
                     ),
@@ -176,7 +183,7 @@ class MoreOptionsScreen extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(fontFamily: 'Satoshi',
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
               ),

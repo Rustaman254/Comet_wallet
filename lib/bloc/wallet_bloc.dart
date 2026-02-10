@@ -347,15 +347,29 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     final currentState = state as WalletLoaded;
 
     try {
-      final updatedBalances = currentState.balances.map((balance) {
-        if (balance['currency'] == event.currency) {
-          return {
-            ...balance,
+      final updatedBalances = List<Map<String, dynamic>>.from(currentState.balances);
+      bool found = false;
+      
+      for (int i = 0; i < updatedBalances.length; i++) {
+        if (updatedBalances[i]['currency'] == event.currency) {
+          updatedBalances[i] = {
+            ...updatedBalances[i],
             'amount': event.amount.toString(),
           };
+          found = true;
+          break;
         }
-        return balance;
-      }).toList();
+      }
+
+      if (!found) {
+        updatedBalances.add({
+          'currency': event.currency,
+          'symbol': _getCurrencySymbol(event.currency),
+          'amount': event.amount.toString(),
+          'date': 'Today',
+          'change': '+0.00',
+        });
+      }
 
       final summaries = _calculateSummaries(currentState.transactions);
 
