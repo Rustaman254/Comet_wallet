@@ -34,6 +34,8 @@ class Transaction {
   final dynamic ownership;
   final TransactionUser? user;
   final String? explorerLink;
+  final DateTime createdAt;
+  final String currency;
 
   Transaction({
     required this.id,
@@ -46,9 +48,24 @@ class Transaction {
     this.ownership,
     this.user,
     this.explorerLink,
+    required this.createdAt,
+    required this.currency,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
+    DateTime parsedDate;
+    try {
+      if (json['CreatedAt'] != null) {
+        parsedDate = DateTime.parse(json['CreatedAt']);
+      } else if (json['created_at'] != null) {
+        parsedDate = DateTime.parse(json['created_at']);
+      } else {
+        parsedDate = DateTime.now();
+      }
+    } catch (e) {
+      parsedDate = DateTime.now();
+    }
+
     return Transaction(
       id: json['id'] ?? 0,
       userID: json['userID'] ?? 0,
@@ -60,6 +77,8 @@ class Transaction {
       ownership: json['ownership'],
       user: json['user'] != null ? TransactionUser.fromJson(json['user']) : null,
       explorerLink: json['explorerLink'],
+      createdAt: parsedDate,
+      currency: json['currency'] ?? 'KES',
     );
   }
 }

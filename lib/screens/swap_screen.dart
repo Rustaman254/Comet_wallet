@@ -36,8 +36,17 @@ class _SwapScreenState extends State<SwapScreen> {
   }
 
   double _getBalanceForCurrency(String currency, WalletState state) {
+    List<Map<String, dynamic>> balances = [];
     if (state is WalletLoaded) {
-      final balance = state.balances.firstWhere(
+      balances = state.balances;
+    } else if (state is WalletBalanceUpdated) {
+      balances = state.balances;
+    } else if (state is WalletSwapLoading) {
+      balances = state.balances;
+    }
+
+    if (balances.isNotEmpty) {
+      final balance = balances.firstWhere(
         (b) => b['currency'] == currency,
         orElse: () => {'amount': '0.0'},
       );
@@ -132,7 +141,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     return ListTile(
                       leading: _buildCurrencyIcon(curr, size: 32.r),
                       title: Text(
-                        '${USDALogo.getFlag(curr)} $curr',
+                        '${USDALogo.getFlag(curr)} ${curr == 'USDA' ? 'USDA (Cardano)' : curr}',
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: getTextColor(context),
@@ -421,6 +430,21 @@ class _SwapScreenState extends State<SwapScreen> {
                           if (double.tryParse(value) == null) return 'Invalid';
                           if (double.parse(value) <= 0) return 'Must be > 0';
                           if (double.parse(value) > balance) return 'Insufficient balance';
+                          
+                          // Minimum swap amount checks
+                          if (_toCurrency == 'USDA') {
+                            final rate = _getExchangeRate(_fromCurrency, 'USDA');
+                            final estimatedUSDA = double.parse(value) * rate;
+                            if (estimatedUSDA < 1.0) {
+                              return 'Min swap: 1 USDA (Cardano)';
+                            }
+                          }
+                          if (_fromCurrency == 'USDA') {
+                            if (double.parse(value) < 1.0) {
+                              return 'Min swap: 1 USDA (Cardano)';
+                            }
+                          }
+                          
                           return null;
                         },
                       )
@@ -448,7 +472,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       _buildCurrencyIcon(currency, size: 24.r),
                       SizedBox(width: 8.w),
                       Text(
-                        currency,
+                        currency == 'USDA' ? 'USDA (Cardano)' : currency,
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           fontSize: 16.sp,

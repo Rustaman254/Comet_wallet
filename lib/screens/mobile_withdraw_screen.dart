@@ -142,7 +142,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                     ),
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
-                      widget.currency,
+                      widget.currency == 'USDA' ? 'USDA (Cardano)' : widget.currency,
                       style: TextStyle(fontFamily: 'Satoshi',
                         color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16,

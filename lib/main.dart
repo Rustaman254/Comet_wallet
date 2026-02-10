@@ -16,6 +16,7 @@ import 'services/authenticated_http_client.dart';
 import 'services/session_service.dart';
 import 'bloc/wallet_bloc.dart';
 import 'bloc/wallet_event.dart';
+import 'screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,6 +125,7 @@ class MyApp extends StatelessWidget {
               labelLarge: const TextStyle(fontFamily: 'Satoshi', fontSize: 14, fontWeight: FontWeight.w500, color: lightTextPrimary),
             ),
           ),
+
           darkTheme: ThemeData(
             brightness: Brightness.dark,
             scaffoldBackgroundColor: darkBackground,
@@ -156,7 +158,7 @@ class MyApp extends StatelessWidget {
               labelLarge: const TextStyle(fontFamily: 'Satoshi', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
             ),
           ),
-          home: const OnboardingWrapper(),
+          home: const SplashScreen(),
                 ),
               ),
             );
@@ -231,20 +233,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     }
   }
 
-  Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isFirstTime', false);
-    
-    if (mounted) {
-      // After onboarding completes, check if user is authenticated
-      final isAuthenticated = await TokenService.isAuthenticated();
-      final nextScreen = isAuthenticated ? const VerifyPinScreen() : const SignInScreen();
-      
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => nextScreen),
-      );
-    }
-  }
+
 
   @override
   void dispose() {
@@ -273,7 +262,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
               return Transform.scale(
                 scale: _scaleAnimation.value,
                 child: Opacity(
-                  opacity: 1,
+                  opacity: _fadeAnimation.value,
                   child: Image.asset(
                     'assets/images/Logo.png',
                     width: MediaQuery.of(context).size.width * 0.4,
@@ -288,7 +277,7 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
     }
 
     if (_isFirstTime) {
-      return OnboardingPageView(onComplete: _completeOnboarding);
+      return const OnboardingPageView();
     } else {
       return const VerifyPinScreen();
     }

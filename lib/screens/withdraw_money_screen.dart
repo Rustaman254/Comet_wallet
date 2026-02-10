@@ -152,7 +152,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.w),
                                 )
                               : Text(
-                                  '${USDALogo.getFlag(currency)} $currency ${balance.toStringAsFixed(2)}',
+                                  '${USDALogo.getFlag(currency)} ${currency == 'USDA' ? 'USDA (Cardano)' : currency} ${balance.toStringAsFixed(2)}',
                                   style: TextStyle(fontFamily: 'Satoshi',
                                     color: Colors.white,
                                     fontSize: 32.sp,

@@ -29,15 +29,17 @@ class SendMoney extends WalletEvent {
   final double amount;
   final String recipientPhone;
   final String transactionType;
+  final String currency;
 
   const SendMoney({
     required this.amount,
     required this.recipientPhone,
     required this.transactionType,
+    this.currency = 'KES',
   });
 
   @override
-  List<Object?> get props => [amount, recipientPhone, transactionType];
+  List<Object?> get props => [amount, recipientPhone, transactionType, currency];
 }
 
 class UpdateBalance extends WalletEvent {

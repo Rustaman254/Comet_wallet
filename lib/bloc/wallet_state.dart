@@ -100,7 +100,11 @@ class WalletBalanceUpdated extends WalletState {
 }
 
 class WalletSwapLoading extends WalletState {
-  const WalletSwapLoading();
+  final List<Map<String, dynamic>> balances;
+  const WalletSwapLoading({required this.balances});
+
+  @override
+  List<Object?> get props => [balances];
 }
 
 class WalletSwapSuccess extends WalletState {

@@ -91,8 +91,9 @@ class USDALogo extends StatelessWidget {
       'Uganda': '🇺🇬',
       'Tanzania': '🇹🇿',
       'Rwanda': '🇷🇼',
+      'USDA': '🪙',
     };
-    return flags[code] ?? '🏳️';
+    return flags[code] ?? (code.toUpperCase().contains('USDA') ? '🪙' : '🏳️');
   }
 }
 
@@ -138,11 +139,11 @@ class USDABadge extends StatelessWidget {
           ),
           SizedBox(width: height * 0.2),
           Text(
-            'USDA',
+            'USDA (Cardano)',
             style: TextStyle(
               fontFamily: 'Satoshi',
               color: Colors.white,
-              fontSize: height * 0.5,
+              fontSize: height * 0.45,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),

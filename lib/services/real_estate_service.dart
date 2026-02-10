@@ -12,7 +12,7 @@ class RealEstateService {
   // Get all available properties
   static Future<List<RealEstateProperty>> getAvailableProperties() async {
     try {
-      LoggerService.log(_tag, 'Fetching available properties');
+      AppLogger.debug(_tag, 'Fetching available properties');
       
       // For now, return simulated data
       // In production, this would make an API call
@@ -41,7 +41,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error fetching properties: $e');
+      AppLogger.error(_tag, 'Error fetching properties: $e');
       rethrow;
     }
   }
@@ -49,7 +49,7 @@ class RealEstateService {
   // Get property details by ID
   static Future<RealEstateProperty?> getPropertyDetails(String propertyId) async {
     try {
-      LoggerService.log(_tag, 'Fetching property details for: $propertyId');
+      AppLogger.debug(_tag, 'Fetching property details for: $propertyId');
       
       // For now, return simulated data
       await Future.delayed(const Duration(milliseconds: 500));
@@ -79,7 +79,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error fetching property details: $e');
+      AppLogger.error(_tag, 'Error fetching property details: $e');
       rethrow;
     }
   }
@@ -91,7 +91,7 @@ class RealEstateService {
     required double totalAmount,
   }) async {
     try {
-      LoggerService.log(_tag, 'Buying $tokenCount tokens for property: $propertyId');
+      AppLogger.debug(_tag, 'Buying $tokenCount tokens for property: $propertyId');
       
       // For now, simulate successful purchase
       await Future.delayed(const Duration(seconds: 2));
@@ -129,7 +129,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error buying tokens: $e');
+      AppLogger.error(_tag, 'Error buying tokens: $e');
       rethrow;
     }
   }
@@ -137,7 +137,7 @@ class RealEstateService {
   // Get user's property investments
   static Future<List<PropertyInvestment>> getMyInvestments() async {
     try {
-      LoggerService.log(_tag, 'Fetching user investments');
+      AppLogger.debug(_tag, 'Fetching user investments');
       
       // For now, return simulated data
       await Future.delayed(const Duration(milliseconds: 600));
@@ -165,7 +165,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error fetching investments: $e');
+      AppLogger.error(_tag, 'Error fetching investments: $e');
       rethrow;
     }
   }
@@ -173,7 +173,7 @@ class RealEstateService {
   // Get marketplace listings
   static Future<List<MarketplaceListing>> getMarketplaceListings() async {
     try {
-      LoggerService.log(_tag, 'Fetching marketplace listings');
+      AppLogger.debug(_tag, 'Fetching marketplace listings');
       
       // For now, return simulated data
       await Future.delayed(const Duration(milliseconds: 700));
@@ -201,7 +201,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error fetching marketplace listings: $e');
+      AppLogger.error(_tag, 'Error fetching marketplace listings: $e');
       rethrow;
     }
   }
@@ -213,7 +213,7 @@ class RealEstateService {
     required double pricePerToken,
   }) async {
     try {
-      LoggerService.log(_tag, 'Listing $tokenCount tokens for sale');
+      AppLogger.debug(_tag, 'Listing $tokenCount tokens for sale');
       
       // For now, simulate successful listing
       await Future.delayed(const Duration(seconds: 1));
@@ -250,7 +250,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error selling tokens: $e');
+      AppLogger.error(_tag, 'Error selling tokens: $e');
       rethrow;
     }
   }
@@ -261,7 +261,7 @@ class RealEstateService {
     required double totalAmount,
   }) async {
     try {
-      LoggerService.log(_tag, 'Buying tokens from marketplace listing: $listingId');
+      AppLogger.debug(_tag, 'Buying tokens from marketplace listing: $listingId');
       
       // For now, simulate successful purchase
       await Future.delayed(const Duration(seconds: 2));
@@ -297,7 +297,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error buying marketplace tokens: $e');
+      AppLogger.error(_tag, 'Error buying marketplace tokens: $e');
       rethrow;
     }
   }
@@ -305,7 +305,7 @@ class RealEstateService {
   // Get transaction history
   static Future<List<PropertyTransaction>> getTransactionHistory() async {
     try {
-      LoggerService.log(_tag, 'Fetching transaction history');
+      AppLogger.debug(_tag, 'Fetching transaction history');
       
       // For now, return simulated data
       await Future.delayed(const Duration(milliseconds: 500));
@@ -333,7 +333,7 @@ class RealEstateService {
       }
       */
     } catch (e) {
-      LoggerService.log(_tag, 'Error fetching transactions: $e');
+      AppLogger.error(_tag, 'Error fetching transactions: $e');
       rethrow;
     }
   }

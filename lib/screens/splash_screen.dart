@@ -7,6 +7,7 @@ import '../services/token_service.dart';
 import 'onboarding_page_view.dart';
 import 'sign_in_screen.dart';
 import 'home_screen.dart';
+import 'verify_pin_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -58,10 +59,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       // 2. If not first time and authenticated: show home
       // 3. Otherwise: show sign in
       if (isFirstTime) {
-        nextScreen = OnboardingPageView(onComplete: _completeOnboarding);
+        nextScreen = const OnboardingPageView();
       } else if (isAuthenticated) {
-        // User is logged in, go to home screen
-        nextScreen = const HomeScreen();
+        // User is logged in, verify PIN first
+        nextScreen = const VerifyPinScreen();
       } else {
         // User is not logged in, go to sign in screen
         nextScreen = const SignInScreen();
@@ -75,21 +76,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           },
           transitionDuration: const Duration(milliseconds: 800),
         ),
-      );
-    }
-  }
-
-  Future<void> _completeOnboarding() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isFirstTime', false);
-    
-    if (mounted) {
-      // After onboarding completes, check if user is authenticated
-      final isAuthenticated = await TokenService.isAuthenticated();
-      final nextScreen = isAuthenticated ? const HomeScreen() : const SignInScreen();
-      
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => nextScreen),
       );
     }
   }
@@ -123,46 +109,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo Container
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        color: buttonGreen.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: buttonGreen.withValues(alpha: 0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.wallet,
-                          size: 50,
-                          color: buttonGreen,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Comet Wallet',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Your Money, Your Way',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 0.5,
+                  // Logo Container
+                    SizedBox(
+                      width: 200, // Adjusted size for better visibility
+                      height: 200,
+                      child: Image.asset(
+                        'assets/images/Logo.png',
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ],

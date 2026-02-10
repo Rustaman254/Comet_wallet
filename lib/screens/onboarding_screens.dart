@@ -40,6 +40,8 @@ class OnboardingScreen1 extends StatelessWidget {
                 _buildLiquidPageIndicator(1, currentPage),
                 SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(2, currentPage),
+                SizedBox(width: 8.w),
+                _buildLiquidPageIndicator(3, currentPage),
               ],
             ),
             SizedBox(height: 30.h),
@@ -217,6 +219,8 @@ class OnboardingScreen2 extends StatelessWidget {
                 _buildLiquidPageIndicator(1, currentPage),
                 SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(2, currentPage),
+                SizedBox(width: 8.w),
+                _buildLiquidPageIndicator(3, currentPage),
               ],
             ),
             SizedBox(height: 30.h),
@@ -383,6 +387,8 @@ class OnboardingScreen3 extends StatelessWidget {
                 _buildLiquidPageIndicator(1, currentPage),
                 SizedBox(width: 8.w),
                 _buildLiquidPageIndicator(2, currentPage),
+                SizedBox(width: 8.w),
+                _buildLiquidPageIndicator(3, currentPage),
               ],
             ),
             SizedBox(height: 30.h),
@@ -544,4 +550,121 @@ class PieChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class OnboardingScreen4 extends StatelessWidget {
+  final VoidCallback onNext;
+  final int currentPage;
+
+  const OnboardingScreen4({super.key, required this.onNext, required this.currentPage});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: darkBackground,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // USDA Image
+            Expanded(
+              flex: 5,
+              child: Center(
+                child: Image.asset(
+                  'assets/images/image-removebg-preview (2).png',
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+            const Spacer(flex: 1),
+            // Page indicators
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLiquidPageIndicator(0, currentPage),
+                SizedBox(width: 8.w),
+                _buildLiquidPageIndicator(1, currentPage),
+                SizedBox(width: 8.w),
+                _buildLiquidPageIndicator(2, currentPage),
+                SizedBox(width: 8.w),
+                _buildLiquidPageIndicator(3, currentPage),
+              ],
+            ),
+            SizedBox(height: 30.h),
+            // Text content
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
+              child: Column(
+                children: [
+                  Text(
+                    'Hold Digital Dollars in USDA on Cardano',
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: Colors.white,
+                      fontSize: 28.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Spend the way you like',
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 40.h),
+            // Next button
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40.w),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: buttonGreen,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
+                  ),
+                  child: Text(
+                    'Get Started',
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 40.h),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLiquidPageIndicator(int index, int currentPage) {
+    final isActive = index == currentPage;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeInOutBack,
+      width: isActive ? 24.w : 8.w,
+      height: 8.h,
+      decoration: BoxDecoration(
+        color: isActive ? buttonGreen : Colors.grey[600],
+        borderRadius: BorderRadius.circular(4.r),
+      ),
+    );
+  }
 }

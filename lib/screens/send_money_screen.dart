@@ -178,6 +178,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           amount: amount,
           recipientPhone: email,
           transactionType: 'transfer',
+          currency: selectedCurrency,
         ));
 
         final successData = {
@@ -236,6 +237,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           amount: amount,
           recipientPhone: phone,
           transactionType: 'mobile_transfer',
+          currency: _mobileCurrency,
         ));
 
         final successData = {
@@ -514,7 +516,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       ),
                       tabs: const [
                         Tab(text: 'Wallet'),
-                        Tab(text: 'USDA'),
+                        Tab(text: 'USDA (Cardano)'),
                       ],
                     ),
                   ),
@@ -990,7 +992,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             
             // Title
             Text(
-              'Transfer USDA to Address',
+              'Transfer USDA (Cardano) to Address',
               style: TextStyle(
                 fontFamily: 'Satoshi',
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
@@ -1027,7 +1029,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             
             // Amount
             Text(
-              'Amount in USDA',
+              'Amount in USDA (Cardano)',
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 14.sp,
@@ -1070,7 +1072,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
                     : Text(
-                        'Transfer USDA',
+                        'Transfer USDA (Cardano)',
                         style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

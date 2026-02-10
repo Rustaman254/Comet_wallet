@@ -242,6 +242,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         transactionType: 'wallet_topup',
         status: 'complete',
         phoneNumber: '',
+        createdAt: timestamp,
+        currency: event.currency,
       );
 
       final updatedTransactions = [newTransaction, ...currentState.transactions];
@@ -295,6 +297,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         transactionType: event.transactionType,
         status: 'complete',
         phoneNumber: event.recipientPhone,
+        createdAt: timestamp,
+        currency: event.currency,
       );
 
       // Update balances (deduct from first available balance)
@@ -493,7 +497,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     SwapCurrencies event,
     Emitter<WalletState> emit,
   ) async {
-    emit(const WalletSwapLoading());
+    final balances = state is WalletLoaded ? (state as WalletLoaded).balances : <Map<String, dynamic>>[];
+    emit(WalletSwapLoading(balances: balances));
 
     try {
       final result = await WalletService.swapCurrencies(
@@ -516,12 +521,23 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         emit(WalletError(message: result['message'] ?? 'Swap failed'));
       }
     } catch (e) {
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.replaceFirst('Exception: ', '');
+      }
+      if (errorMessage.startsWith('Swap error: ')) {
+        errorMessage = errorMessage.replaceFirst('Swap error: ', '');
+      }
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.replaceFirst('Exception: ', '');
+      }
+      
       AppLogger.error(
         LogTags.payment,
         'Swap failed in BLoC',
-        data: {'error': e.toString()},
+        data: {'error': errorMessage},
       );
-      emit(WalletError(message: 'Swap failed: $e'));
+      emit(WalletError(message: errorMessage));
     }
   }
 
@@ -562,6 +578,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         status: 'complete',
         phoneNumber: event.recipientAddress, // Using address as phone placeholder
         explorerLink: result['explorerLink'], // Assuming API returns this or we construct it
+        createdAt: timestamp,
+        currency: 'USDA',
       );
 
       // We need to fetch fresh data to get accurate balances (fees etc)

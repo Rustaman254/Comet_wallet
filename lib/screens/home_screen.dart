@@ -25,6 +25,8 @@ import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
 import '../widgets/usda_logo.dart';
+import '../utils/format_utils.dart';
+import 'transaction_details_screen.dart';
 import 'package:heroicons/heroicons.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -304,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                       title: Text(
-                        '${USDALogo.getFlag(currency)} $currency',
+                        '${USDALogo.getFlag(currency)} ${currency == 'USDA' ? 'USDA (Cardano)' : currency}',
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: getTextColor(context),
@@ -776,7 +778,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       ),
                                                                     ),
                                                                     child: Text(
-                                                                      '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['currency'] ?? 'KES'}',
+                                                                      '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['currency'] == 'USDA' ? 'USDA (Cardano)' : (balance['currency'] ?? 'KES')}',
                                                                       style: TextStyle(
                                                                         fontFamily: 'Satoshi',
                                                                         color: Colors.white,
@@ -801,7 +803,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         textBaseline: TextBaseline.alphabetic,
                                                                         children: [
                                                                           Text(
-                                                                            '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['symbol'] ?? balance['currency'] ?? 'KES'}',
+                                                                            '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['currency'] == 'USDA' ? 'USDA (Cardano)' : (balance['symbol'] ?? balance['currency'] ?? 'KES')}',
                                                                             style: TextStyle(
                                                                               fontFamily: 'Satoshi',
                                                                               color: Colors.white70,
@@ -1303,7 +1305,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTransactionList(List<Transaction> transactions) {
-    final recentTransactions = transactions.take(5).toList();
+    final recentTransactions = transactions.take(6).toList();
 
     if (recentTransactions.isEmpty) {
       return Column(
@@ -1333,13 +1335,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTransactionItemFromModel(Transaction transaction) {
+   Widget _buildTransactionItemFromModel(Transaction transaction) {
     Color statusColor;
     IconData iconData;
     Color iconColor;
 
     switch (transaction.status.toLowerCase()) {
       case 'complete':
+      case 'success':
         statusColor = buttonGreen;
         break;
       case 'pending':
@@ -1357,6 +1360,7 @@ class _HomeScreenState extends State<HomeScreen> {
         iconColor = transactionTopupColor;
         break;
       case 'send_money':
+      case 'transfer_usda':
         iconData = Icons.send_outlined;
         iconColor = transactionSendColor;
         break;
@@ -1369,83 +1373,125 @@ class _HomeScreenState extends State<HomeScreen> {
         iconColor = getTransactionColor(transaction.transactionType);
     }
 
-    return Row(
-      children: [
-        Container(
-          width: 50.r,
-          height: 50.r,
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransactionDetailsScreen(transaction: transaction),
           ),
-          child: Icon(
-            iconData,
-            color: iconColor,
-            size: 24.r,
-          ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _formatTransactionType(transaction.transactionType),
-                style: TextStyle(
-                  fontFamily: 'Satoshi',
-                  color: getTextColor(context),
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        child: Row(
+          children: [
+            Container(
+              width: 48.r,
+              height: 48.r,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12.r),
               ),
-              SizedBox(height: 4.h),
-              Row(
+              child: Icon(
+                iconData,
+                color: iconColor,
+                size: 22.r,
+              ),
+            ),
+            SizedBox(width: 14.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    transaction.phoneNumber.isNotEmpty
-                        ? transaction.phoneNumber
-                        : 'N/A',
+                    _formatTransactionType(transaction.transactionType),
                     style: TextStyle(
                       fontFamily: 'Satoshi',
-                      color: getSecondaryTextColor(context),
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
+                      color: getTextColor(context),
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(width: 8.w),
-                  Container(
-                    width: 4.r,
-                    height: 4.r,
-                    decoration: BoxDecoration(
-                      color: getTertiaryTextColor(context),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  Text(
-                    transaction.status.toUpperCase(),
-                    style: TextStyle(
-                      fontFamily: 'Satoshi',
-                      color: statusColor,
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  SizedBox(height: 2.h),
+                  Row(
+                    children: [
+                      Text(
+                        transaction.phoneNumber.isNotEmpty
+                            ? transaction.phoneNumber
+                            : 'N/A',
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: getSecondaryTextColor(context),
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Container(
+                        width: 3.r,
+                        height: 3.r,
+                        decoration: BoxDecoration(
+                          color: getTertiaryTextColor(context),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        transaction.status.toUpperCase(),
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: statusColor,
+                          fontSize: 9.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (transaction.currency == 'USDA')
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: USDALogo(size: 14),
+                      )
+                    else
+                      Text(
+                        USDALogo.getFlag(transaction.currency),
+                        style: TextStyle(fontSize: 12.sp),
+                      ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      FormatUtils.formatAmount(transaction.amount),
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
+                        color: getTextColor(context),
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  DateFormat('MMM dd').format(transaction.createdAt),
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    color: getTertiaryTextColor(context),
+                    fontSize: 10.sp,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        Text(
-          'KES ${transaction.amount.toStringAsFixed(2)}',
-          style: TextStyle(
-            fontFamily: 'Satoshi',
-            color: getTextColor(context),
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+      ),
     );
   }
 

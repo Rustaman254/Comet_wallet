@@ -15,6 +15,8 @@ import 'package:csv/csv.dart';
 import 'package:intl/intl.dart'; 
 import 'package:webview_flutter/webview_flutter.dart';
 import '../utils/format_utils.dart';
+import 'transaction_details_screen.dart';
+import '../widgets/usda_logo.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -30,7 +32,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   String? _error;
   final TextEditingController _searchController = TextEditingController();
   String _selectedFilter = 'All';
-  final List<String> _filters = ['All', 'topup', 'send', 'link'];
+  final List<String> _filters = ['All', 'topup', 'send', 'usda', 'swap'];
 
   @override
   void initState() {
@@ -63,7 +65,26 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         final matchesSearch = tx.phoneNumber.contains(query) || 
                              tx.transactionType.toLowerCase().contains(query.toLowerCase()) ||
                              tx.amount.toString().contains(query);
-        final matchesFilter = _selectedFilter == 'All' || tx.transactionType.toLowerCase().contains(_selectedFilter.toLowerCase());
+        
+        bool matchesFilter = false;
+        if (_selectedFilter == 'All') {
+          matchesFilter = true;
+        } else if (_selectedFilter == 'topup') {
+          matchesFilter = tx.transactionType.toLowerCase().contains('topup') || 
+                         tx.transactionType.toLowerCase().contains('receive');
+        } else if (_selectedFilter == 'send') {
+          matchesFilter = tx.transactionType.toLowerCase().contains('send') || 
+                         tx.transactionType.toLowerCase().contains('transfer') && 
+                         !tx.transactionType.toLowerCase().contains('usda');
+        } else if (_selectedFilter == 'usda') {
+          matchesFilter = tx.currency == 'USDA' || 
+                         tx.transactionType.toLowerCase().contains('usda');
+        } else if (_selectedFilter == 'swap') {
+          matchesFilter = tx.transactionType.toLowerCase().contains('swap');
+        } else {
+          matchesFilter = tx.transactionType.toLowerCase().contains(_selectedFilter.toLowerCase());
+        }
+
         return matchesSearch && matchesFilter;
       }).toList();
     }
@@ -255,7 +276,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     );
   }
 
-  Widget _buildBody(WalletState state) {
+   Widget _buildBody(WalletState state) {
     if (state is WalletLoading && _filteredTransactions.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -269,22 +290,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             SizedBox(height: 16.h),
             Text(
               'Error loading transactions',
-              style: TextStyle(fontFamily: 'Satoshi',fontSize: 18.sp, fontWeight: FontWeight.w500),
+              style: TextStyle(fontFamily: 'Satoshi', fontSize: 18.sp, fontWeight: FontWeight.w500),
             ),
             SizedBox(height: 8.h),
             Text(
               state.message,
-              style: TextStyle(fontFamily: 'Satoshi',color: Colors.grey[400], fontSize: 14.sp),
+              style: TextStyle(fontFamily: 'Satoshi', color: Colors.grey[500]),
               textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 24.h),
-            ElevatedButton(
-              onPressed: _fetchTransactions,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: buttonGreen,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-              ),
-              child: const Text('Try Again'),
             ),
           ],
         ),
@@ -296,7 +308,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 80.r, color: Colors.grey[700]),
+            Icon(Icons.history, size: 64.r, color: Colors.grey[300]),
             SizedBox(height: 16.h),
             Text(
               'No matches found',
@@ -311,161 +323,238 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       );
     }
 
+    // Group transactions by date
+    Map<String, List<Transaction>> grouped = {};
+    for (var tx in _filteredTransactions) {
+      String dateStr = _getDateHeader(tx.createdAt);
+      if (!grouped.containsKey(dateStr)) {
+        grouped[dateStr] = [];
+      }
+      grouped[dateStr]!.add(tx);
+    }
+
+    List<String> sortedHeaders = grouped.keys.toList();
+
     return ListView.builder(
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
-      itemCount: _filteredTransactions.length,
-      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      itemCount: 1, // We'll build the whole list as a column inside a single item or use a different structure
       itemBuilder: (context, index) {
-        final transaction = _filteredTransactions[index];
-        return Padding(
-          padding: EdgeInsets.only(bottom: 16.h),
-          child: _buildTransactionItem(transaction),
-        );
+        return _buildGroupedList(grouped);
       },
     );
   }
 
-  Widget _buildTransactionItem(Transaction transaction) {
+  Widget _buildGroupedList(Map<String, List<Transaction>> grouped) {
+    List<Widget> children = [];
+    var sortedDates = grouped.keys.toList();
+    
+    for (var date in sortedDates) {
+      children.add(
+        Padding(
+          padding: EdgeInsets.only(top: 24.h, bottom: 12.h),
+          child: Text(
+            date,
+            style: TextStyle(
+              fontFamily: 'Satoshi',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[500],
+              letterSpacing: 1.1,
+            ),
+          ),
+        ),
+      );
+      
+      for (var tx in grouped[date]!) {
+        children.add(_buildTransactionItem(tx));
+      }
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
+  }
+
+  String _getDateHeader(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final txDate = DateTime(date.year, date.month, date.day);
+
+    if (txDate == today) return 'TODAY';
+    if (txDate == yesterday) return 'YESTERDAY';
+    return DateFormat('MMMM dd, yyyy').format(date).toUpperCase();
+  }
+
+   Widget _buildTransactionItem(Transaction transaction) {
     Color statusColor;
     IconData iconData;
     Color iconColor;
 
     switch (transaction.status.toLowerCase()) {
       case 'complete':
+      case 'success':
         statusColor = buttonGreen;
         break;
       case 'pending':
         statusColor = Colors.orange;
         break;
-      case 'failed':
       default:
         statusColor = Colors.red;
-        break;
     }
 
     switch (transaction.transactionType.toLowerCase()) {
+      case 'send':
+      case 'transfer':
+      case 'transfer_usda':
+        iconData = Icons.arrow_upward;
+        iconColor = Colors.red[400]!;
+        break;
+      case 'topup':
+      case 'receive':
       case 'wallet_topup':
-        iconData = Icons.add_circle_outline;
-        iconColor = Colors.blue;
+        iconData = Icons.arrow_downward;
+        iconColor = buttonGreen;
         break;
-      case 'send_money':
-        iconData = Icons.send_outlined;
-        iconColor = Colors.orange;
-        break;
-      case 'payment_link':
-        iconData = Icons.link;
-        iconColor = Colors.purple;
+      case 'swap':
+        iconData = Icons.swap_horiz;
+        iconColor = Colors.blue[400]!;
         break;
       default:
-        iconData = Icons.swap_horiz;
-        iconColor = Colors.grey;
+        iconData = Icons.compare_arrows;
+        iconColor = Colors.grey[400]!;
     }
 
-    return Row(
-      children: [
-        Container(
-          width: 50.r,
-          height: 50.r,
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TransactionDetailsScreen(transaction: transaction),
           ),
-          child: Icon(
-            iconData,
-            color: iconColor,
-            size: 24.r,
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.all(16.r),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark 
+              ? Colors.white.withOpacity(0.05) 
+              : Colors.grey[50],
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark 
+                ? Colors.white.withOpacity(0.1) 
+                : Colors.grey[200]!,
           ),
         ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _formatTransactionType(transaction.transactionType),
-                style: TextStyle(fontFamily: 'Satoshi',
-                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+        child: Row(
+          children: [
+            Container(
+              width: 44.r,
+              height: 44.r,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12.r),
               ),
-              SizedBox(height: 4.h),
-              Row(
+              child: Icon(
+                iconData,
+                color: iconColor,
+                size: 20.r,
+              ),
+            ),
+            SizedBox(width: 14.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
+                    _formatTransactionType(transaction.transactionType),
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(width: 8.w),
-                  Container(
-                    width: 4.r,
-                    height: 4.r,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  Text(
-                    transaction.status.toUpperCase(),
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: statusColor,
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  SizedBox(height: 4.h),
+                  Row(
+                    children: [
+                      Text(
+                        transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: Colors.grey[500],
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Container(
+                        width: 3.r,
+                        height: 3.r,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[400],
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Text(
+                        transaction.status.toUpperCase(),
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: statusColor,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              if (transaction.explorerLink != null && transaction.explorerLink!.isNotEmpty) ...[
-                SizedBox(height: 4.h),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            title: const Text('Explorer', style: TextStyle(fontFamily: 'Satoshi')),
-                            backgroundColor: darkBackground,
-                            foregroundColor: Colors.white,
-                          ),
-                          body: WebViewWidget(
-                            controller: WebViewController()
-                              ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                              ..loadRequest(Uri.parse(transaction.explorerLink!)),
-                          ),
-                        ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (transaction.currency == 'USDA')
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: USDALogo(size: 14),
+                      )
+                    else
+                      Text(
+                        USDALogo.getFlag(transaction.currency),
+                        style: TextStyle(fontSize: 12.sp),
                       ),
-                    );
-                  },
-                  child: Text(
-                    'View on Explorer',
-                    style: TextStyle(
-                      fontFamily: 'Satoshi',
-                      color: Colors.blue,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.underline,
+                    SizedBox(width: 4.w),
+                    Text(
+                      FormatUtils.formatAmount(transaction.amount),
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                  ],
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  DateFormat('HH:mm').format(transaction.createdAt),
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    color: Colors.grey[500],
+                    fontSize: 11.sp,
                   ),
                 ),
               ],
-            ],
-          ),
+            ),
+          ],
         ),
-        Text(
-          'KES ${FormatUtils.formatAmount(transaction.amount)}',
-          style: TextStyle(fontFamily: 'Satoshi',
-            color: Theme.of(context).textTheme.bodyMedium?.color,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+      ),
     );
   }
 

@@ -166,17 +166,21 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       barrierDismissible: false,
       barrierColor: Colors.black.withValues(alpha: 0.6),
       builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return Center(
           child: Container(
-            width: 140.r,
-            padding: EdgeInsets.all(16.r),
+            width: 200.w,
+            padding: EdgeInsets.all(24.r),
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: isDark ? Colors.grey[900] : Colors.white,
               borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(
-                color: buttonGreen.withValues(alpha: 0.4),
-                width: 1.5.w,
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -187,8 +191,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                   'Verifying PIN...',
                   style: TextStyle(
                     fontFamily: 'Satoshi',
-                    color: Colors.white,
+                    color: isDark ? Colors.white : Colors.black,
                     fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
