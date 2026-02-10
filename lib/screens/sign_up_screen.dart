@@ -11,6 +11,7 @@ import 'verify_pin_screen.dart';
 import 'kyc/id_upload_screen.dart';
 import '../services/auth_service.dart';
 import '../services/token_service.dart';
+import '../widgets/usda_logo.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -40,6 +41,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
     '+256': 'Uganda',
     '+255': 'Tanzania',
     '+250': 'Rwanda',
+    '+234': 'Nigeria',
+    '+233': 'Ghana',
+    '+251': 'Ethiopia',
+    '+20': 'Egypt',
+    '+211': 'South Sudan',
+    '+86': 'China',
+    '+91': 'India',
+    '+971': 'UAE',
   };
   
   final Set<String> _eastAfricanCodes = {'+254', '+256', '+255', '+250'};
@@ -339,10 +348,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontSize: 16.sp,
                           ),
+                          selectedItemBuilder: (BuildContext context) {
+                            return _countryCodeMap.entries.map((entry) {
+                              return Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${USDALogo.getFlag(entry.key)} ${entry.key}',
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                    fontSize: 16.sp,
+                                  ),
+                                ),
+                              );
+                            }).toList();
+                          },
                           items: _countryCodeMap.entries.map((entry) {
                             return DropdownMenuItem<String>(
                               value: entry.key,
-                              child: Text(entry.key),
+                              child: Text(
+                                '${USDALogo.getFlag(entry.key)} ${entry.value} (${entry.key})',
+                              ),
                             );
                           }).toList(),
                           onChanged: (value) {

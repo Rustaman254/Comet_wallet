@@ -13,39 +13,86 @@ class USDALogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (size == 0) return const SizedBox.shrink();
+    
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF4A90E2), // Vibrant blue
-            Color(0xFF50C9C3), // Bright teal
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4A90E2).withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
-      child: Center(
-        child: Text(
-          'U',
-          style: TextStyle(
-            fontFamily: 'Satoshi',
-            color: Colors.white,
-            fontSize: size * 0.5,
-            fontWeight: FontWeight.bold,
-          ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2),
+        child: Image.asset(
+          'assets/images/usda_logo_new.png',
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback to original design if asset missing
+            return Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF4A90E2), Color(0xFF50C9C3)],
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'U',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: size * 0.5,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
+  }
+
+  /// Helper to get flag emoji for a currency or country code
+  static String getFlag(String code) {
+    final Map<String, String> flags = {
+      'KES': '🇰🇪',
+      'USD': '🇺🇸',
+      'TZS': '🇹🇿',
+      'UGX': '🇺🇬',
+      'EUR': '🇪🇺',
+      'GBP': '🇬🇧',
+      'ZAR': '🇿🇦',
+      'RWF': '🇷🇼',
+      'NGN': '🇳🇬',
+      'GHS': '🇬🇭',
+      'ETB': '🇪🇹',
+      'EGP': '🇪🇬',
+      'SSP': '🇸🇸',
+      'CNY': '🇨🇳',
+      'INR': '🇮🇳',
+      'AED': '🇦🇪',
+      '+254': '🇰🇪',
+      '+256': '🇺🇬',
+      '+255': '🇹🇿',
+      '+250': '🇷🇼',
+      '+234': '🇳🇬',
+      '+233': '🇬🇭',
+      '+251': '🇪🇹',
+      '+20': '🇪🇬',
+      '+211': '🇸🇸',
+      '+86': '🇨🇳',
+      '+91': '🇮🇳',
+      '+971': '🇦🇪',
+      'Kenya': '🇰🇪',
+      'Uganda': '🇺🇬',
+      'Tanzania': '🇹🇿',
+      'Rwanda': '🇷🇼',
+    };
+    return flags[code] ?? '🏳️';
   }
 }
 

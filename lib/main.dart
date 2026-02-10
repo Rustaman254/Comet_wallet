@@ -13,6 +13,7 @@ import 'screens/verify_pin_screen.dart';
 import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
 import 'services/authenticated_http_client.dart';
+import 'services/session_service.dart';
 import 'bloc/wallet_bloc.dart';
 import 'bloc/wallet_event.dart';
 
@@ -81,11 +82,14 @@ class MyApp extends StatelessWidget {
               create: (context) => WalletBloc()
                 ..add(const FetchWalletDataFromServer())
                 ..add(const StartAutoRefresh()),
-              child: MaterialApp(
-              title: 'Comet Wallet',
-          debugShowCheckedModeBanner: false,
-          themeMode: currentMode,
-          theme: ThemeData(
+              child: Listener(
+                onPointerDown: (_) => SessionService.recordActivity(),
+                onPointerMove: (_) => SessionService.recordActivity(),
+                child: MaterialApp(
+                  title: 'Comet Wallet',
+                  debugShowCheckedModeBanner: false,
+                  themeMode: currentMode,
+                  theme: ThemeData(
             brightness: Brightness.light,
             scaffoldBackgroundColor: lightBackground,
             cardColor: lightCardBackground,
@@ -153,6 +157,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           home: const OnboardingWrapper(),
+                ),
               ),
             );
           },

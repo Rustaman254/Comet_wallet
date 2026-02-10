@@ -9,6 +9,7 @@ import '../services/token_service.dart';
 import '../utils/input_decoration.dart';
 import 'payment_qr_display_screen.dart';
 import 'sign_in_screen.dart';
+import '../widgets/usda_logo.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
   const ReceiveMoneyScreen({super.key});
@@ -207,8 +208,8 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Amount (KES)',
+                   Text(
+                    'Amount (${USDALogo.getFlag('KES')} KES)',
                     style: TextStyle(fontFamily: 'Satoshi',
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withOpacity(0.7),
                       fontSize: 14,

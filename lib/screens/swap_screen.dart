@@ -132,7 +132,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     return ListTile(
                       leading: _buildCurrencyIcon(curr, size: 32.r),
                       title: Text(
-                        curr,
+                        '${USDALogo.getFlag(curr)} $curr',
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: getTextColor(context),
@@ -170,17 +170,11 @@ class _SwapScreenState extends State<SwapScreen> {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: buttonGreen.withValues(alpha: 0.1),
-        shape: BoxShape.circle,
-      ),
       alignment: Alignment.center,
       child: Text(
-        currency.substring(0, 1),
+        USDALogo.getFlag(currency),
         style: TextStyle(
-          color: buttonGreen,
-          fontWeight: FontWeight.bold,
-          fontSize: (size * 0.5),
+          fontSize: size * 0.8,
         ),
       ),
     );

@@ -417,9 +417,21 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: balances.map((balance) {
+            final currency = balance['currency'];
             return ListTile(
+              leading: currency == 'USDA' 
+                ? const USDALogo(size: 28)
+                : Container(
+                    width: 28.r,
+                    height: 28.r,
+                    alignment: Alignment.center,
+                    child: Text(
+                      USDALogo.getFlag(currency),
+                      style: TextStyle(fontSize: 20.sp),
+                    ),
+                  ),
               title: Text(
-                balance['currency'],
+                '${USDALogo.getFlag(currency)} $currency',
                 style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
               ),
               onTap: () {
@@ -563,7 +575,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '$_mobileCurrency ', // Dynamic currency
+                        '${USDALogo.getFlag(_mobileCurrency)} $_mobileCurrency ', // Dynamic currency
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: buttonGreen,
@@ -624,7 +636,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             ),
             SizedBox(height: 8.h),
             Text(
-              'Currency detected: $_mobileCurrency',
+              'Currency detected: ${USDALogo.getFlag(_mobileCurrency)} $_mobileCurrency',
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45,
                 fontSize: 12.sp,
@@ -724,7 +736,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${balances[_currentBalancePage]['currency']} ',
+                          '${USDALogo.getFlag(balances[_currentBalancePage]['currency'])} ${balances[_currentBalancePage]['currency']} ',
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             color: buttonGreen,
@@ -823,13 +835,25 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      selectedCurrency,
-                      style: TextStyle(
-                        fontFamily: 'Satoshi',
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                        fontSize: 16.sp,
-                      ),
+                    Row(
+                      children: [
+                        if (selectedCurrency == 'USDA')
+                          const USDALogo(size: 24)
+                        else
+                          Text(
+                            USDALogo.getFlag(selectedCurrency),
+                            style: TextStyle(fontSize: 18.sp),
+                          ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          selectedCurrency,
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
+                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                      ],
                     ),
                     Icon(Icons.keyboard_arrow_down, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, size: 20),
                   ],

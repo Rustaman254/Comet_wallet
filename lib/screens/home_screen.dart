@@ -292,19 +292,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, index) {
                     final currency = toAdd[index];
                     return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: buttonGreen.withOpacity(0.1),
-                        child: Text(
-                          currency.substring(0, 1),
-                          style: TextStyle(color: buttonGreen, fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                      leading: currency == 'USDA' 
+                        ? const USDALogo(size: 32)
+                        : Container(
+                            width: 32.r,
+                            height: 32.r,
+                            alignment: Alignment.center,
+                            child: Text(
+                              USDALogo.getFlag(currency),
+                              style: TextStyle(fontSize: 24.sp),
+                            ),
+                          ),
                       title: Text(
-                        currency,
+                        '${USDALogo.getFlag(currency)} $currency',
                         style: TextStyle(
                           fontFamily: 'Satoshi',
                           color: getTextColor(context),
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       onTap: () async {
@@ -772,8 +776,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       ),
                                                                     ),
                                                                     child: Text(
-                                                                      balance['currency'] ??
-                                                                          'KES',
+                                                                      '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['currency'] ?? 'KES'}',
                                                                       style: TextStyle(
                                                                         fontFamily: 'Satoshi',
                                                                         color: Colors.white,
@@ -789,40 +792,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 const USDALogo(size: 40),
                                                                 SizedBox(height: 12.h),
                                                               ],
-                                                              Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment.baseline,
-                                                                textBaseline:
-                                                                    TextBaseline.alphabetic,
-                                                                children: [
-                                                                  Text(
-                                                                    balance['symbol'] ?? balance['currency'] ?? 'KES',
-                                                                    style: TextStyle(
-                                                                      fontFamily:
-                                                                          'Satoshi',
-                                                                      color: Colors.white70,
-                                                                      fontSize: 20.sp,
-                                                                      fontWeight:
-                                                                          FontWeight.w600,
+                                                                Row(
+                                                                  children: [
+                                                                    FittedBox(
+                                                                      fit: BoxFit.scaleDown,
+                                                                      child: Row(
+                                                                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                                                                        textBaseline: TextBaseline.alphabetic,
+                                                                        children: [
+                                                                          Text(
+                                                                            '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['symbol'] ?? balance['currency'] ?? 'KES'}',
+                                                                            style: TextStyle(
+                                                                              fontFamily: 'Satoshi',
+                                                                              color: Colors.white70,
+                                                                              fontSize: 20.sp,
+                                                                              fontWeight: FontWeight.w600,
+                                                                            ),
+                                                                          ),
+                                                                          SizedBox(width: 8.w),
+                                                                          Text(
+                                                                            _isBalanceVisible
+                                                                            ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
+                                                                                : '••••••',
+                                                                            style: TextStyle(
+                                                                              fontFamily: 'Satoshi',
+                                                                              color: Colors.white,
+                                                                              fontSize: 42.sp, // Slightly smaller base size
+                                                                              fontWeight: FontWeight.bold,
+                                                                              letterSpacing: -1,
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                     ),
-                                                                  ),
-                                                                  SizedBox(width: 8.w),
-                                                                  Text(
-                                                                    _isBalanceVisible
-                                                                    ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
-                                                                        : '••••••',
-                                                                    style: TextStyle(
-                                                                      fontFamily:
-                                                                          'Satoshi',
-                                                                      color: Colors.white,
-                                                                      fontSize: 48.sp,
-                                                                      fontWeight:
-                                                                          FontWeight.bold,
-                                                                      letterSpacing: -1,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                                  ],
+                                                                ),
                                                               const Spacer(),
                                                               Row(
                                                                 mainAxisAlignment:

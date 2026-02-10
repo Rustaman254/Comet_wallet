@@ -7,6 +7,7 @@ import '../constants/colors.dart';
 import '../services/toast_service.dart';
 import '../services/wallet_service.dart';
 import 'mobile_withdraw_screen.dart';
+import '../widgets/usda_logo.dart';
 
 class WithdrawMoneyScreen extends StatefulWidget {
   const WithdrawMoneyScreen({super.key});
@@ -151,7 +152,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.w),
                                 )
                               : Text(
-                                  '$currency ${balance.toStringAsFixed(2)}',
+                                  '${USDALogo.getFlag(currency)} $currency ${balance.toStringAsFixed(2)}',
                                   style: TextStyle(fontFamily: 'Satoshi',
                                     color: Colors.white,
                                     fontSize: 32.sp,
