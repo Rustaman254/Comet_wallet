@@ -148,42 +148,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     _buildMenuItem(
                       context,
-                      'Payment Preferences',
-                      Icons.payment_outlined,
-                      onTap: () {},
-                    ),
-                    _buildMenuItem(
-                      context,
-                      'Banks and Cards',
-                      Icons.credit_card_outlined,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const MyCardsScreen()),
-                        );
-                      },
-                    ),
-                    _buildMenuItem(
-                      context,
-                      'Notifications',
-                      Icons.notifications_outlined,
-                      badgeCount: 2,
-                      onTap: () {},
-                    ),
-                    _buildMenuItem(
-                      context,
-                      'Message Center',
-                      Icons.chat_bubble_outline,
-                      onTap: () {},
-                    ),
-                    _buildMenuItem(
-                      context,
-                      'Address',
-                      Icons.location_on_outlined,
-                      onTap: () {},
-                    ),
-                    _buildMenuItem(
-                      context,
                       'Settings',
                       Icons.settings_outlined,
                       onTap: () {
@@ -193,6 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
+
                   ],
                 ),
               ),

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
 import '../services/toast_service.dart';
-
+import '../utils/format_utils.dart';
+import '../widgets/usda_logo.dart';
 import '../utils/input_decoration.dart';
 import 'mobile_payment_confirm_screen.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_state.dart';
 
 class SendMobileNumberScreen extends StatefulWidget {
   const SendMobileNumberScreen({super.key});
@@ -28,11 +32,12 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
 
   // Phone input related variables
   String _selectedCountryCode = '+254';
+  String _selectedCurrency = 'KES'; // Track selected currency
   final List<Map<String, String>> _countryCodes = [
-    {'code': '+254', 'country': 'Kenya'},
-    {'code': '+255', 'country': 'Tanzania'},
-    {'code': '+256', 'country': 'Uganda'},
-    {'code': '+250', 'country': 'Rwanda'},
+    {'code': '+254', 'country': 'Kenya', 'currency': 'KES', 'flag': '🇰🇪'},
+    {'code': '+255', 'country': 'Tanzania', 'currency': 'TZS', 'flag': '🇹🇿'},
+    {'code': '+256', 'country': 'Uganda', 'currency': 'UGX', 'flag': '🇺🇬'},
+    {'code': '+250', 'country': 'Rwanda', 'currency': 'RWF', 'flag': '🇷🇼'},
   ];
 
   List<Map<String, dynamic>> _balances = [];
@@ -45,40 +50,11 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
   }
 
   Future<void> _fetchWalletBalance() async {
-    try {
-      final balanceData = await WalletService.getWalletBalance();
-      if (mounted) {
-        setState(() {
-          _balances = [
-            {
-              'currency': balanceData['currency'] ?? 'KES',
-              'amount': (balanceData['balance'] ?? 0.0).toString(),
-              'date': 'Today',
-              'change': '+0.00',
-            }
-          ];
-          selectedCurrency = _balances[0]['currency'];
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _balances = [
-            {
-              'currency': 'KES',
-              'amount': '0.00',
-              'date': 'Today',
-              'change': '0.00',
-            }
-          ];
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingBalance = false;
-        });
-      }
+    // Balance is now fetched from WalletBloc in build method
+    if (mounted) {
+      setState(() {
+        _isLoadingBalance = false;
+      });
     }
   }
 
@@ -101,6 +77,20 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
           selectedCurrency = _balances[page]['currency'];
         });
       }
+    }
+  }
+
+  String _getBalanceForCurrency(String currency, List<Map<String, dynamic>> balances) {
+    try {
+      // Find the balance for the selected currency
+      final currencyBalance = balances.firstWhere(
+        (b) => b['currency'] == currency,
+        orElse: () => {'amount': '0.0'},
+      );
+      final balance = double.tryParse(currencyBalance['amount']?.toString() ?? '0.0') ?? 0.0;
+      return FormatUtils.formatAmount(balance);
+    } catch (e) {
+      return '0.00';
     }
   }
 
@@ -140,7 +130,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
         builder: (_) => MobilePaymentConfirmScreen(
           phoneNumber: fullPhoneNumber,
           amount: amountText,
-          currency: selectedCurrency,
+          currency: _selectedCurrency,
         ),
       ),
     );
@@ -148,26 +138,32 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: darkBackground,
-      body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 20.h),
-            // Header
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                  Expanded(
+    return BlocBuilder<WalletBloc, WalletState>(
+      builder: (context, state) {
+        // Get balances from WalletBloc state
+        final balances = state is WalletLoaded ? state.balances : 
+                        (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
+        
+        return Scaffold(
+          backgroundColor: darkBackground,
+          body: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(height: 20.h),
+                // Header
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                      Expanded(
                     child: Text(
                       'Send to Mobile Number',
                       textAlign: TextAlign.center,
@@ -207,13 +203,13 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                               ),
                             ),
                             SizedBox(height: 8.h),
-                            if (_balances.isNotEmpty && _currentBalancePage < _balances.length)
+                            if (balances.isNotEmpty)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '${_balances[_currentBalancePage]['currency']} ',
+                                    '${USDALogo.getFlag(_selectedCurrency)} $_selectedCurrency ',
                                     style: TextStyle(
                                       fontFamily: 'Satoshi',
                                       color: buttonGreen,
@@ -222,7 +218,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '${_balances[_currentBalancePage]['amount']}',
+                                    _getBalanceForCurrency(_selectedCurrency, balances),
                                     style: TextStyle(
                                       fontFamily: 'Satoshi',
                                       color: buttonGreen,
@@ -274,7 +270,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                         children: [
                           // Country Code Dropdown
                           Container(
-                            width: 100.w,
+                            width: 150.w,
                             decoration: BoxDecoration(
                               border: Border(
                                 bottom: BorderSide(
@@ -292,20 +288,28 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                 style: TextStyle(
                                   fontFamily: 'Satoshi',
                                   color: Colors.white,
-                                  fontSize: 16.sp,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 onChanged: (String? newValue) {
                                   if (newValue != null) {
+                                    final country = _countryCodes.firstWhere((c) => c['code'] == newValue);
                                     setState(() {
                                       _selectedCountryCode = newValue;
+                                      _selectedCurrency = country['currency']!;
                                     });
                                   }
                                 },
                                 items: _countryCodes.map<DropdownMenuItem<String>>((Map<String, String> country) {
                                   return DropdownMenuItem<String>(
                                     value: country['code'],
-                                    child: Text(country['code']!),
+                                    child: Row(
+                                      children: [
+                                        Text(country['flag']!, style: TextStyle(fontSize: 16.sp)),
+                                        SizedBox(width: 6.w),
+                                        Text(country['code']!, style: TextStyle(fontSize: 14.sp)),
+                                      ],
+                                    ),
                                   );
                                 }).toList(),
                               ),
@@ -395,6 +399,8 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
           ),
         ),
       ),
+    );
+      },
     );
   }
 }

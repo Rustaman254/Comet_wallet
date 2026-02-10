@@ -27,7 +27,7 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
   
   final List<Widget> _pages = [
     const HomeScreen(),
-    const MyCardsScreen(),
+    // Cards screen removed
     const TransactionsScreen(),
     const SettingsScreen(),
   ];

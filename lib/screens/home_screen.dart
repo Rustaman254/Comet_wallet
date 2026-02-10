@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -456,39 +457,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           SizedBox(width: 12.w),
                           // Welcome text - clickable
-                          GestureDetector(
-                            onTap: () {
-                              VibrationService.lightImpact();
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const ProfileScreen(),
-                                ),
-                              );
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Welcome back,',
-                                  style: TextStyle(
-                                    fontFamily: 'Satoshi',
-                                    color: getSecondaryTextColor(context),
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                Text(
-                                  _userProfile?.name ?? 'Anwar Sadatt',
-                                  style: TextStyle(
-                                    fontFamily: 'Satoshi',
-                                    color: getTextColor(context),
-                                    fontSize: 21.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Welcome text removed
+
                           const Spacer(),
                           // Search button
                           // Search button removed as per request
@@ -675,7 +645,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           children: [
                                             ...balances.map((balance) {
                                               final currency = balance['currency'] ?? '';
-                                              return Padding(
+                                              print('DEBUG: Building card for currency: $currency'); // Debug print
+                                              final isUSDA = currency == 'USDA';
+                                              final balanceAmount = _isBalanceVisible
+                                                  ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
+                                                  : '••••••';
+                                              
+                                          return Padding(
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal: 24.w,
                                                 ),
@@ -701,224 +677,214 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                     child: Stack(
                                                       children: [
-                                                        // LANDMARK IMAGE - Background Right (bleeding to edges)
-                                                        Positioned(
-                                                          bottom: -20,
-                                                          right: -20,
-                                                          child: Opacity(
-                                                            opacity: 0.15,
-                                                            child: _getLandmarkWidget(currency),
+                                                        // LANDMARK IMAGE - Background (Blended)
+                                                        if (!isUSDA)
+                                                          Positioned(
+                                                            bottom: -20,
+                                                            right: -20,
+                                                            child: Opacity(
+                                                              opacity: 0.1, // Subtle blend
+                                                              child: _getLandmarkWidget(currency),
+                                                            ),
                                                           ),
-                                                        ),
+                                                        
                                                         // CONTENT
                                                         Padding(
                                                           padding: EdgeInsets.all(24.r),
                                                           child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment.start,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                             children: [
+                                                              // TOP ROW: "Total Balance" and Level/Currency Pill
                                                               Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                 children: [
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        'Total Balance',
-                                                                        style: TextStyle(
-                                                                          fontFamily:
-                                                                              'Satoshi',
-                                                                          color: Colors
-                                                                              .white70,
-                                                                          fontSize: 13.sp,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .w400,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(width: 8.w),
-                                                                      GestureDetector(
-                                                                        onTap: () {
-                                                                          setState(() {
-                                                                            _isBalanceVisible =
-                                                                                !_isBalanceVisible;
-                                                                          });
-                                                                          VibrationService
-                                                                              .lightImpact();
-                                                                        },
-                                                                        child: Icon(
-                                                                          _isBalanceVisible
-                                                                              ? Icons
-                                                                                  .visibility_outlined
-                                                                              : Icons
-                                                                                  .visibility_off_outlined,
-                                                                          color:
-                                                                              Colors.white70,
-                                                                          size: 18.r,
-                                                                        ),
-                                                                      ),
-                                                                    ],
+                                                                  Text(
+                                                                    'Total Balance',
+                                                                    style: TextStyle(
+                                                                      fontFamily: 'Satoshi',
+                                                                      color: Colors.white.withValues(alpha: 0.9),
+                                                                      fontSize: 16.sp,
+                                                                      fontWeight: FontWeight.bold,
+                                                                    ),
                                                                   ),
                                                                   Container(
-                                                                    padding:
-                                                                        EdgeInsets.symmetric(
-                                                                      horizontal: 12.w,
-                                                                      vertical: 6.h,
-                                                                    ),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors.white
-                                                                          .withValues(
-                                                                              alpha: 0.2),
-                                                                      borderRadius:
-                                                                          BorderRadius
-                                                                              .circular(
-                                                                        20.r,
-                                                                      ),
-                                                                    ),
-                                                                    child: Text(
-                                                                      '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['currency'] == 'USDA' ? 'USDA (Cardano)' : (balance['currency'] ?? 'KES')}',
-                                                                      style: TextStyle(
-                                                                        fontFamily: 'Satoshi',
-                                                                        color: Colors.white,
-                                                                        fontSize: 12.sp,
-                                                                        fontWeight: FontWeight.bold,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              SizedBox(height: 16.h),
-                                                              if (currency == 'USDA') ...[
-                                                                const USDALogo(size: 40),
-                                                                SizedBox(height: 12.h),
-                                                              ],
-                                                                Row(
-                                                                  children: [
-                                                                    FittedBox(
-                                                                      fit: BoxFit.scaleDown,
-                                                                      child: Row(
-                                                                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                                                                        textBaseline: TextBaseline.alphabetic,
-                                                                        children: [
-                                                                          Text(
-                                                                            '${USDALogo.getFlag(balance['currency'] ?? 'KES')} ${balance['currency'] == 'USDA' ? 'USDA (Cardano)' : (balance['symbol'] ?? balance['currency'] ?? 'KES')}',
-                                                                            style: TextStyle(
-                                                                              fontFamily: 'Satoshi',
-                                                                              color: Colors.white70,
-                                                                              fontSize: 20.sp,
-                                                                              fontWeight: FontWeight.w600,
-                                                                            ),
-                                                                          ),
-                                                                          SizedBox(width: 8.w),
-                                                                          Text(
-                                                                            _isBalanceVisible
-                                                                            ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
-                                                                                : '••••••',
-                                                                            style: TextStyle(
-                                                                              fontFamily: 'Satoshi',
-                                                                              color: Colors.white,
-                                                                              fontSize: 42.sp, // Slightly smaller base size
-                                                                              fontWeight: FontWeight.bold,
-                                                                              letterSpacing: -1,
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              const Spacer(),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Text(
-                                                                        'Date',
-                                                                        style: TextStyle(
-                                                                          fontFamily:
-                                                                              'Satoshi',
-                                                                          color: Colors
-                                                                              .white70,
-                                                                          fontSize: 12.sp,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .w400,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                          height: 2.h),
-                                                                      Text(
-                                                                        balance['date'] ??
-                                                                            'Today',
-                                                                        style: TextStyle(
-                                                                          fontFamily:
-                                                                              'Satoshi',
-                                                                          color:
-                                                                              Colors.white,
-                                                                          fontSize: 14.sp,
-                                                                          fontWeight:
-                                                                              FontWeight
-                                                                                  .w500,
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Container(
-                                                                    padding: EdgeInsets
-                                                                        .symmetric(
-                                                                      horizontal: 10.w,
-                                                                      vertical: 4.h,
-                                                                    ),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors.white
-                                                                          .withValues(
-                                                                              alpha: 0.15),
-                                                                      borderRadius:
-                                                                          BorderRadius
-                                                                              .circular(
-                                                                                  12.r),
+                                                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                                                                    decoration: BoxDecoration(
+                                                                      color: Colors.white.withValues(alpha: 0.2),
+                                                                      borderRadius: BorderRadius.circular(20.r),
                                                                     ),
                                                                     child: Row(
                                                                       children: [
-                                                                        Text(
-                                                                          balance['change'] ??
-                                                                              '+0.00',
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontFamily:
-                                                                                'Satoshi',
-                                                                            color: Colors
-                                                                                .white,
-                                                                            fontSize:
-                                                                                14.sp,
-                                                                            fontWeight:
-                                                                                FontWeight
-                                                                                    .bold,
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width: 4.w),
-                                                                        Icon(
-                                                                          Icons
-                                                                              .trending_up_outlined,
-                                                                          color:
-                                                                              buttonGreen,
-                                                                          size: 16.r,
-                                                                        ),
+                                                                         Container(
+                                                                            width: 20.r,
+                                                                            height: 20.r,
+                                                                            decoration: const BoxDecoration(
+                                                                              shape: BoxShape.circle,
+                                                                            ),
+                                                                            clipBehavior: Clip.antiAlias,
+                                                                            alignment: Alignment.center,
+                                                                            child: isUSDA 
+                                                                              ? const USDALogo(size: 20) 
+                                                                              : Text(
+                                                                                  USDALogo.getFlag(currency),
+                                                                                  style: TextStyle(fontSize: 16.sp),
+                                                                                ),
+                                                                         ),
+                                                                         SizedBox(width: 6.w),
+                                                                         Text(
+                                                                            currency,
+                                                                            style: TextStyle(
+                                                                              fontFamily: 'Satoshi',
+                                                                              color: Colors.white,
+                                                                              fontSize: 12.sp,
+                                                                              fontWeight: FontWeight.bold,
+                                                                            ),
+                                                                         ),
                                                                       ],
                                                                     ),
                                                                   ),
                                                                 ],
                                                               ),
+
+                                                              const Spacer(),
+
+                                                              // MIDDLE ROW: Currency Symbol + Balance + Eye
+                                                              Row(
+                                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                                children: [
+                                                                  Text(
+                                                                    balance['symbol'] ?? (isUSDA ? '\$' : currency),
+                                                                    style: TextStyle(
+                                                                      fontFamily: 'Satoshi',
+                                                                      color: Colors.white.withValues(alpha: 0.7),
+                                                                      fontSize: 20.sp,
+                                                                      fontWeight: FontWeight.w500,
+                                                                    ),
+                                                                  ),
+                                                                  SizedBox(width: 8.w),
+                                                                  Text(
+                                                                    balanceAmount,
+                                                                    style: TextStyle(
+                                                                      fontFamily: 'Satoshi',
+                                                                      color: Colors.white,
+                                                                      fontSize: 32.sp,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      letterSpacing: -1,
+                                                                    ),
+                                                                  ),
+                                                                   SizedBox(width: 12.w),
+                                                                    GestureDetector(
+                                                                      onTap: () {
+                                                                        setState(() {
+                                                                          _isBalanceVisible = !_isBalanceVisible;
+                                                                        });
+                                                                        VibrationService.lightImpact();
+                                                                      },
+                                                                      child: Container(
+                                                                        padding: EdgeInsets.all(4.r),
+                                                                        decoration: BoxDecoration(
+                                                                          color: Colors.white.withValues(alpha: 0.1),
+                                                                          shape: BoxShape.circle,
+                                                                        ),
+                                                                        child: Icon(
+                                                                          _isBalanceVisible
+                                                                              ? Icons.visibility_outlined
+                                                                              : Icons.visibility_off_outlined,
+                                                                          color: Colors.white,
+                                                                          size: 16.sp,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                ],
+                                                              ),
+
+                                                              const Spacer(),
+
+                                                              // BOTTOM ROW: Context specific
+                                                              if (isUSDA) ...[
+                                                                 Row(
+                                                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                   children: [
+                                                                     // Address Truncated
+                                                                     Column(
+                                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                                                       children: [
+                                                                         Text(
+                                                                           'Cardano Address',
+                                                                           style: TextStyle(
+                                                                             fontFamily: 'Satoshi',
+                                                                             color: Colors.white54,
+                                                                             fontSize: 10.sp,
+                                                                           ),
+                                                                         ),
+                                                                         SizedBox(height: 4.h),
+                                                                         GestureDetector(
+                                                                            onTap: () async {
+                                                                              if (_userProfile?.cardanoAddress != null) {
+                                                                                await Clipboard.setData(ClipboardData(text: _userProfile!.cardanoAddress));
+                                                                                if (context.mounted) {
+                                                                                  ToastService().showSuccess(context, 'Address copied');
+                                                                                }
+                                                                                VibrationService.lightImpact();
+                                                                              }
+                                                                            },
+                                                                           child: Row(
+                                                                             children: [
+                                                                                Text(
+                                                                                 _userProfile?.cardanoAddress != null && _userProfile!.cardanoAddress.length > 20
+                                                                                     ? '${_userProfile!.cardanoAddress.substring(0, 10)}...${_userProfile!.cardanoAddress.substring(_userProfile!.cardanoAddress.length - 8)}'
+                                                                                     : (_userProfile?.cardanoAddress ?? '...'),
+                                                                                 style: TextStyle(
+                                                                                   fontFamily: 'Satoshi',
+                                                                                   color: Colors.white.withValues(alpha: 0.9),
+                                                                                   fontSize: 13.sp,
+                                                                                   fontWeight: FontWeight.w500,
+                                                                                 ),
+                                                                               ),
+                                                                               SizedBox(width: 6.w),
+                                                                               Icon(Icons.copy, color: Colors.white54, size: 12.sp),
+                                                                             ],
+                                                                           ),
+                                                                         ),
+                                                                       ],
+                                                                     ),
+                                                                     // Swap Button
+                                                                     GestureDetector(
+                                                                       onTap: () {
+                                                                         Navigator.push(context, MaterialPageRoute(builder: (_) => const SwapScreen()));
+                                                                       },
+                                                                       child: Container(
+                                                                         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                                                                         decoration: BoxDecoration(
+                                                                           color: Colors.white,
+                                                                           borderRadius: BorderRadius.circular(24.r),
+                                                                         ),
+                                                                         child: Text(
+                                                                           'Swap',
+                                                                           style: TextStyle(
+                                                                             fontFamily: 'Satoshi',
+                                                                             color: Colors.black,
+                                                                             fontSize: 14.sp,
+                                                                             fontWeight: FontWeight.bold,
+                                                                           ),
+                                                                         ),
+                                                                       ),
+                                                                     ),
+                                                                   ],
+                                                                 )
+                                                               ] else ...[ 
+                                                                  // Date (Full formatted)
+                                                                  Text(
+                                                                    DateFormat('d MMMM yyyy').format(DateTime.now()), 
+                                                                    style: TextStyle(
+                                                                      fontFamily: 'Satoshi',
+                                                                      color: Colors.white.withValues(alpha: 0.7),
+                                                                      fontSize: 16.sp, 
+                                                                      fontWeight: FontWeight.w500,
+                                                                    ),
+                                                                  ),
+                                                               ],
                                                             ],
                                                           ),
                                                         ),

@@ -433,11 +433,14 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     ),
                   ),
               title: Text(
-                '${USDALogo.getFlag(currency)} $currency',
+                currency, // Removed duplicate flag
                 style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
               ),
               onTap: () {
                 final index = balances.indexOf(balance);
+                setState(() {
+                  selectedCurrency = currency; // Update selected currency
+                });
                 _balancePageController.animateToPage(
                   index,
                   duration: const Duration(milliseconds: 300),
