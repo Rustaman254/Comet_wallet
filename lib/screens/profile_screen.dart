@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/colors.dart';
 import 'edit_profile_screen.dart';
@@ -119,13 +120,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      _userRole,
-                      style: TextStyle(fontFamily: 'Satoshi',
-                        color: Colors.white70,
-                        fontSize: 13,
+                      Text(
+                        _userRole,
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          color: getSecondaryTextColor(context),
+                          fontSize: 13.sp,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

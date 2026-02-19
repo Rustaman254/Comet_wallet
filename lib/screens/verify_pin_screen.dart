@@ -168,35 +168,42 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return Center(
-          child: Container(
-            width: 200.w,
-            padding: EdgeInsets.all(24.r),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.grey[900] : Colors.white,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator(color: buttonGreen),
-                SizedBox(height: 16.h),
-                Text(
-                  'Verifying PIN...',
-                  style: TextStyle(
-                    fontFamily: 'Satoshi',
-                    color: isDark ? Colors.white : Colors.black,
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              constraints: BoxConstraints(
+                minWidth: 150.w,
+                maxWidth: 280.w,
+              ),
+              padding: EdgeInsets.all(24.r),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[900] : Colors.white,
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(color: buttonGreen),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Verifying PIN...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      color: isDark ? Colors.white : Colors.black,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

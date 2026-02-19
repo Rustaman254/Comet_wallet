@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'constants/colors.dart';
 import 'screens/onboarding_page_view.dart';
@@ -254,24 +255,72 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
 
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: const Color(0xFF122023),
-        body: Center(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _scaleAnimation.value,
-                child: Opacity(
-                  opacity: _fadeAnimation.value,
-                  child: Image.asset(
-                    'assets/images/Logo.png',
-                    width: MediaQuery.of(context).size.width * 0.4,
+        backgroundColor: darkBackground,
+        body: Stack(
+          children: [
+            Center(
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _scaleAnimation.value,
+                    child: Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: Image.asset(
+                        'assets/images/Logo.png',
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 40,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Powered by",
+                    style: TextStyle(
+                      fontFamily: 'Satoshi',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Image.asset(
+                    'assets/images/Logo anzens_white.png',
+                    height: 24,
                     fit: BoxFit.contain,
                   ),
-                ),
-              );
-            },
-          ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "on ",
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Image.asset(
+                        'assets/images/cardano_logo_new.png',
+                        height: 20,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     }

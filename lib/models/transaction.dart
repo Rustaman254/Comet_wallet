@@ -34,6 +34,7 @@ class Transaction {
   final dynamic ownership;
   final TransactionUser? user;
   final String? explorerLink;
+  final String transactionId;
   final DateTime createdAt;
   final String currency;
 
@@ -48,6 +49,7 @@ class Transaction {
     this.ownership,
     this.user,
     this.explorerLink,
+    required this.transactionId,
     required this.createdAt,
     required this.currency,
   });
@@ -77,6 +79,7 @@ class Transaction {
       ownership: json['ownership'],
       user: json['user'] != null ? TransactionUser.fromJson(json['user']) : null,
       explorerLink: json['explorerLink'],
+      transactionId: json['transactionId'] ?? '',
       createdAt: parsedDate,
       currency: json['currency'] ?? 'KES',
     );

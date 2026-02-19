@@ -574,11 +574,21 @@ class WalletService {
           response: errorResponse,
         );
 
-        throw Exception(
-          errorResponse['message'] ?? 
-          errorResponse['error'] ??
-          'Money transfer failed: ${response.statusCode}'
-        );
+        // Provide user-friendly error messages
+        String errorMessage;
+        if (errorResponse['error'] == 'Insufficient balance') {
+          final currentBalance = errorResponse['current_balance'] ?? 0;
+          final requiredAmount = errorResponse['required_amount'] ?? amount;
+          final currency = errorResponse['currency'] ?? 'KES';
+          errorMessage = 'Insufficient balance. You have $currentBalance $currency but need $requiredAmount $currency.';
+        } else {
+          errorMessage = errorResponse['details'] ?? 
+                        errorResponse['message'] ?? 
+                        errorResponse['error'] ??
+                        'Money transfer failed: ${response.statusCode}';
+        }
+
+        throw Exception(errorMessage);
       }
     } catch (e) {
       AppLogger.error(
@@ -679,13 +689,13 @@ class WalletService {
       };
 
       AppLogger.logAPIRequest(
-        endpoint: 'https://api.yeshara.network/api/v1/wallet/swap',
+        endpoint: ApiConstants.walletSwapEndpoint,
         method: 'POST',
         body: requestBody,
       );
 
       final response = await AuthenticatedHttpClient.post(
-        Uri.parse('https://api.yeshara.network/api/v1/wallet/swap'),
+        Uri.parse(ApiConstants.walletSwapEndpoint),
         body: jsonEncode(requestBody),
       );
 
@@ -715,7 +725,7 @@ class WalletService {
         }
 
         AppLogger.logAPIResponse(
-          endpoint: 'https://api.yeshara.network/api/v1/wallet/swap',
+          endpoint: ApiConstants.walletSwapEndpoint,
           method: 'POST',
           statusCode: response.statusCode,
           duration: duration,
@@ -763,13 +773,13 @@ class WalletService {
       };
 
       AppLogger.logAPIRequest(
-        endpoint: 'https://api.yeshara.network/api/v1/wallet/transfer-usda',
+        endpoint: ApiConstants.walletTransferUsdaEndpoint,
         method: 'POST',
         body: requestBody,
       );
 
       final response = await AuthenticatedHttpClient.post(
-        Uri.parse('https://api.yeshara.network/api/v1/wallet/transfer-usda'),
+        Uri.parse(ApiConstants.walletTransferUsdaEndpoint),
         body: jsonEncode(requestBody),
       );
 
@@ -798,7 +808,7 @@ class WalletService {
         }
 
         AppLogger.logAPIResponse(
-          endpoint: 'https://api.yeshara.network/api/v1/wallet/transfer-usda',
+          endpoint: ApiConstants.walletTransferUsdaEndpoint,
           method: 'POST',
           statusCode: response.statusCode,
           duration: duration,

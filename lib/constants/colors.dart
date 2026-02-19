@@ -13,7 +13,7 @@ const Color warningOrange = Color(0xFFFA9D3A); // Warning/caution
 const Color errorRed = Color(0xFFEF4444); // Error/negative
 
 // Dark Theme Colors
-const Color darkBackground = Color(0xFF0F1419); // Deep dark background
+const Color darkBackground = Color(0xFF122023); // Deep dark background
 const Color darkSurface = Color(0xFF1A1F26); // Card/surface background
 const Color darkBorder = Color(0xFF2A3441); // Subtle border
 

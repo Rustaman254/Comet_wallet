@@ -163,6 +163,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (val) async {
                   VibrationService.selectionClick();
                   MyApp.themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+                  
+                  // Persist theme preference
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('isDarkMode', val);
+                  
                   setState(() {});
                 },
                 isDark: isDark,

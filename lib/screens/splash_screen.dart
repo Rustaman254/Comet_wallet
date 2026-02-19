@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
@@ -98,32 +99,87 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     return Scaffold(
       backgroundColor: darkBackground,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _scaleAnimation.value,
-              child: Opacity(
-                opacity: _fadeAnimation.value,
-                child: Column(
+      body: Stack(
+        children: [
+          Center(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Logo Container
+                      SizedBox(
+                        width: 200, // Adjusted size for better visibility
+                        height: 200,
+                        child: Image.asset(
+                          'assets/images/Logo.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 40,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Powered by",
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Image.asset(
+                  'assets/images/Logo anzens_white.png',
+                  height: 24,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 8),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                  // Logo Container
-                    SizedBox(
-                      width: 200, // Adjusted size for better visibility
-                      height: 200,
-                      child: Image.asset(
-                        'assets/images/Logo.png',
-                        fit: BoxFit.contain,
+                    Text(
+                      "on ",
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SvgPicture.asset(
+                      'assets/images/cardano_logo.svg',
+                      height: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "Cardano",
+                      style: TextStyle(
+                        fontFamily: 'Satoshi',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

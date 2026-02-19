@@ -16,6 +16,7 @@ import '../services/toast_service.dart';
 import '../services/session_service.dart';
 import '../utils/input_decoration.dart';
 import '../widgets/usda_logo.dart';
+import '../widgets/currency_selection_sheet.dart';
 
 class SendMoneyScreen extends StatefulWidget {
   final String? initialEmail;
@@ -403,54 +404,29 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
     if (balances.isEmpty) return;
     
-    showDialog(
+    // Extract currency codes
+    final currencies = balances.map((b) => b['currency'] as String).toList();
+    
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark ? cardBackground : lightCardBackground,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          'Select Currency',
-          style: TextStyle(fontFamily: 'Satoshi',
-            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: balances.map((balance) {
-            final currency = balance['currency'];
-            return ListTile(
-              leading: currency == 'USDA' 
-                ? const USDALogo(size: 28)
-                : Container(
-                    width: 28.r,
-                    height: 28.r,
-                    alignment: Alignment.center,
-                    child: Text(
-                      USDALogo.getFlag(currency),
-                      style: TextStyle(fontSize: 20.sp),
-                    ),
-                  ),
-              title: Text(
-                currency, // Removed duplicate flag
-                style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
-              ),
-              onTap: () {
-                final index = balances.indexOf(balance);
-                setState(() {
-                  selectedCurrency = currency; // Update selected currency
-                });
-                _balancePageController.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                );
-                Navigator.pop(context);
-              },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CurrencySelectionSheet(
+        currencies: currencies,
+        selectedCurrency: selectedCurrency,
+        onCurrencySelected: (currency) {
+          final index = balances.indexWhere((b) => b['currency'] == currency);
+          if (index != -1) {
+             setState(() {
+              selectedCurrency = currency;
+            });
+            _balancePageController.animateToPage(
+              index,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
             );
-          }).toList(),
-        ),
+          }
+        },
       ),
     );
   }
@@ -735,13 +711,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     ),
                   ),
                   SizedBox(height: 8.h),
-                  if (balances.isNotEmpty && _currentBalancePage < balances.length)
+                  if (balances.isNotEmpty)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${USDALogo.getFlag(balances[_currentBalancePage]['currency'])} ${balances[_currentBalancePage]['currency']} ',
+                          '${USDALogo.getFlag(selectedCurrency)} $selectedCurrency ',
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             color: buttonGreen,
@@ -750,7 +726,14 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                           ),
                         ),
                         Text(
-                          FormatUtils.formatAmount(double.tryParse(balances[_currentBalancePage]['amount'].toString()) ?? 0.0),
+                          FormatUtils.formatAmount(
+                            double.tryParse(
+                              balances.firstWhere(
+                                (b) => b['currency'] == selectedCurrency,
+                                orElse: () => {'amount': '0.0'},
+                              )['amount']?.toString() ?? '0.0'
+                            ) ?? 0.0
+                          ),
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             color: buttonGreen,
@@ -958,7 +941,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      const USDABadge(height: 20),
                       Text(
                         ' Balance',
                         style: TextStyle(
@@ -975,7 +957,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const USDALogo(size: 28),
+                      Image.asset(
+                        'assets/images/usda_logo_new.png',
+                        width: 28.r,
+                        height: 28.r,
+                      ),
                       SizedBox(width: 8.w),
                       Text(
                         FormatUtils.formatAmount(double.tryParse(usdABalance) ?? 0.0),
@@ -1024,7 +1010,17 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               decoration: buildUnderlineInputDecoration(
                 context: context,
                 label: '',
-                hintText: 'Enter addr_test...',
+                hintText: 'Enter addr1...',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    Icons.qr_code_scanner,
+                    color: buttonGreen,
+                  ),
+                  onPressed: () async {
+                    // TODO: Implement QR scanner
+                    ToastService().showInfo(context, 'QR Scanner coming soon');
+                  },
+                ),
               ),
               onChanged: (v) => setState(() {}),
             ),

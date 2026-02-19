@@ -44,7 +44,7 @@ class TransactionDetailsScreen extends StatelessWidget {
             _buildHeader(context),
             SizedBox(height: 32.h),
             _buildDetailsCard(context),
-            if (transaction.explorerLink != null && transaction.explorerLink!.isNotEmpty) ...[
+            if (_getExplorerLink() != null) ...[
               SizedBox(height: 32.h),
               _buildExplorerButton(context),
             ],
@@ -52,6 +52,18 @@ class TransactionDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String? _getExplorerLink() {
+    if (transaction.explorerLink != null && transaction.explorerLink!.isNotEmpty) {
+      return transaction.explorerLink;
+    }
+    // Fallback: If transactionId looks like a Cardano tx hash (64 hex chars)
+    if (transaction.transactionId.length == 64 && 
+        RegExp(r'^[a-fA-F0-9]+$').hasMatch(transaction.transactionId)) {
+       return 'https://preprod.cardanoscan.io/transaction/${transaction.transactionId}';
+    }
+    return null;
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -142,6 +154,10 @@ class TransactionDetailsScreen extends StatelessWidget {
         children: [
           _buildDetailRow(context, 'Type', _formatType(transaction.transactionType)),
           _buildDivider(isDark),
+          if (transaction.transactionId.isNotEmpty) ...[
+            _buildDetailRow(context, 'Transaction ID', transaction.transactionId, showCopy: true),
+            _buildDivider(isDark),
+          ],
           _buildDetailRow(context, 'Date', DateFormat('MMM dd, yyyy').format(transaction.createdAt)),
           _buildDivider(isDark),
           _buildDetailRow(context, 'Time', DateFormat('HH:mm').format(transaction.createdAt)),
@@ -150,6 +166,16 @@ class TransactionDetailsScreen extends StatelessWidget {
           if (transaction.phoneNumber.isNotEmpty) ...[
             _buildDivider(isDark),
             _buildDetailRow(context, 'Recipient/Source', transaction.phoneNumber, showCopy: true),
+          ],
+          if (transaction.user != null) ...[
+            if (transaction.user!.name.isNotEmpty) ...[
+              _buildDivider(isDark),
+              _buildDetailRow(context, 'Name', transaction.user!.name),
+            ],
+            if (transaction.user!.email.isNotEmpty) ...[
+              _buildDivider(isDark),
+              _buildDetailRow(context, 'Email', transaction.user!.email),
+            ],
           ],
         ],
       ),
@@ -226,7 +252,7 @@ class TransactionDetailsScreen extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => WebViewScreen(
-                url: transaction.explorerLink!,
+                url: _getExplorerLink()!,
                 title: 'Transaction Explorer',
               ),
             ),

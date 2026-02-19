@@ -6,6 +6,7 @@ import '../utils/input_decoration.dart';
 import '../services/ecitizen_service.dart';
 import '../models/ecitizen_bill.dart';
 import 'ecitizen_details_screen.dart';
+import '../widgets/usda_logo.dart';
 
 class ECitizenServicesScreen extends StatefulWidget {
   const ECitizenServicesScreen({super.key});
@@ -19,7 +20,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   String selectedCurrency = 'USD';
   bool isLoading = false;
 
-  final List<String> currencies = ['USD', 'KES', 'EUR'];
+  final List<String> currencies = ['USD', 'KES', 'EUR', 'USDA'];
 
   @override
   void dispose() {
@@ -84,16 +85,20 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   }
 
   void _showCurrencyDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = Theme.of(context).cardColor;
+    final textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.black,
+        backgroundColor: bgColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Select Currency',
           style: TextStyle(
             fontFamily: 'Satoshi',
-            color: Colors.white,
+            color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -101,12 +106,16 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: currencies.map((currency) {
+            final isUsda = currency == 'USDA';
             return ListTile(
+              leading: isUsda
+                  ? USDALogo(size: 20)
+                  : null,
               title: Text(
                 currency,
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.white,
+                  color: textColor,
                   fontSize: 16,
                 ),
               ),
@@ -125,9 +134,16 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
+    final labelColor = isDark ? Colors.grey[400] : Colors.grey[600];
+    final iconColor = isDark ? Colors.white : Colors.black87;
+    final borderColor = isDark ? Colors.white24 : Colors.black12;
+    final arrowBg = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.06);
+
     return Scaffold(
-      // match login page
-      backgroundColor: Colors.black,
+      backgroundColor: scaffoldBg,
       body: SafeArea(
         child: Column(
           children: [
@@ -148,12 +164,12 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                               width: 40.r,
                               height: 40.r,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.08),
+                                color: arrowBg,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.arrow_back_outlined,
-                                color: Colors.white,
+                                color: iconColor,
                                 size: 20.r,
                               ),
                             ),
@@ -164,7 +180,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontFamily: 'Satoshi',
-                                color: Colors.white,
+                                color: textColor,
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -175,7 +191,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                       ),
                     ),
                     const SizedBox(height: 40),
-              
+
                     // Reference Number Input
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -186,7 +202,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                             'Reference Number',
                             style: TextStyle(
                               fontFamily: 'Satoshi',
-                              color: Colors.grey[400],
+                              color: labelColor,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
@@ -196,15 +212,15 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                             controller: _referenceController,
                             style: TextStyle(
                               fontFamily: 'Satoshi',
-                              color: Colors.white,
+                              color: textColor,
                               fontSize: 16.sp,
                             ),
                             decoration: buildUnderlineInputDecoration(
                               context: context,
                               label: '',
-                              prefixIcon: const Icon(
+                              prefixIcon: Icon(
                                 Icons.numbers_outlined,
-                                color: Colors.white,
+                                color: iconColor,
                               ),
                             ),
                           ),
@@ -213,7 +229,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                             'Currency',
                             style: TextStyle(
                               fontFamily: 'Satoshi',
-                              color: Colors.grey[400],
+                              color: labelColor,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
@@ -226,30 +242,32 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(
-                                    color: Colors.white24,
+                                    color: borderColor,
                                     width: 1.w,
                                   ),
                                 ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(
-                                    Icons.monetization_on_outlined,
-                                    color: Colors.white,
-                                  ),
+                                  selectedCurrency == 'USDA'
+                                      ? USDALogo(size: 20)
+                                      : Icon(
+                                          Icons.monetization_on_outlined,
+                                          color: iconColor,
+                                        ),
                                   SizedBox(width: 12.w),
                                   Text(
                                     selectedCurrency,
                                     style: TextStyle(
                                       fontFamily: 'Satoshi',
-                                      color: Colors.white,
+                                      color: textColor,
                                       fontSize: 16.sp,
                                     ),
                                   ),
                                   const Spacer(),
                                   Icon(
                                     Icons.keyboard_arrow_down,
-                                    color: Colors.white.withOpacity(0.7),
+                                    color: iconColor.withOpacity(0.7),
                                   ),
                                 ],
                               ),
@@ -258,15 +276,15 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24), // Add some bottom spacing for scrollable content
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
-            
+
             // Check Status Button (Fixed at bottom)
             Padding(
-              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h), // 24 bottom padding
+              padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -274,8 +292,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: buttonGreen,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor:
-                        buttonGreen.withOpacity(0.5),
+                    disabledBackgroundColor: buttonGreen.withOpacity(0.5),
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.r),

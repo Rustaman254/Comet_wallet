@@ -29,6 +29,7 @@ import '../widgets/usda_logo.dart';
 import '../utils/format_utils.dart';
 import 'transaction_details_screen.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -186,32 +187,22 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return initials;
   }
-  String _getLandmarkAsset(String currency) {
-    switch (currency.toUpperCase()) {
-      case 'KES':
-        return 'assets/images/landmarks/kenya.png';
-      case 'USD':
-      case 'USDA':
-        return 'assets/images/landmarks/usa.png';
-      case 'UGX':
-        return 'assets/images/landmarks/uganda.png';
-      case 'TZS':
-        return 'assets/images/landmarks/tanzania.png';
-      case 'RWF':
-        return 'assets/images/landmarks/rwanda.png';
-      default:
-        return '';
-    }
+  String _getLandmarkImage(String currency) {
+    // Use world map for all currencies
+    return 'assets/images/world_map.png';
   }
 
   Widget _getLandmarkWidget(String currency) {
-    final assetPath = _getLandmarkAsset(currency);
+    final assetPath = _getLandmarkImage(currency);
     if (assetPath.isNotEmpty) {
-      return Image.asset(
-        assetPath,
-        width: 180.r,
-        height: 180.r,
-        fit: BoxFit.contain,
+      return Opacity(
+        opacity: 0.3, // Increased from 0.08 for better visibility
+        child: Image.asset(
+          assetPath,
+          width: 180.r,
+          height: 180.r,
+          fit: BoxFit.contain,
+        ),
       );
     }
 
@@ -424,15 +415,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: 50.r,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    // remove red border to match clean login avatar
-                                    color: Colors.grey[800],
+                                    // Match login avatar style
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[800] 
+                                        : Colors.grey[300],
                                   ),
                                   child: Center(
                                     child: Text(
                                       getInitials(_userProfile?.name ?? 'User'),
                                       style: TextStyle(
                                         fontFamily: 'Satoshi',
-                                        color: Colors.white,
+                                        color: getTextColor(context),
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -487,8 +480,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               );
                             },
-                            child: Stack(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
+                                // Coming Soon badge above the icon
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6.w,
+                                    vertical: 2.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(10.r),
+                                  ),
+                                  child: Text(
+                                    'Coming Soon',
+                                    style: TextStyle(
+                                      fontFamily: 'Satoshi',
+                                      color: Colors.white,
+                                      fontSize: 8.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                // QR scan icon
                                 Container(
                                   width: 40.r,
                                   height: 40.r,
@@ -500,30 +516,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Icons.qr_code_scanner_outlined,
                                     color: getTextColor(context),
                                     size: 20.r,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: -4,
-                                  right: -4,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 6.w,
-                                      vertical: 2.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(10.r),
-                                      // remove border to keep badge flat
-                                    ),
-                                    child: Text(
-                                      'Coming Soon',
-                                      style: TextStyle(
-                                        fontFamily: 'Satoshi',
-                                        color: Colors.white,
-                                        fontSize: 8.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ],
@@ -554,11 +546,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               SizedBox(width: 16.w),
                               _buildActionButton(
                                 Icons.arrow_downward_outlined,
-                                'Receive',
+                                'Withdraw',
                                 () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (_) => const ReceiveMoneyScreen(),
+                                      builder: (_) => const WithdrawMoneyScreen(),
                                     ),
                                   );
                                 },
@@ -682,10 +674,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           Positioned(
                                                             bottom: -20,
                                                             right: -20,
-                                                            child: Opacity(
-                                                              opacity: 0.1, // Subtle blend
-                                                              child: _getLandmarkWidget(currency),
-                                                            ),
+                                                            child: _getLandmarkWidget(currency),
                                                           ),
                                                         
                                                         // CONTENT
@@ -803,6 +792,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                                               // BOTTOM ROW: Context specific
                                                               if (isUSDA) ...[
+                                                                 // Sponsored by Cardano
+                                                                 Row(
+                                                                   children: [
+                                                                     // Cardano logo placeholder (can be replaced with actual PNG)
+                                                                     Container(
+                                                                       width: 20.r,
+                                                                       height: 20.r,
+                                                                       decoration: BoxDecoration(
+                                                                         color: Colors.white,
+                                                                         shape: BoxShape.circle,
+                                                                       ),
+                                                                       padding: EdgeInsets.all(4.r),
+                                                                       child: SvgPicture.asset(
+                                                                         'assets/images/cardano_logo.svg',
+                                                                         width: 12.r,
+                                                                         height: 12.r,
+                                                                       ),
+                                                                     ),
+                                                                     SizedBox(width: 6.w),
+                                                                     Text(
+                                                                       'Powered by Cardano',
+                                                                       style: TextStyle(
+                                                                         fontFamily: 'Satoshi',
+                                                                         color: Colors.white70,
+                                                                         fontSize: 11.sp,
+                                                                         fontWeight: FontWeight.w500,
+                                                                       ),
+                                                                     ),
+                                                                   ],
+                                                                 ),
+                                                                 SizedBox(height: 12.h),
                                                                  Row(
                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                    children: [
@@ -1137,9 +1157,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Theme.of(context).brightness == Brightness.dark 
+            ? Colors.white.withValues(alpha: 0.05) 
+            : Colors.white,
         borderRadius: BorderRadius.circular(50.r),
-        // removed border
+        boxShadow: Theme.of(context).brightness == Brightness.dark 
+            ? null 
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1161,7 +1191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title,
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.grey[400],
+                  color: getSecondaryTextColor(context),
                   fontSize: 10.sp,
                 ),
               ),
@@ -1169,7 +1199,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 value,
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: Colors.white,
+                  color: getTextColor(context),
                   fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
                 ),
@@ -1188,11 +1218,17 @@ class _HomeScreenState extends State<HomeScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            darkGreen,
-            darkGreen.withValues(alpha: 0.8),
-            lightGreen.withValues(alpha: 0.3),
-          ],
+          colors: Theme.of(context).brightness == Brightness.dark
+            ? [
+                darkGreen,
+                darkGreen.withValues(alpha: 0.8),
+                lightGreen.withValues(alpha: 0.3),
+              ]
+            : [
+                const Color(0xFF2563EB), // Bright blue
+                const Color(0xFF3B82F6), // Medium blue
+                const Color(0xFF60A5FA), // Light blue
+              ],
         ),
         // remove border
         borderRadius: BorderRadius.circular(20.r),
@@ -1462,13 +1498,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatTransactionType(String type) {
-    return type
-        .split('_')
-        .map(
-          (word) =>
-              word[0].toUpperCase() + word.substring(1).toLowerCase(),
-        )
-        .join(' ');
+    String capitalizeWord(String word) {
+      if (word.toUpperCase() == 'USDA') return 'USDA';
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }
+
+    return type.split('_').map(capitalizeWord).join(' ');
   }
 
   Widget _buildTransactionItem(String phone, String date, String amount) {

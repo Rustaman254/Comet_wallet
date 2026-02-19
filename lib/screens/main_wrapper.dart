@@ -70,10 +70,13 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
       // App went to background
       SessionService.pause();
     } else if (state == AppLifecycleState.resumed) {
-      // Force lock immediately when coming back from background
-      // as per user requirement: "when the user switches the app to another app 
-      // then comes back then the user should input their pin or biometrics"
-      _handleSessionExpired();
+      // Only lock if backgrounded for more than the grace period (to allow for biometric prompts)
+      if (SessionService.shouldLockAfterBackground()) {
+        _handleSessionExpired();
+      } else {
+        // Otherwise, just resume session tracking
+        SessionService.resume();
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../utils/format_utils.dart';
 import 'transaction_details_screen.dart';
 import '../widgets/usda_logo.dart';
+import '../screens/main_wrapper.dart';
 
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
@@ -156,15 +157,28 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+    return PopScope(
+        canPop: Navigator.of(context).canPop(),
+        onPopInvoked: (didPop) {
+          if (didPop) return;
+          // If we can't pop, we must be a tab. Go to Home (index 0).
+          MainWrapper.of(context)?.onTabChanged(0);
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyMedium?.color),
+              onPressed: () {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  MainWrapper.of(context)?.onTabChanged(0);
+                }
+              },
+            ),
         title: Text(
           'Transactions',
           style: TextStyle(fontFamily: 'Satoshi',
@@ -212,7 +226,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           );
         },
       ),
+        ),
     );
+
   }
 
   Widget _buildSearchAndFilter() {
@@ -559,9 +575,27 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   String _formatTransactionType(String type) {
-    return type.split('_').map((word) => 
-      word[0].toUpperCase() + word.substring(1).toLowerCase()
-    ).join(' ');
+    String capitalizeWord(String word) {
+      if (word.toUpperCase() == 'USDA') return 'USDA';
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }
+
+    // Handle special cases first
+    if (type.toLowerCase().contains('swap')) {
+      // Format swap transactions properly
+      final parts = type.split('_').map(capitalizeWord).toList();
+      
+      // Ensure "Swap" is at the beginning if not already
+      if (!parts.first.toLowerCase().contains('swap')) {
+        parts.insert(0, 'Swap');
+      }
+      
+      return parts.join(' ');
+    }
+    
+    // Default formatting for other transaction types
+    return type.split('_').map(capitalizeWord).join(' ');
   }
 
 }

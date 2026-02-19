@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'https://api.yeshara.network/api/v1';
+  static const String baseUrl = 'https://api.fusionfi.io/api/v1'; // https://api.fusionfi.io - https://api.yeshara.network
   static const String loginEndpoint = '$baseUrl/users/login';
   static const String registerEndpoint = '$baseUrl/users/create';
   static const String userProfileEndpoint = '$baseUrl/users/profile';
@@ -14,6 +14,11 @@ class ApiConstants {
   static const String verifyPinEndpoint = '$baseUrl/users/verify-pin';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
   
+  // Wallet endpoints
+  static const String walletSwapEndpoint = '$baseUrl/wallet/swap';
+  static const String walletTransferUsdaEndpoint = '$baseUrl/wallet/transfer-usda';
+  
+  // Real estate endpoints
   static const String realEstatePropertiesEndpoint = '$baseUrl/real-estate/properties';
   static const String realEstatePropertyDetailsEndpoint = '$baseUrl/real-estate/property';
   static const String realEstateBuyTokensEndpoint = '$baseUrl/real-estate/buy-tokens';

@@ -6,10 +6,14 @@ import 'logger_service.dart';
 /// Service to manage user session, including inactivity timeout and token expiration
 class SessionService {
   static const String _lastActivityKey = 'last_activity_timestamp';
-  static const Duration _inactivityTimeout = Duration(minutes: 1);
+  static const Duration _inactivityTimeout = Duration(minutes: 60);
+  
+  /// Grace period: app must be in background longer than this to require re-auth
+  static const Duration _backgroundGracePeriod = Duration(seconds: 30);
   
   static Timer? _inactivityTimer;
   static DateTime? _lastActivityTime;
+  static DateTime? _pausedAt;
   static VoidCallback? _onSessionExpired;
   
   /// Initialize session tracking
@@ -140,13 +144,37 @@ class SessionService {
   /// Pause session tracking (e.g., when app goes to background)
   static void pause() {
     _inactivityTimer?.cancel();
+    _pausedAt = DateTime.now();
     _saveLastActivity();
     
     AppLogger.debug(
       LogTags.auth,
       'Session tracking paused',
-      data: {'last_activity': _lastActivityTime?.toIso8601String()},
+      data: {
+        'last_activity': _lastActivityTime?.toIso8601String(),
+        'paused_at': _pausedAt?.toIso8601String(),
+      },
     );
+  }
+  
+  /// Returns true if the app was in the background long enough to require re-auth.
+  /// Returns false if the app was only briefly backgrounded (e.g., biometric prompt).
+  static bool shouldLockAfterBackground() {
+    if (_pausedAt == null) return false;
+    final backgroundDuration = DateTime.now().difference(_pausedAt!);
+    final shouldLock = backgroundDuration > _backgroundGracePeriod;
+    
+    AppLogger.debug(
+      LogTags.auth,
+      'Background lock check',
+      data: {
+        'background_seconds': backgroundDuration.inSeconds,
+        'grace_period_seconds': _backgroundGracePeriod.inSeconds,
+        'should_lock': shouldLock,
+      },
+    );
+    
+    return shouldLock;
   }
   
   /// Resume session tracking (e.g., when app comes to foreground)

@@ -8,6 +8,7 @@ import '../constants/colors.dart';
 import '../services/toast_service.dart';
 import '../services/session_service.dart';
 import '../widgets/usda_logo.dart';
+import '../widgets/currency_selection_sheet.dart';
 
 class SwapScreen extends StatefulWidget {
   const SwapScreen({super.key});
@@ -110,63 +111,21 @@ class _SwapScreenState extends State<SwapScreen> {
   void _showCurrencyPicker(bool isFrom) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(24.r),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Select Currency',
-                style: TextStyle(
-                  fontFamily: 'Satoshi',
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                  color: getTextColor(context),
-                ),
-              ),
-              SizedBox(height: 16.h),
-              Flexible(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: _availableCurrencies.length,
-                  separatorBuilder: (_, __) => Divider(color: getBorderColor(context)),
-                  itemBuilder: (context, index) {
-                    final curr = _availableCurrencies[index];
-                    return ListTile(
-                      leading: _buildCurrencyIcon(curr, size: 32.r),
-                      title: Text(
-                        '${USDALogo.getFlag(curr)} ${curr == 'USDA' ? 'USDA (Cardano)' : curr}',
-                        style: TextStyle(
-                          fontFamily: 'Satoshi',
-                          color: getTextColor(context),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      trailing: (isFrom ? _fromCurrency : _toCurrency) == curr
-                          ? Icon(Icons.check_circle, color: buttonGreen, size: 24.r)
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          if (isFrom) {
-                            _fromCurrency = curr;
-                          } else {
-                            _toCurrency = curr;
-                          }
-                        });
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+        return CurrencySelectionSheet(
+          currencies: _availableCurrencies,
+          selectedCurrency: isFrom ? _fromCurrency : _toCurrency,
+          onCurrencySelected: (currency) {
+             setState(() {
+              if (isFrom) {
+                _fromCurrency = currency;
+              } else {
+                _toCurrency = currency;
+              }
+            });
+          },
         );
       },
     );
@@ -436,12 +395,12 @@ class _SwapScreenState extends State<SwapScreen> {
                             final rate = _getExchangeRate(_fromCurrency, 'USDA');
                             final estimatedUSDA = double.parse(value) * rate;
                             if (estimatedUSDA < 1.0) {
-                              return 'Min swap: 1 USDA (Cardano)';
+                              return 'Min swap: 1 $_toCurrency (Cardano)';
                             }
                           }
                           if (_fromCurrency == 'USDA') {
                             if (double.parse(value) < 1.0) {
-                              return 'Min swap: 1 USDA (Cardano)';
+                              return 'Min swap: 1 $_fromCurrency (Cardano)';
                             }
                           }
                           

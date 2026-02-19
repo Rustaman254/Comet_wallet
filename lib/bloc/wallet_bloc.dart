@@ -244,6 +244,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         phoneNumber: '',
         createdAt: timestamp,
         currency: event.currency,
+        transactionId: 'TOPUP-${timestamp.millisecondsSinceEpoch}',
       );
 
       final updatedTransactions = [newTransaction, ...currentState.transactions];
@@ -299,6 +300,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         phoneNumber: event.recipientPhone,
         createdAt: timestamp,
         currency: event.currency,
+        transactionId: 'SEND-${timestamp.millisecondsSinceEpoch}',
       );
 
       // Update balances (deduct from first available balance)
@@ -580,6 +582,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         explorerLink: result['explorerLink'], // Assuming API returns this or we construct it
         createdAt: timestamp,
         currency: 'USDA',
+        transactionId: result['transactionId'] ?? 'USDA-TRANSFER-${timestamp.millisecondsSinceEpoch}',
       );
 
       // We need to fetch fresh data to get accurate balances (fees etc)
