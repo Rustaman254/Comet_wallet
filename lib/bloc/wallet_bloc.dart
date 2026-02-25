@@ -86,6 +86,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       final walletsList = balanceData['wallets'] as List<dynamic>? ?? [];
       final balancesMap = balanceData['balances'] as Map<String, dynamic>? ?? {};
       
+      // Extract USDA exact balance from raw response if provided there
+      final rawResponse = balanceData['raw'] as Map<String, dynamic>? ?? {};
+      if (rawResponse.containsKey('balance_usda')) {
+        balancesMap['USDA'] = double.tryParse(rawResponse['balance_usda'].toString()) ?? 0.0;
+      } else if (rawResponse['user'] != null && rawResponse['user'] is Map && (rawResponse['user'] as Map).containsKey('balance_usda')) {
+        balancesMap['USDA'] = double.tryParse((rawResponse['user'] as Map)['balance_usda'].toString()) ?? 0.0;
+      }
+      
       // Create balance cards for each wallet
       final balances = <Map<String, dynamic>>[];
       

@@ -60,7 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadAddedCurrencies();
     _loadCachedUserData();
     _fetchUserProfile();
-    // Data fetch is now handled by BLoC in main.dart
+    
+    // Fetch wallet data when home screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<WalletBloc>().add(const FetchWalletDataFromServer());
+      }
+    });
   }
 
   Future<void> _loadAddedCurrencies() async {
@@ -639,8 +645,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               final currency = balance['currency'] ?? '';
                                               print('DEBUG: Building card for currency: $currency'); // Debug print
                                               final isUSDA = currency == 'USDA';
+                                              double parsedAmount = double.tryParse(balance['amount']?.toString() ?? '0') ?? 0;
                                               final balanceAmount = _isBalanceVisible
-                                                  ? _formatAmount(double.tryParse(balance['amount']?.toString() ?? '0') ?? 0)
+                                                  ? _formatAmount(parsedAmount)
                                                   : '••••••';
                                               
                                           return Padding(

@@ -191,6 +191,12 @@ class WalletService {
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
         
+        AppLogger.debug(
+          LogTags.payment,
+          'Full balance API response',
+          data: jsonResponse,
+        );
+
         // Parse wallets list
         final walletsList = (jsonResponse['wallets'] as List?)
             ?.map((w) => {
@@ -236,6 +242,7 @@ class WalletService {
           'balances': balancesMap,
           'user_id': jsonResponse['user_id'],
           'status': jsonResponse['status'],
+          'raw': jsonResponse,
         };
       } else {
         throw Exception('Failed to fetch wallet balance');

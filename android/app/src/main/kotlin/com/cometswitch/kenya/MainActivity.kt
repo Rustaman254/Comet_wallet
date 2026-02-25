@@ -1,4 +1,4 @@
-package com.cometswitch.kenya
+package com.cometswitch.africa
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
