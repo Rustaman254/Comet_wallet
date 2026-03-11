@@ -37,7 +37,7 @@ class AuthService {
           'email': email,
           'phone': phoneNumber,
           'password': password,
-          'role': 8,
+          'role': 2,
           'pin': pin,
           'status': 'active',
           'location': location,
@@ -376,6 +376,8 @@ class AuthService {
   }
 
   /// Verify user PIN
+  /// Uses direct http.post instead of AuthenticatedHttpClient to avoid
+  /// auto-logout on 401 responses (which may be "wrong PIN" not "token expired").
   static Future<bool> verifyPin(String pin) async {
     final startTime = DateTime.now();
 
@@ -399,8 +401,12 @@ class AuthService {
         body: requestBody,
       );
 
-      final response = await AuthenticatedHttpClient.post(
+      // Use direct http.post — NOT AuthenticatedHttpClient — so we can
+      // distinguish "wrong PIN" 401 from "token expired" 401 without the
+      // client auto-logging the user out.
+      final response = await http.post(
         Uri.parse(ApiConstants.verifyPinEndpoint),
+        headers: headers,
         body: jsonEncode(requestBody),
       );
 
@@ -419,14 +425,35 @@ class AuthService {
 
         return jsonResponse['verified'] == true;
       } else if (response.statusCode == 401) {
-        // Token expired - AuthenticatedHttpClient already handled logout
+        // Parse the response body to distinguish wrong PIN from token expiry
+        Map<String, dynamic>? body;
+        try {
+          body = jsonDecode(response.body);
+        } catch (_) {}
+
+        final errorMsg = (body?['message'] ?? body?['error'] ?? '').toString().toLowerCase();
+        
+        // If the body mentions PIN/incorrect/wrong, treat as wrong PIN (not token expiry)
+        final isWrongPin = errorMsg.contains('pin') ||
+            errorMsg.contains('incorrect') ||
+            errorMsg.contains('wrong') ||
+            errorMsg.contains('invalid pin');
+
         AppLogger.logAPIResponse(
           endpoint: ApiConstants.verifyPinEndpoint,
           method: 'POST',
           statusCode: response.statusCode,
           duration: duration,
-          response: {'error': 'Token expired'},
+          response: body ?? {'error': response.body},
         );
+
+        if (isWrongPin) {
+          // Wrong PIN — don't logout, just return false
+          return false;
+        }
+
+        // Genuine token expiry — logout and throw
+        await TokenService.logout();
         throw TokenExpiredException('Your session has expired. Please login again.');
       } else {
         AppLogger.logAPIResponse(
@@ -443,6 +470,87 @@ class AuthService {
         rethrow;
       }
       AppLogger.error(LogTags.auth, 'PIN verification failed', data: {'error': e.toString()});
+      rethrow;
+    }
+  }
+
+  /// Reset user PIN
+  static Future<Map<String, dynamic>> resetPin({
+    required String password,
+    required String newPin,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final requestBody = {
+        'password': password,
+        'new_pin': newPin,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.resetPinEndpoint,
+        method: 'POST',
+        body: {'password': '***', 'new_pin': '****'},
+      );
+
+      final response = await AuthenticatedHttpClient.post(
+        Uri.parse(ApiConstants.resetPinEndpoint),
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.resetPinEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: jsonResponse,
+        );
+
+        return {
+          'success': true,
+          'message': jsonResponse['message'] ?? 'PIN reset successfully',
+        };
+      } else if (response.statusCode == 401) {
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.resetPinEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: {'error': 'Token expired'},
+        );
+        throw TokenExpiredException('Your session has expired. Please login again.');
+      } else {
+        final errorBody = jsonDecode(response.body);
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.resetPinEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: {'error': response.body},
+        );
+
+        return {
+          'success': false,
+          'message': errorBody['message'] ?? errorBody['error'] ?? 'Failed to reset PIN',
+        };
+      }
+    } catch (e) {
+      if (e is TokenExpiredException) rethrow;
+
+      final duration = DateTime.now().difference(startTime);
+      AppLogger.error(
+        LogTags.auth,
+        'PIN reset failed',
+        data: {
+          'error': e.toString(),
+          'duration_ms': duration.inMilliseconds,
+        },
+      );
       rethrow;
     }
   }

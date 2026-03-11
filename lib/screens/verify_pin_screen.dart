@@ -5,10 +5,12 @@ import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
 import '../services/vibration_service.dart';
 import '../services/biometric_service.dart';
+import '../services/toast_service.dart';
 import 'main_wrapper.dart';
 import '../services/token_service.dart';
 import '../services/auth_service.dart';
 import 'sign_in_screen.dart';
+import 'reset_pin_screen.dart';
 
 class VerifyPinScreen extends StatefulWidget {
   final Widget? nextScreen;
@@ -21,6 +23,7 @@ class VerifyPinScreen extends StatefulWidget {
 class _VerifyPinScreenState extends State<VerifyPinScreen>
     with TickerProviderStateMixin {
   String _pin = '';
+  bool _wrongPin = false;
   final String _correctPin = '1234';
   String _userName = 'User';
   late AnimationController _shakeController;
@@ -139,6 +142,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       VibrationService.lightImpact();
       setState(() {
         _pin += number;
+        _wrongPin = false;
       });
 
       if (_pin.length == 4) {
@@ -239,6 +243,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
         );
       } else {
         VibrationService.errorVibrate();
+        setState(() => _wrongPin = true);
         _shakeController.forward(from: 0.0).then((_) {
           if (mounted) {
             setState(() {
@@ -246,6 +251,10 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
             });
           }
         });
+        ToastService().showError(
+          context,
+          'Incorrect PIN. Please try again.',
+        );
       }
     } on TokenExpiredException catch (e) {
       // Token expired - redirect to login
@@ -264,6 +273,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
       await _hideLoaderDialog();
       
       VibrationService.errorVibrate();
+      setState(() => _wrongPin = true);
       _shakeController.forward(from: 0.0).then((_) {
         if (mounted) {
           setState(() {
@@ -271,6 +281,10 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           });
         }
       });
+      ToastService().showError(
+        context,
+        'Something went wrong. Please try again.',
+      );
     }
   }
 
@@ -607,6 +621,20 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                       ),
                       SizedBox(height: 20.h),
                       _buildDashPin(),
+                      SizedBox(height: 12.h),
+                      AnimatedOpacity(
+                        opacity: _wrongPin ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 250),
+                        child: Text(
+                          'Wrong PIN.',
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
+                            color: Colors.red,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                       const Spacer(),
                       SizedBox(height: 20.h),
                       _buildKeypad(),
@@ -616,7 +644,9 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                           onPressed: _isVerifying
                               ? null
                               : () {
-                                  // TODO: forgot PIN flow
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(builder: (_) => const ResetPinScreen()),
+                                  );
                                 },
                           child: Text(
                             'Forgot PIN?',

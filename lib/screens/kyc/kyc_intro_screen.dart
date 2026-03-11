@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../constants/colors.dart';
-import 'id_upload_screen.dart';
+import 'smile_id_kyc_screen.dart';
 import '../home_screen.dart';
 
 class KYCIntroScreen extends StatelessWidget {
@@ -86,7 +86,7 @@ class KYCIntroScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const IDUploadScreen()),
+                    MaterialPageRoute(builder: (_) => const SmileIDKycScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

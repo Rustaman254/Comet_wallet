@@ -1,18 +1,10 @@
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'token_service.dart';
 import 'logger_service.dart';
 
 /// HTTP client wrapper that handles token expiration
 class AuthenticatedHttpClient {
-  static VoidCallback? _onTokenExpired;
-  
-  /// Initialize with token expiration callback
-  static void initialize({required VoidCallback onTokenExpired}) {
-    _onTokenExpired = onTokenExpired;
-  }
-  
+
   /// Make an authenticated GET request
   static Future<http.Response> get(
     Uri url, {
@@ -119,16 +111,9 @@ class AuthenticatedHttpClient {
         },
       );
       
-      // Clear the expired token
+      // Clear the expired token so the user can't re-use it
       TokenService.logout();
-      
-      // Trigger the callback to redirect to login
-      _onTokenExpired?.call();
+      // Individual screens/services handle navigation via TokenExpiredException
     }
-  }
-  
-  /// Dispose of resources
-  static void dispose() {
-    _onTokenExpired = null;
   }
 }

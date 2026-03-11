@@ -8,12 +8,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'constants/colors.dart';
+import 'constants/smile_id_config.dart';
 import 'screens/onboarding_page_view.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/verify_pin_screen.dart';
 import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
-import 'services/authenticated_http_client.dart';
 import 'services/session_service.dart';
 import 'bloc/wallet_bloc.dart';
 import 'bloc/wallet_event.dart';
@@ -22,19 +22,18 @@ import 'screens/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize SmileID with error handling
-  // Give the native side time to fully initialize
+  // Initialize SmileID with environment-driven config
   await Future.delayed(const Duration(seconds: 1));
   
   try {
     debugPrint("Starting SmileID Dart initialization");
     SmileID.initializeWithConfig(
-      useSandbox: true,
+      useSandbox: SmileIDConfig.useSandbox,
       config: FlutterConfig(
-        partnerId: "6482",
-        authToken: "7bd88c7b-801b-420a-b35b-86d7a232ba70",
-        prodBaseUrl: "https://api.smileidentity.com/v1",
-        sandboxBaseUrl: "https://testapi.smileidentity.com/v1",
+        partnerId: SmileIDConfig.partnerId,
+        authToken: SmileIDConfig.authToken,
+        prodBaseUrl: SmileIDConfig.prodBaseUrl,
+        sandboxBaseUrl: SmileIDConfig.sandboxBaseUrl,
       ),
       enableCrashReporting: true,
     );
@@ -55,6 +54,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   static final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.dark);
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -66,20 +66,6 @@ class MyApp extends StatelessWidget {
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
-            // Initialize authenticated HTTP client
-            AuthenticatedHttpClient.initialize(
-              onTokenExpired: () {
-                // Navigate to login screen when token expires
-                final navigator = Navigator.of(context);
-                if (navigator.mounted) {
-                  navigator.pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const SignInScreen()),
-                    (route) => false,
-                  );
-                }
-              },
-            );
-            
             return BlocProvider(
               create: (context) => WalletBloc()
                 ..add(const FetchWalletDataFromServer())
@@ -88,6 +74,7 @@ class MyApp extends StatelessWidget {
                 onPointerDown: (_) => SessionService.recordActivity(),
                 onPointerMove: (_) => SessionService.recordActivity(),
                 child: MaterialApp(
+                  navigatorKey: MyApp.navigatorKey,
                   title: 'Comet Wallet',
                   debugShowCheckedModeBanner: false,
                   themeMode: currentMode,

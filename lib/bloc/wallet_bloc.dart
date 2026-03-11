@@ -518,14 +518,33 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       );
 
       if (result['status'] == 'success') {
+        // Extract actual balances from the API response exactly as returned
+        final double balanceUsda = double.tryParse(result['balance_usda']?.toString() ?? '0') ?? 0.0;
+        final Map<String, double> balancesMap = {};
+        
+        if (result['balances'] is Map) {
+          (result['balances'] as Map).forEach((key, value) {
+            balancesMap[key.toString()] = double.tryParse(value.toString()) ?? 0.0;
+          });
+        }
+        
+        // Also include USDA in the balances map if it's not there
+        if (!balancesMap.containsKey('USDA')) {
+          balancesMap['USDA'] = balanceUsda;
+        }
+
         emit(WalletSwapSuccess(
           message: result['message'] ?? 'Swap successful',
-          amountCredited: (result['amount_credited'] ?? 0).toDouble(),
-          fromCurrency: event.fromCurrency,
-          toCurrency: event.toCurrency,
+          amountCredited: double.tryParse((result['amount_usda'] ?? result['amount_credited'] ?? result['amount_debited'] ?? 0).toString()) ?? 0.0,
+          fromCurrency: result['from_currency'] ?? event.fromCurrency,
+          toCurrency: result['to_currency'] ?? event.toCurrency,
+          balanceUsda: balanceUsda,
+          balances: balancesMap,
+          txId: result['tx_id'],
+          explorerLink: result['explorer_link'],
         ));
         
-        // Refresh wallet data to update balances and transactions
+        // Fetch fresh data from server to sync all other states
         add(const FetchWalletDataFromServer());
       } else {
         emit(WalletError(message: result['message'] ?? 'Swap failed'));

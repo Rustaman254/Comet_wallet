@@ -204,7 +204,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           });
           ToastService().showError(
             context,
-            'Incorrect PIN. Please try again.',
+            'Wrong PIN.',
           );
         }
         return;

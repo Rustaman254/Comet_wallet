@@ -12,6 +12,7 @@ class ApiConstants {
   static const String paymentLinksEndpoint = '$baseUrl/payment-links';
   static const String walletSendMoneyEndpoint = '$baseUrl/wallet/send-money';
   static const String verifyPinEndpoint = '$baseUrl/users/verify-pin';
+  static const String resetPinEndpoint = '$baseUrl/users/reset-pin';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
   
   // Wallet endpoints
@@ -26,4 +27,7 @@ class ApiConstants {
   static const String realEstateMarketplaceEndpoint = '$baseUrl/real-estate/marketplace';
   static const String realEstateSellTokensEndpoint = '$baseUrl/real-estate/sell-tokens';
   static const String realEstateTransactionsEndpoint = '$baseUrl/real-estate/transactions';
+
+  // Forex endpoints
+  static const String forexRatesEndpoint = '$baseUrl/forex/rates';
 }

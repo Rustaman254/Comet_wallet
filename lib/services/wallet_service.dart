@@ -718,7 +718,7 @@ class WalletService {
             'from_currency': fromCurrency,
             'to_currency': toCurrency,
             'amount': amount,
-            'amount_credited': jsonResponse['amount_credited'],
+            'amount_credited': jsonResponse['amount_credited'] ?? jsonResponse['amount_usda'],
           },
         );
 

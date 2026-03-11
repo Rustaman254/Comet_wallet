@@ -112,14 +112,22 @@ class WalletSwapSuccess extends WalletState {
   final double amountCredited;
   final String fromCurrency;
   final String toCurrency;
+  final double balanceUsda;
+  final Map<String, double> balances;
+  final String? txId;
+  final String? explorerLink;
 
   const WalletSwapSuccess({
     required this.message,
     required this.amountCredited,
     required this.fromCurrency,
     required this.toCurrency,
+    required this.balanceUsda,
+    required this.balances,
+    this.txId,
+    this.explorerLink,
   });
 
   @override
-  List<Object?> get props => [message, amountCredited, fromCurrency, toCurrency];
+  List<Object?> get props => [message, amountCredited, fromCurrency, toCurrency, balanceUsda, balances, txId, explorerLink];
 }

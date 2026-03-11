@@ -16,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.cometswitch.africa"
+    namespace = "com.cometswitch.kenya"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -33,13 +33,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.cometswitch.africa"
+        applicationId = "com.cometswitch.kenya"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion // flutter.minSdkVersion
         targetSdk = 35 //flutter.targetSdkVersion
-        versionCode = 3
-        versionName = "1.0.3"
+        versionCode = 123
+        versionName = "123.0.0"
     }
 
     signingConfigs {
@@ -55,6 +55,11 @@ android {
         release {
             signingConfig = signingConfigs.getByName("release")
         }
+    }
+
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     packaging {

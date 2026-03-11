@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
 import '../constants/colors.dart';
+import '../constants/api_constants.dart';
+import '../services/authenticated_http_client.dart';
 import '../services/toast_service.dart';
 import '../services/session_service.dart';
 import '../widgets/usda_logo.dart';
@@ -22,7 +26,11 @@ class _SwapScreenState extends State<SwapScreen> {
   final _amountController = TextEditingController();
   String _fromCurrency = 'KES';
   String _toCurrency = 'USDA';
-  
+
+  bool _isFetchingRate = false;
+  // Always stores the latest rate from the API (no caching)
+  double _currentRate = 0.0;
+
   final List<String> _availableCurrencies = [
     'KES', 'USD', 'TZS', 'UGX', 'EUR', 'GBP', 'ZAR', 'RWF', 'USDA'
   ];
@@ -34,6 +42,68 @@ class _SwapScreenState extends State<SwapScreen> {
       SessionService.recordActivity();
       setState(() {});
     });
+    _fetchExchangeRate();
+  }
+
+  /// Fetches the exchange rate for a specific currency pair from the API.
+  /// Endpoint: /forex/rates/{FROM}/{TO}
+  /// Response: {"from_currency": "KES", "rate": 0.0077, "status": "success", "to_currency": "USD"}
+  Future<void> _fetchRateForPair(String from, String to) async {
+    if (from == to) {
+      if (mounted) {
+        setState(() {
+          _currentRate = 1.0;
+          _isFetchingRate = false;
+        });
+      }
+      return;
+    }
+
+    setState(() => _isFetchingRate = true);
+    try {
+      final url = '${ApiConstants.forexRatesEndpoint}/$from/$to';
+      final response = await AuthenticatedHttpClient.get(
+        Uri.parse(url),
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        if (data is Map && data['status'] == 'success') {
+          final rate = double.tryParse(data['rate']?.toString() ?? '');
+          if (rate != null && rate > 0) {
+            _currentRate = rate;
+          }
+        }
+      }
+    } catch (_) {
+      // Keep existing rate on error
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFetchingRate = false;
+        });
+      }
+    }
+  }
+
+  /// Returns how many [to] currency units you get for 1 [from] unit.
+  /// Always returns the latest rate fetched from the API.
+  double _lookupRate(String from, String to) {
+    if (from == to) return 1.0;
+    return _currentRate;
+  }
+
+  void _fetchExchangeRate() {
+    if (_fromCurrency == _toCurrency) {
+      setState(() {
+        _currentRate = 1.0;
+      });
+      return;
+    }
+
+    // Always fetch fresh rate from server
+    _fetchRateForPair(_fromCurrency, _toCurrency);
   }
 
   double _getBalanceForCurrency(String currency, WalletState state) {
@@ -56,30 +126,12 @@ class _SwapScreenState extends State<SwapScreen> {
     return 0.0;
   }
 
-  double _getExchangeRate(String from, String to) {
-    if (from == to) return 1.0;
-    
-    final Map<String, double> toUSD = {
-      'KES': 0.0077,
-      'USD': 1.0,
-      'TZS': 0.00039,
-      'UGX': 0.00027,
-      'EUR': 1.09,
-      'GBP': 1.27,
-      'ZAR': 0.055,
-      'RWF': 0.00078,
-      'USDA': 1.0,
-    };
-    
-    final fromRate = toUSD[from] ?? 1.0;
-    final toRate = toUSD[to] ?? 1.0;
-    
-    return fromRate / toRate;
-  }
+
 
   double _calculateEstimatedAmount() {
     final amount = double.tryParse(_amountController.text) ?? 0.0;
-    final rate = _getExchangeRate(_fromCurrency, _toCurrency);
+    if (amount <= 0) return 0.0;
+    final rate = _lookupRate(_fromCurrency, _toCurrency);
     return amount * rate;
   }
 
@@ -87,6 +139,170 @@ class _SwapScreenState extends State<SwapScreen> {
   void dispose() {
     _amountController.dispose();
     super.dispose();
+  }
+
+  /// Rounds a value to the nearest 100 and formats with 2 decimal places.
+  String _formatBalance(double value) {
+    return value.toStringAsFixed(2);
+  }
+
+  void _showSwapSuccessDialog(BuildContext context, WalletSwapSuccess state) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.check_circle, color: buttonGreen, size: 28.r),
+              SizedBox(width: 8.w),
+              Expanded(
+                child: Text(
+                  'Swap Successful',
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: getTextColor(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                state.message,
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  fontSize: 14.sp,
+                  color: getSecondaryTextColor(context),
+                ),
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                'Updated Balances',
+                style: TextStyle(
+                  fontFamily: 'Satoshi',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  color: getTextColor(context),
+                ),
+              ),
+              SizedBox(height: 8.h),
+              ...state.balances.entries.map((entry) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 4.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          _buildCurrencyIcon(entry.key, size: 20.r),
+                          SizedBox(width: 8.w),
+                          Text(
+                            entry.key,
+                            style: TextStyle(
+                              fontFamily: 'Satoshi',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: getTextColor(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        _formatBalance(entry.value),
+                        style: TextStyle(
+                          fontFamily: 'Satoshi',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: getTextColor(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              if (state.txId != null && state.explorerLink != null) ...[
+                SizedBox(height: 16.h),
+                Text(
+                  'Transaction details',
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: getTextColor(context),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                InkWell(
+                  onTap: () async {
+                    final uri = Uri.parse(state.explorerLink!);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      Icon(Icons.open_in_new, size: 16.r, color: buttonGreen),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Text(
+                          state.txId!,
+                          style: TextStyle(
+                            fontFamily: 'Satoshi',
+                            fontSize: 12.sp,
+                            color: buttonGreen,
+                            decoration: TextDecoration.underline,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  Navigator.of(context).pop(true);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: buttonGreen,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 14.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Done',
+                  style: TextStyle(
+                    fontFamily: 'Satoshi',
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _handleSwap() {
@@ -118,13 +334,14 @@ class _SwapScreenState extends State<SwapScreen> {
           currencies: _availableCurrencies,
           selectedCurrency: isFrom ? _fromCurrency : _toCurrency,
           onCurrencySelected: (currency) {
-             setState(() {
+            setState(() {
               if (isFrom) {
                 _fromCurrency = currency;
               } else {
                 _toCurrency = currency;
               }
             });
+            _fetchExchangeRate();
           },
         );
       },
@@ -153,8 +370,7 @@ class _SwapScreenState extends State<SwapScreen> {
     return BlocListener<WalletBloc, WalletState>(
       listener: (context, state) {
         if (state is WalletSwapSuccess) {
-          ToastService().showSuccess(context, state.message);
-          Navigator.of(context).pop(true);
+          _showSwapSuccessDialog(context, state);
         } else if (state is WalletError) {
           ToastService().showError(context, state.message);
         }
@@ -265,15 +481,24 @@ class _SwapScreenState extends State<SwapScreen> {
                               color: getSecondaryTextColor(context),
                             ),
                           ),
-                          Text(
-                            '1 $_fromCurrency = ${_getExchangeRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
-                            style: TextStyle(
-                              fontFamily: 'Satoshi',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              color: getTextColor(context),
-                            ),
-                          ),
+                          _isFetchingRate
+                              ? SizedBox(
+                                  height: 14.r,
+                                  width: 14.r,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 1.5,
+                                    color: getSecondaryTextColor(context),
+                                  ),
+                                )
+                              : Text(
+                                  '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
+                                  style: TextStyle(
+                                    fontFamily: 'Satoshi',
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: getTextColor(context),
+                                  ),
+                                ),
                         ],
                       ),
                     ),
@@ -392,7 +617,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           
                           // Minimum swap amount checks
                           if (_toCurrency == 'USDA') {
-                            final rate = _getExchangeRate(_fromCurrency, 'USDA');
+                            final rate = _lookupRate(_fromCurrency, 'USDA');
                             final estimatedUSDA = double.parse(value) * rate;
                             if (estimatedUSDA < 1.0) {
                               return 'Min swap: 1 $_toCurrency (Cardano)';
