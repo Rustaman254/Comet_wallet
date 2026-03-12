@@ -6,6 +6,17 @@ allprojects {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
+    configurations.configureEach {
+        resolutionStrategy {
+            force(
+                "androidx.camera:camera-lifecycle:1.5.0",
+                "androidx.camera:camera-camera2:1.5.0",
+                "androidx.camera:camera-video:1.5.0",
+                "androidx.camera:camera-core:1.5.0",
+                "androidx.camera:camera-view:1.5.0"
+            )
+        }
+    }
 }
 
 val newBuildDir: Directory =

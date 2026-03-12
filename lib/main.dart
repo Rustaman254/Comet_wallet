@@ -9,10 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'constants/colors.dart';
 import 'constants/smile_id_config.dart';
+import 'services/smile_id_init_service.dart';
 import 'screens/onboarding_page_view.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/verify_pin_screen.dart';
-import 'screens/main_wrapper.dart';
 import 'services/token_service.dart';
 import 'services/session_service.dart';
 import 'bloc/wallet_bloc.dart';
@@ -22,22 +22,15 @@ import 'screens/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize SmileID with environment-driven config
-  await Future.delayed(const Duration(seconds: 1));
-  
+  // Initialize SmileID with proper native context setup
   try {
-    debugPrint("Starting SmileID Dart initialization");
-    SmileID.initializeWithConfig(
-      useSandbox: SmileIDConfig.useSandbox,
-      config: FlutterConfig(
-        partnerId: SmileIDConfig.partnerId,
-        authToken: SmileIDConfig.authToken,
-        prodBaseUrl: SmileIDConfig.prodBaseUrl,
-        sandboxBaseUrl: SmileIDConfig.sandboxBaseUrl,
-      ),
-      enableCrashReporting: true,
-    );
-    debugPrint("SmileID Dart initialization completed successfully");
+    debugPrint("Starting SmileID initialization");
+    final smileIdReady = await SmileIDInitService.initializeSmileID();
+    if (smileIdReady) {
+      debugPrint("SmileID initialization successful");
+    } else {
+      debugPrint("SmileID initialization returned false - SDK may not be fully ready");
+    }
   } catch (e) {
     debugPrint("SmileID initialization failed: $e");
   }

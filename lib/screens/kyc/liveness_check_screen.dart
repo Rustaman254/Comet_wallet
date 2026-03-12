@@ -5,6 +5,7 @@ import '../../constants/colors.dart';
 import '../home_screen.dart';
 import '../../services/toast_service.dart';
 import '../../services/token_service.dart';
+import '../../services/smile_id_init_service.dart';
 
 class LivenessCheckScreen extends StatefulWidget {
   const LivenessCheckScreen({super.key});
@@ -25,12 +26,21 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
   }
 
   Future<void> _ensureSmileIDReady() async {
-    // Wait to ensure SmileID native initialization is complete
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      setState(() {
-        _isSmileIDReady = true;
-      });
+    try {
+      // Ensure SmileID SDK is fully initialized before proceeding
+      await SmileIDInitService.ensureInitialized();
+      if (mounted) {
+        setState(() {
+          _isSmileIDReady = true;
+        });
+      }
+    } catch (e) {
+      debugPrint("Failed to ensure SmileID ready: $e");
+      if (mounted) {
+        setState(() {
+          _isSmileIDReady = false;
+        });
+      }
     }
   }
 

@@ -431,6 +431,8 @@ class _SwapScreenState extends State<SwapScreen> {
                             _fromCurrency = _toCurrency;
                             _toCurrency = temp;
                           });
+                          // Fetch the exchange rate for the swapped currency pair
+                          _fetchExchangeRate();
                         },
                         child: Container(
                           padding: EdgeInsets.all(8.r),

@@ -9,6 +9,7 @@ import '../../constants/smile_id_config.dart';
 import '../../services/kyc_service.dart';
 import '../../services/token_service.dart';
 import '../../services/toast_service.dart';
+import '../../services/smile_id_init_service.dart';
 import '../../models/kyc_model.dart';
 import '../home_screen.dart';
 
@@ -49,14 +50,11 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
 
   Future<void> _ensureSmileReady() async {
     try {
-      // Give native side time to finish init
-      await Future.delayed(const Duration(seconds: 2));
+      // Ensure SmileID SDK is fully initialized before proceeding
+      // This critical step ensures the native fileSavePath is properly set up
+      await SmileIDInitService.ensureInitialized();
 
-      // Set callback URL so Smile ID posts results to our backend
-      SmileID.setCallbackUrl(
-        callbackUrl: Uri.parse(SmileIDConfig.callbackUrl),
-      );
-
+      // Ready for Smile ID flow
       if (mounted) setState(() => _smileReady = true);
     } catch (e) {
       debugPrint('SmileID readiness check failed: $e');
@@ -259,10 +257,19 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
             jobId: _jobId,
             countryCode: SmileIDConfig.defaultCountryCode,
             documentType: SmileIDConfig.defaultDocumentType,
+            useStrictMode: true,
             showInstructions: true,
             allowGalleryUpload: true,
-            onSuccess: _onFlowSuccess,
-            onError: _onFlowError,
+            onSuccess: (String? resultJson) {
+              final snackBar = SnackBar(content: Text("Success: $resultJson"));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              _onFlowSuccess(resultJson);
+            },
+            onError: (String errorMessage) {
+              final snackBar = SnackBar(content: Text("Error: $errorMessage"));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              _onFlowError(errorMessage);
+            },
           ),
         );
       case _KycFlow.biometricKyc:
