@@ -1,4 +1,3 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../constants/api_constants.dart';
 import 'token_service.dart';
@@ -12,6 +11,7 @@ class WalletService {
     required String phoneNumber,
     required double amount,
     required String currency,
+    String? pin,
   }) async {
     final startTime = DateTime.now();
 
@@ -49,6 +49,7 @@ class WalletService {
         'phone_number': phoneNumber,
         'amount': amount,
         'currency': currency,
+        if (pin != null) 'pin': pin,
       };
 
       AppLogger.debug(
@@ -67,14 +68,10 @@ class WalletService {
         body: requestBody,
       );
 
-      // Prepare authorization header
-      // Try with Bearer prefix first (standard JWT format)
-      final authorizationHeader = 'Bearer $token';
       AppLogger.debug(
         LogTags.payment,
         'Preparing authorization header for Top Up',
         data: {
-          'token_prefix': 'Bearer',
           'token_present': token.isNotEmpty,
           'token_length': token.length,
         },
@@ -353,6 +350,7 @@ class WalletService {
     required String toEmail,
     required double amount,
     required String currency,
+    String? pin,
   }) async {
     final startTime = DateTime.now();
 
@@ -366,6 +364,7 @@ class WalletService {
         'to_email': toEmail,
         'amount': amount,
         'currency': currency,
+        if (pin != null) 'pin': pin,
       };
 
       AppLogger.logAPIRequest(
@@ -518,6 +517,7 @@ class WalletService {
     required double amount,
     required String currency,
     required String description,
+    String? pin,
   }) async {
     final startTime = DateTime.now();
 
@@ -536,6 +536,7 @@ class WalletService {
         'amount': amount,
         'currency': currency,
         'description': description,
+        if (pin != null) 'pin': pin,
       };
 
       AppLogger.logAPIRequest(

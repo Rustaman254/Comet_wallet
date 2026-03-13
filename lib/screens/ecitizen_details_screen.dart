@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../services/wallet_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../constants/colors.dart';
 import '../models/ecitizen_bill.dart';
 import '../services/ecitizen_service.dart';
-import '../services/wallet_service.dart';
 import '../services/token_service.dart';
 import 'enter_pin_screen.dart';
 
@@ -43,7 +43,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         width: 40.r,
                         height: 40.r,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -80,7 +80,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       width: 80.r,
                       height: 80.r,
                       decoration: BoxDecoration(
-                        color: buttonGreen.withOpacity(0.15),
+                        color: buttonGreen.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -107,7 +107,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                         vertical: 6.h,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.15),
+                        color: Colors.green.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20.r),
                         // removed border to stay consistent with pills on home/login
                       ),
@@ -127,7 +127,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                     SizedBox(height: 24.h),
                     _buildDetailRow('Date', 'Today'),
                     SizedBox(height: 24.h),
-                    Divider(color: Colors.white.withOpacity(0.1)),
+                    Divider(color: Colors.white.withValues(alpha: 0.1)),
                     SizedBox(height: 24.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -170,13 +170,14 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                             recipientName: 'eCitizen - ${widget.bill.name}',
                             amount: widget.bill.amount.toStringAsFixed(2),
                             currency: widget.bill.currency,
-                            onVerify: () async {
+                            onVerify: (pin) async {
                               // 1. Perform wallet to wallet transfer
                               final transferResponse =
                                   await WalletService.transferWallet(
                                 toEmail: 'colls@cradlevoices.com',
                                 amount: widget.bill.amount,
                                 currency: widget.bill.currency,
+                                pin: pin,
                               );
 
                               final transactionId =

@@ -16,7 +16,7 @@ class EnterPinScreen extends StatefulWidget {
   final String amount;
   final String currency;
   final String description;
-  final Future<Map<String, dynamic>> Function()? onVerify;
+  final Future<Map<String, dynamic>> Function(String pin)? onVerify;
 
   const EnterPinScreen({
     super.key,
@@ -34,7 +34,6 @@ class EnterPinScreen extends StatefulWidget {
 class _EnterPinScreenState extends State<EnterPinScreen>
     with SingleTickerProviderStateMixin {
   String _pin = '';
-  final String _correctPin = '1234';
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
   bool _isVerifying = false; // for loader dialog state
@@ -42,7 +41,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   // Biometric state
   bool _biometricsAvailable = false;
   bool _hasFaceID = false;
-  bool _hasFingerprint = false;
+  bool _isBiometricScanning = false;
 
   @override
   void initState() {
@@ -85,7 +84,6 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       setState(() {
         _biometricsAvailable = isAvailable;
         _hasFaceID = hasFace;
-        _hasFingerprint = hasFingerprint;
       });
     }
   }
@@ -143,7 +141,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -213,7 +211,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       // 2. PIN Verified, proceed with transaction
       Map<String, dynamic> response;
       if (widget.onVerify != null) {
-        response = await widget.onVerify!();
+        response = await widget.onVerify!(_pin);
       } else {
         final amount =
             double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
@@ -291,7 +289,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           // Process the transaction
           Map<String, dynamic> response;
           if (widget.onVerify != null) {
-            response = await widget.onVerify!();
+            response = await widget.onVerify!(_pin);
           } else {
             final amount =
                 double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
@@ -584,7 +582,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                         borderRadius: BorderRadius.circular(999.r),
                         color: isFilled
                             ? buttonGreen
-                            : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withOpacity(0.3)),
+                            : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.3)),
                       ),
                     ),
                   ),

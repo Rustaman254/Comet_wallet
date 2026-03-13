@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
+import '../services/wallet_service.dart';
 import 'enter_pin_screen.dart';
 
 class MobilePaymentConfirmScreen extends StatelessWidget {
@@ -149,7 +150,14 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                           recipientName: phoneNumber,
                           amount: amount,
                           currency: currency,
-                          description: 'Withdrawal to M-Pesa',
+                          description: 'Mobile Payment',
+                          onVerify: (pin) => WalletService.sendMoney(
+                            recipientPhone: phoneNumber,
+                            amount: double.parse(amount),
+                            currency: currency,
+                            description: 'Mobile Payment',
+                            pin: pin,
+                          ),
                         ),
                       ),
                     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_bottom_nav.dart';
 import 'home_screen.dart';
-import 'my_cards_screen.dart';
 import 'transactions_screen.dart';
+import 'orders_page.dart';
 import 'settings_screen.dart';
 import 'verify_pin_screen.dart';
 import '../services/session_service.dart';
@@ -29,6 +29,7 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
     const HomeScreen(),
     // Cards screen removed
     const TransactionsScreen(),
+    const OrdersPage(),
     const SettingsScreen(),
   ];
 

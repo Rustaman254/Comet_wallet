@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
+import '../services/wallet_service.dart';
 import '../utils/input_decoration.dart';
 import 'enter_pin_screen.dart';
 
@@ -51,13 +52,24 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
       return;
     }
 
+    // Renaming variables to match the instruction's snippet for clarity
+    final String phoneNumber = phoneText;
+    final String amount = amountText;
+    final String currency = widget.currency;
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => EnterPinScreen(
-          recipientName: phoneText, // Standard field for recipient phone
-          amount: amountText,
-          currency: widget.currency,
-          description: 'Withdrawal to M-Pesa',
+          recipientName: phoneNumber,
+          amount: amount,
+          currency: currency,
+          onVerify: (pin) => WalletService.sendMoney(
+            recipientPhone: phoneNumber,
+            amount: double.parse(amount),
+            currency: currency,
+            description: 'Mobile Withdrawal',
+            pin: pin,
+          ),
         ),
       ),
     );

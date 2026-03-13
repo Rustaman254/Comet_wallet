@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/wallet_service.dart';
 
 import '../constants/colors.dart';
 import 'enter_pin_screen.dart';
@@ -283,9 +284,14 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => EnterPinScreen(
-                              recipientName: '$selectedCategory Bill',
+                              recipientName: _accountController.text,
                               amount: _amountController.text,
                               currency: 'KES',
+                              onVerify: (pin) => WalletService.topupWallet(
+                                  phoneNumber: _accountController.text,
+                                  amount: double.parse(_amountController.text),
+                                  currency: 'KES',
+                                  pin: pin),
                             ),
                           ),
                         );

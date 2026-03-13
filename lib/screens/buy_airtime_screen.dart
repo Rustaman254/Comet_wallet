@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/wallet_service.dart';
 
 import '../constants/colors.dart';
 import 'enter_pin_screen.dart';
@@ -332,6 +333,11 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                             recipientName: _phoneController.text,
                             amount: _amountController.text,
                             currency: 'KES',
+                            onVerify: (pin) => WalletService.topupWallet(
+                                phoneNumber: _phoneController.text,
+                                amount: double.parse(_amountController.text),
+                                currency: 'KES',
+                                pin: pin),
                           ),
                         ),
                       );
