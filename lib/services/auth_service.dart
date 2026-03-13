@@ -9,6 +9,65 @@ import '../models/user_profile.dart';
 import 'authenticated_http_client.dart';
 
 class AuthService {
+  /// Extract a human-readable error message from an HTTP response.
+  /// Checks for `error`, `message`, and `description` fields in the JSON body.
+  /// Falls back to a generic message if nothing usable is found.
+  /// Robustly extracts a human-readable error message from a backend response.
+  static String _extractErrorMessage(http.Response response) {
+    try {
+      final dynamic body = jsonDecode(response.body);
+      return _findErrorInObject(body) ?? 'Something went wrong, please try again.';
+    } catch (_) {
+      // Body is not valid JSON
+      if (response.body.isNotEmpty && response.body.length < 200) {
+        return response.body;
+      }
+    }
+    return 'Something went wrong, please try again.';
+  }
+
+  /// Recursively searches for error strings in a JSON-like object.
+  static String? _findErrorInObject(dynamic obj) {
+    if (obj == null) return null;
+
+    if (obj is String) {
+      // If the string itself is stringified JSON, try to parse and hunt inside
+      final trimmed = obj.trim();
+      if ((trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+          (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+        try {
+          return _findErrorInObject(jsonDecode(trimmed));
+        } catch (_) {}
+      }
+      // Otherwise, return as is if non-empty
+      return trimmed.isNotEmpty ? trimmed : null;
+    }
+
+    if (obj is Map) {
+      // High-priority keys often used for specific error messages
+      final priorityKeys = ['error', 'errors', 'message', 'msg', 'description', 'detail'];
+      for (final key in priorityKeys) {
+        if (obj.containsKey(key)) {
+          final res = _findErrorInObject(obj[key]);
+          if (res != null && res.isNotEmpty) return res;
+        }
+      }
+
+      // If no priority key found a string, look at all values
+      for (final value in obj.values) {
+        final res = _findErrorInObject(value);
+        if (res != null && res.isNotEmpty) return res;
+      }
+    }
+
+    if (obj is List && obj.isNotEmpty) {
+      // If it's a list, check the first item
+      return _findErrorInObject(obj.first);
+    }
+
+    return null;
+  }
+
   /// User registration
   static Future<Map<String, dynamic>> register({
     required String email,
@@ -121,7 +180,7 @@ class AuthService {
           response: {'error': response.body},
         );
 
-        throw Exception('Registration failed with status code: ${response.statusCode}');
+        throw Exception(_extractErrorMessage(response));
       }
     } catch (e) {
       final duration = DateTime.now().difference(startTime);
@@ -136,7 +195,9 @@ class AuthService {
         },
       );
 
-      throw Exception('Registration error: $e');
+      // Re-throw as-is if it's already our parsed Exception; otherwise wrap it
+      if (e is Exception) rethrow;
+      throw Exception('Something went wrong, please try again.');
     }
   }
 
@@ -212,6 +273,7 @@ class AuthService {
           final balanceAda = (userObj?['balance_ada'] ?? 0.0).toDouble();
           final balanceUsda = (userObj?['balance_usda'] ?? 0.0).toDouble();
           final balanceUsdaRaw = userObj?['balance_usda_raw'];
+          final kycVerified = userObj?['kyc_verified'] ?? false;
 
           await TokenService.saveExtendedUserData(
             token: token,
@@ -223,6 +285,7 @@ class AuthService {
             balanceAda: balanceAda,
             balanceUsda: balanceUsda,
             balanceUsdaRaw: balanceUsdaRaw,
+            kycVerified: kycVerified is bool ? kycVerified : false,
           );
 
           AppLogger.debug(
@@ -271,7 +334,7 @@ class AuthService {
           response: {'error': response.body},
         );
 
-        throw Exception('Login failed with status code: ${response.statusCode}');
+        throw Exception(_extractErrorMessage(response));
       }
     } catch (e) {
       final duration = DateTime.now().difference(startTime);

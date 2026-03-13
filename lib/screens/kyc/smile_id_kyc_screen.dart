@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smile_id/smile_id.dart';
 import 'package:smile_id/products/selfie/smile_id_smart_selfie_enrollment.dart';
 import 'package:smile_id/products/document/smile_id_document_verification.dart';
 import 'package:smile_id/products/biometric/smile_id_biometric_kyc.dart';
-import 'package:smile_id/products/models/model.dart';
 import '../../constants/colors.dart';
 import '../../constants/smile_id_config.dart';
 import '../../services/kyc_service.dart';
@@ -289,10 +287,9 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
           body: SmileIDBiometricKYC(
             userId: _userId!,
             jobId: _jobId,
-            countryCode: SmileIDConfig.defaultCountryCode,
-            documentType: SmileIDConfig.defaultDocumentType,
+            country: SmileIDConfig.defaultCountryCode,
+            idType: SmileIDConfig.defaultDocumentType,
             showInstructions: true,
-            allowGalleryUpload: true,
             onSuccess: _onFlowSuccess,
             onError: _onFlowError,
           ),

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
 import '../services/toast_service.dart';
 import '../services/vibration_service.dart';
 import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
-import 'verify_pin_screen.dart';
-import 'kyc/id_upload_screen.dart';
 import '../services/auth_service.dart';
-import '../services/token_service.dart';
 import '../widgets/usda_logo.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -81,6 +77,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _handleSignUp() async {
     VibrationService.selectionClick();
     if (_formKey.currentState!.validate()) {
+      // Direct safety check for password length
+      if (_passwordController.text.length < 8) {
+        VibrationService.errorVibrate();
+        ToastService().showError(context, "Password must be at least 8 characters");
+        return;
+      }
+
       setState(() {
         _isLoading = true;
       });
@@ -105,10 +108,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           setState(() {
             _isLoading = false;
           });
-          ToastService().showSuccess(context, "Account created successfully!");
+          ToastService().showSuccess(context, "Account created successfully! Please sign in.");
           
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const IDUploadScreen()),
+            MaterialPageRoute(builder: (_) => const SignInScreen()),
           );
         }
       } catch (e) {
@@ -256,13 +259,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           });
                         },
                       ),
+                    ).copyWith(
+                      helperText: 'Password must be at least 8 characters.',
+                      helperStyle: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[600],
+                        fontSize: 12,
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a password';
                       }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                      if (value.length < 8) {
+                        return 'Password must be at least 8 characters';
                       }
                       return null;
                     },

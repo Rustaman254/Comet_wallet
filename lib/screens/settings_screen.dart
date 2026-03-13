@@ -10,6 +10,7 @@ import 'sign_in_screen.dart';
 import '../services/logger_service.dart';
 import '../utils/component_styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'kyc/kyc_intro_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,6 +22,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _vibrationEnabled = true;
   bool _biometricsEnabled = false;
+  bool _kycVerified = true; // default to true so banner is hidden until loaded
 
 
   @override
@@ -33,10 +35,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final prefs = await SharedPreferences.getInstance();
     final vibrationEnabled = await VibrationService.isEnabled();
     final biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
+    final kycVerified = await TokenService.getKycVerified();
     
     setState(() {
       _vibrationEnabled = vibrationEnabled;
       _biometricsEnabled = biometricEnabled;
+      _kycVerified = kycVerified;
     });
   }
 
@@ -97,6 +101,96 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: 32),
+
+              // KYC Banner (shown only when kyc_verified is false)
+              if (!_kycVerified)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.amber.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.amber,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'KYC Not Verified',
+                                style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                  color: isDark ? Colors.white : lightTextPrimary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Verify your identity to unlock full features.',
+                                style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                  color: isDark ? Colors.white70 : lightSecondaryText,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const KYCIntroScreen()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            foregroundColor: Colors.black87,
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Verify KYC',
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              if (!_kycVerified) const SizedBox(height: 24),
               
               // General Section
               _buildSectionHeader('General', isDark),

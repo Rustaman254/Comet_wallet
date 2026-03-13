@@ -11,6 +11,7 @@ class TokenService {
   static const String _balanceAdaKey = 'balance_ada';
   static const String _balanceUsdaKey = 'balance_usda';
   static const String _balanceUsdaRawKey = 'balance_usda_raw';
+  static const String _kycVerifiedKey = 'kyc_verified';
 
   /// Save authentication token
   static Future<void> saveToken(String token) async {
@@ -125,6 +126,7 @@ class TokenService {
     await prefs.remove(_balanceAdaKey);
     await prefs.remove(_balanceUsdaKey);
     await prefs.remove(_balanceUsdaRawKey);
+    await prefs.remove(_kycVerifiedKey);
   }
 
   /// Save all user data at once
@@ -163,6 +165,7 @@ class TokenService {
     double? balanceAda,
     double? balanceUsda,
     int? balanceUsdaRaw,
+    bool? kycVerified,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     List<Future<bool>> futures = [
@@ -185,6 +188,9 @@ class TokenService {
     }
     if (balanceUsdaRaw != null) {
       futures.add(prefs.setInt(_balanceUsdaRawKey, balanceUsdaRaw));
+    }
+    if (kycVerified != null) {
+      futures.add(prefs.setBool(_kycVerifiedKey, kycVerified));
     }
     await Future.wait(futures);
   }
@@ -214,5 +220,17 @@ class TokenService {
       'token_preview': token != null ? '${token.substring(0, 20)}...' : 'null',
       'is_authenticated': await isAuthenticated(),
     };
+  }
+
+  /// Save KYC verified status
+  static Future<void> saveKycVerified(bool verified) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_kycVerifiedKey, verified);
+  }
+
+  /// Get KYC verified status
+  static Future<bool> getKycVerified() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_kycVerifiedKey) ?? false;
   }
 }
