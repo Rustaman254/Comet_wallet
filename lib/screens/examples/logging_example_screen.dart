@@ -182,7 +182,7 @@ class _LoggingExampleScreenState extends State<LoggingExampleScreen> {
           'Logging Examples',
           style: TextStyle(fontFamily: 'Satoshi',),
         ),
-        backgroundColor: buttonGreen,
+        backgroundColor: primaryBrandColor,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/colors.dart';
@@ -77,8 +79,8 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     );
     
     _biometricColorAnimation = ColorTween(
-      begin: buttonGreen,
-      end: buttonGreen.withOpacity(0.5),
+      begin: primaryBrandColor,
+      end: primaryBrandColor.withOpacity(0.5),
     ).animate(
       CurvedAnimation(
         parent: _biometricPulseController,
@@ -194,7 +196,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(color: buttonGreen),
+                  const CircularProgressIndicator(color: primaryBrandColor),
                   SizedBox(height: 16.h),
                   Text(
                     'Verifying PIN...',
@@ -271,7 +273,31 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     } catch (e) {
       if (!mounted) return;
       await _hideLoaderDialog();
-      
+
+      // Detect network errors (SocketException, host lookup failures, etc.)
+      // These typically indicate an expired session or unreachable server
+      final isNetworkError = e is SocketException ||
+          e is http.ClientException ||
+          e.toString().contains('SocketException') ||
+          e.toString().contains('Failed host lookup') ||
+          e.toString().contains('Connection refused');
+
+      if (isNetworkError) {
+        // Treat as session expiry — logout and redirect to login
+        await TokenService.logout();
+        if (mounted && context.mounted) {
+          ToastService().showError(
+            context,
+            'Session expired. Please login again.',
+          );
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const SignInScreen()),
+            (route) => false,
+          );
+        }
+        return;
+      }
+
       VibrationService.errorVibrate();
       setState(() => _wrongPin = true);
       _shakeController.forward(from: 0.0).then((_) {
@@ -387,7 +413,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999.r),
                         color: isFilled
-                            ? buttonGreen
+                            ? primaryBrandColor
                             : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withOpacity(0.3)),
                       ),
                     ),
@@ -467,7 +493,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               boxShadow: _isBiometricScanning
                   ? [
                       BoxShadow(
-                        color: buttonGreen.withOpacity(0.3),
+                        color: primaryBrandColor.withOpacity(0.3),
                         blurRadius: 10 * _biometricPulseController.value,
                         spreadRadius: 2 * _biometricPulseController.value,
                       )
@@ -481,7 +507,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                   _hasFaceID ? Icons.face : Icons.fingerprint,
                   color: _isBiometricScanning 
                       ? _biometricColorAnimation.value 
-                      : buttonGreen,
+                      : primaryBrandColor,
                   size: 28,
                 ),
               ),
@@ -625,13 +651,15 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                       AnimatedOpacity(
                         opacity: _wrongPin ? 1.0 : 0.0,
                         duration: const Duration(milliseconds: 250),
-                        child: Text(
-                          'Wrong PIN.',
-                          style: TextStyle(
-                            fontFamily: 'Satoshi',
-                            color: Colors.red,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
+                        child: Center(
+                          child: Text(
+                            'Wrong PIN.',
+                            style: TextStyle(
+                              fontFamily: 'Satoshi',
+                              color: Colors.red,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -652,7 +680,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                             'Forgot PIN?',
                             style: TextStyle(
                               fontFamily: 'Satoshi',
-                              color: buttonGreen,
+                              color: primaryBrandColor,
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w500,
                             ),

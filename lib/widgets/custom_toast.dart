@@ -19,7 +19,7 @@ class CustomToast extends StatelessWidget {
   Color get _backgroundColor {
     switch (type) {
       case ToastType.success:
-        return buttonGreen;
+        return primaryBrandColor;
       case ToastType.error:
         return Colors.redAccent;
       case ToastType.info:

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-// Primary color - Vibrant green for actions
-const Color buttonGreen = Color(0xFF2ECD42); // Modern teal green
+// Primary color - Vibrant blue for actions
+const Color primaryBrandColor = Color(0xFF0077E5); // Fusionfi Blue
+const Color secondaryBrandColor = Color(0xFF13B5C0); // Fusionfi Cyan
 const Color equityMaroon = Color(0xFFA32A29);
 const Color equityGold = Color(0xFFE8B931);
 
@@ -36,8 +37,8 @@ const Color lightAccentOrange = Color(0xFFEA580C); // Vibrant orange
 // Legacy colors for compatibility
 const Color darkTeal = Color(0xFF1A4D4D);
 const Color darkGreen = Color(0xFF0F3D3D);
-const Color brightGreen = Color(0xFF2ECD42);
-const Color lightGreen = Color(0xFF66BB6A);
+const Color brightGreen = Color(0xFF0077E5);
+const Color lightGreen = Color(0xFF13B5C0);
 const Color gold = Color(0xFFFFD700);
 const Color cardBackground = darkSurface;
 const Color cardBorder = darkBorder;

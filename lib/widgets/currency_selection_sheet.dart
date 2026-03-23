@@ -92,9 +92,9 @@ class CurrencySelectionSheet extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
                         decoration: isSelected ? BoxDecoration(
-                          color: buttonGreen.withOpacity(0.1),
+                          color: primaryBrandColor.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: buttonGreen.withOpacity(0.3)),
+                          border: Border.all(color: primaryBrandColor.withOpacity(0.3)),
                         ) : null,
                         child: Row(
                           children: [
@@ -112,7 +112,7 @@ class CurrencySelectionSheet extends StatelessWidget {
                               ),
                             ),
                             if (isSelected)
-                              Icon(Icons.check_circle, color: buttonGreen, size: 24.r),
+                              Icon(Icons.check_circle, color: primaryBrandColor, size: 24.r),
                           ],
                         ),
                       ),

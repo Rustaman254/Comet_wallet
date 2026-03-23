@@ -109,7 +109,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isSelected ? buttonGreen : Colors.white.withValues(alpha: 0.1),
+                          color: isSelected ? primaryBrandColor : Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -131,7 +131,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
             // Tenders List
             Expanded(
               child: _isLoading
-                  ? Center(child: CircularProgressIndicator(color: buttonGreen))
+                  ? Center(child: CircularProgressIndicator(color: primaryBrandColor))
                   : _filteredTenders.isEmpty
                       ? Center(
                           child: Column(
@@ -151,7 +151,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                         )
                       : RefreshIndicator(
                           onRefresh: _loadTenders,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 24.0),
                             itemCount: _filteredTenders.length,
@@ -280,7 +280,7 @@ class _ViewTendersScreenState extends State<ViewTendersScreen> {
                       Text(
                         tender.budget,
                         style: TextStyle(fontFamily: 'Satoshi',
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),

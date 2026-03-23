@@ -72,7 +72,7 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
         centerTitle: true,
       ),
       body: _userId == null || !_isSmileIDReady
-          ? const Center(child: CircularProgressIndicator(color: buttonGreen))
+          ? const Center(child: CircularProgressIndicator(color: primaryBrandColor))
           : SmileIDSmartSelfieEnrollment(
               userId: _userId!,
               allowNewEnroll: true,

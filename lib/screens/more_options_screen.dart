@@ -26,19 +26,19 @@ class MoreOptionsScreen extends StatelessWidget {
         },
         'isComingSoon': false,
       },
-      {
-        'icon': Icons.public,
-        'label': 'E-Citizen',
-        'onTap': () {
-          Navigator.pop(context);
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const ECitizenServicesScreen(),
-            ),
-          );
-        },
-        'isComingSoon': false,
-      },
+      // {
+      //   'icon': Icons.public,
+      //   'label': 'E-Citizen',
+      //   'onTap': () {
+      //     Navigator.pop(context);
+      //     Navigator.of(context).push(
+      //       MaterialPageRoute(
+      //         builder: (_) => const ECitizenServicesScreen(),
+      //       ),
+      //     );
+      //   },
+      //   'isComingSoon': false,
+      // },
       {
         'icon': Icons.phone_outlined,
         'label': 'Buy Airtime',

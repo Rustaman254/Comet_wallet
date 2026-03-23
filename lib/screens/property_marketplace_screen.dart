@@ -113,7 +113,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             child: Text(
               'Buy Now',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -129,7 +129,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => Center(
-        child: CircularProgressIndicator(color: buttonGreen),
+        child: CircularProgressIndicator(color: primaryBrandColor),
       ),
     );
 
@@ -169,11 +169,11 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: buttonGreen.withValues(alpha: 0.2),
+                color: primaryBrandColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.check_circle_outline,
-                  color: buttonGreen, size: 40),
+                  color: primaryBrandColor, size: 40),
             ),
             const SizedBox(height: 16),
             Text(
@@ -203,7 +203,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             child: Text(
               'Done',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -274,7 +274,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
             Expanded(
               child: _isLoading
                   ? Center(
-                      child: CircularProgressIndicator(color: buttonGreen),
+                      child: CircularProgressIndicator(color: primaryBrandColor),
                     )
                   : _listings.isEmpty
                       ? Center(
@@ -296,7 +296,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                         )
                       : RefreshIndicator(
                           onRefresh: _loadListings,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           child: ListView.builder(
                             physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics(),
@@ -434,7 +434,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                                   : Icons.arrow_downward,
                               color: listing.isPriceIncreased
                                   ? Colors.red
-                                  : buttonGreen,
+                                  : primaryBrandColor,
                               size: 14,
                             ),
                             const SizedBox(width: 4),
@@ -443,7 +443,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                               style: TextStyle(fontFamily: 'Satoshi',
                                 color: listing.isPriceIncreased
                                     ? Colors.red
-                                    : buttonGreen,
+                                    : primaryBrandColor,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -479,7 +479,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
                 ElevatedButton(
                   onPressed: () => _showBuyDialog(listing),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -542,7 +542,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
         Text(
           value,
           style: TextStyle(fontFamily: 'Satoshi',
-            color: isTotal ? buttonGreen : Colors.white,
+            color: isTotal ? primaryBrandColor : Colors.white,
             fontSize: isTotal ? 16 : 12,
             fontWeight: FontWeight.w600,
           ),

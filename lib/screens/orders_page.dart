@@ -204,7 +204,7 @@ class _OrdersViewState extends State<OrdersView> {
                       onRefresh: () async {
                         context.read<OrdersBloc>().add(const FetchOrders());
                       },
-                      color: buttonGreen,
+                      color: primaryBrandColor,
                       child: _buildBody(filteredOrders, isLoading, errorMessage),
                     ),
                   ),
@@ -216,7 +216,7 @@ class _OrdersViewState extends State<OrdersView> {
                 Container(
                   color: Colors.black.withValues(alpha: 0.3),
                   child: const Center(
-                    child: CircularProgressIndicator(color: buttonGreen),
+                    child: CircularProgressIndicator(color: primaryBrandColor),
                   ),
                 ),
             ],
@@ -240,9 +240,9 @@ class _OrdersViewState extends State<OrdersView> {
             end: Alignment.bottomRight,
             colors: Theme.of(context).brightness == Brightness.dark
                 ? [
-                    darkGreen,
-                    darkGreen.withValues(alpha: 0.8),
-                    lightGreen.withValues(alpha: 0.3),
+                    primaryBrandColor,
+                    primaryBrandColor.withValues(alpha: 0.8),
+                    secondaryBrandColor.withValues(alpha: 0.8),
                   ]
                 : [
                     const Color(0xFF2563EB),
@@ -338,11 +338,11 @@ class _OrdersViewState extends State<OrdersView> {
                     EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? buttonGreen
+                      ? primaryBrandColor
                       : getCardColor(context),
                   borderRadius: BorderRadius.circular(20.r),
                   border: Border.all(
-                    color: isSelected ? buttonGreen : getBorderColor(context),
+                    color: isSelected ? primaryBrandColor : getBorderColor(context),
                     width: 1.w,
                   ),
                 ),
@@ -370,7 +370,7 @@ class _OrdersViewState extends State<OrdersView> {
   Widget _buildBody(List<Order> orders, bool isLoading, String? errorMessage) {
     if (isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: buttonGreen),
+        child: CircularProgressIndicator(color: primaryBrandColor),
       );
     }
 
@@ -410,7 +410,7 @@ class _OrdersViewState extends State<OrdersView> {
                     style: TextStyle(
                         fontFamily: 'Satoshi', color: Colors.white)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
                   ),

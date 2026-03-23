@@ -35,7 +35,7 @@ class SendOptionsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Send Money',
+            'Withdraw Money',
             style: TextStyle(fontFamily: 'Satoshi',
               color: Colors.white,
               fontSize: 24,
@@ -60,7 +60,7 @@ class SendOptionsScreen extends StatelessWidget {
           _buildOption(
             context,
             Icons.phone_android_outlined,
-            'Send to Mobile Number',
+            'Withdraw to Mobile Number',
             () {
               Navigator.pop(context);
               Navigator.of(context).push(
@@ -102,10 +102,10 @@ class SendOptionsScreen extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: buttonGreen.withValues(alpha: 0.1),
+                color: primaryBrandColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(icon, color: buttonGreen, size: 24),
+              child: Icon(icon, color: primaryBrandColor, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(

@@ -84,7 +84,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             color: _selectedMode == 'Payment Link'
-                                ? buttonGreen
+                                ? primaryBrandColor
                                 : cardBackground,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(12),
@@ -92,7 +92,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                             ),
                             border: Border.all(
                               color: _selectedMode == 'Payment Link'
-                                  ? buttonGreen
+                                  ? primaryBrandColor
                                   : cardBorder,
                               width: 1,
                             ),
@@ -125,7 +125,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
                             color: _selectedMode == 'Wallet to Wallet'
-                                ? buttonGreen
+                                ? primaryBrandColor
                                 : cardBackground,
                             borderRadius: const BorderRadius.only(
                               topRight: Radius.circular(12),
@@ -133,7 +133,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                             ),
                             border: Border.all(
                               color: _selectedMode == 'Wallet to Wallet'
-                                  ? buttonGreen
+                                  ? primaryBrandColor
                                   : cardBorder,
                               width: 1,
                             ),
@@ -231,7 +231,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                     child: Text(
                       _paymentLink,
                       style: TextStyle(fontFamily: 'Satoshi',
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -248,7 +248,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                             'Payment link copied to clipboard',
                             style: TextStyle(fontFamily: 'Satoshi',),
                           ),
-                          backgroundColor: buttonGreen,
+                          backgroundColor: primaryBrandColor,
                           duration: const Duration(seconds: 2),
                         ),
                       );
@@ -256,12 +256,12 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: buttonGreen.withValues(alpha: 0.2),
+                        color: primaryBrandColor.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Icon(
                         Icons.copy_outlined,
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                         size: 20,
                       ),
                     ),
@@ -280,7 +280,7 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
               // Share functionality
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: buttonGreen,
+              backgroundColor: primaryBrandColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -326,13 +326,13 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                   width: 100,
                   height: 100,
                   decoration: BoxDecoration(
-                    color: buttonGreen.withValues(alpha: 0.2),
+                    color: primaryBrandColor.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.qr_code_scanner,
                     size: 60,
-                    color: buttonGreen,
+                    color: primaryBrandColor,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -448,12 +448,12 @@ class _RequestMoneyScreenState extends State<RequestMoneyScreen> {
                     'Payment request generated',
                     style: TextStyle(fontFamily: 'Satoshi',),
                   ),
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: buttonGreen,
+              backgroundColor: primaryBrandColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(

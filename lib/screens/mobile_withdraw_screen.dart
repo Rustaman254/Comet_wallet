@@ -190,7 +190,7 @@ class _MobileWithdrawScreenState extends State<MobileWithdrawScreen> {
                 child: ElevatedButton(
                   onPressed: _handleContinue,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

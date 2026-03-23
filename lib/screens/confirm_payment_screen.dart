@@ -66,7 +66,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
+                        backgroundColor: primaryBrandColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(

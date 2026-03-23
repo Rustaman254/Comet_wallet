@@ -75,7 +75,7 @@ class MyCardsScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),

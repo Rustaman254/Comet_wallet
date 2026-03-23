@@ -218,7 +218,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _fetchTransactions,
-                  color: buttonGreen,
+                  color: primaryBrandColor,
                   child: _buildBody(state),
                 ),
               ),
@@ -251,7 +251,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 hintText: 'Search transactions...',
                 hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.grey[500], fontSize: 14.sp),
                 border: InputBorder.none,
-                icon: Icon(Icons.search, color: buttonGreen, size: 20.r),
+                icon: Icon(Icons.search, color: primaryBrandColor, size: 20.r),
               ),
             ),
           ),
@@ -267,10 +267,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 4.w),
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                     decoration: BoxDecoration(
-                      color: isSelected ? buttonGreen : Theme.of(context).cardColor,
+                      color: isSelected ? primaryBrandColor : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(20.r),
                       border: Border.all(
-                        color: isSelected ? buttonGreen : cardBorder,
+                        color: isSelected ? primaryBrandColor : cardBorder,
                         width: 1.w,
                       ),
                     ),
@@ -411,7 +411,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
     switch (transaction.status.toLowerCase()) {
       case 'complete':
       case 'success':
-        statusColor = buttonGreen;
+        statusColor = primaryBrandColor;
         break;
       case 'pending':
         statusColor = Colors.orange;
@@ -431,7 +431,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       case 'receive':
       case 'wallet_topup':
         iconData = Icons.arrow_downward;
-        iconColor = buttonGreen;
+        iconColor = primaryBrandColor;
         break;
       case 'swap':
         iconData = Icons.swap_horiz;
@@ -559,7 +559,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  DateFormat('HH:mm').format(transaction.createdAt),
+                  DateFormat('MMM dd, HH:mm').format(transaction.createdAt),
                   style: TextStyle(
                     fontFamily: 'Satoshi',
                     color: Colors.grey[500],

@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
                 onPointerMove: (_) => SessionService.recordActivity(),
                 child: MaterialApp(
                   navigatorKey: MyApp.navigatorKey,
-                  title: 'Comet Wallet',
+                  title: 'Fusionfi',
                   debugShowCheckedModeBanner: false,
                   themeMode: currentMode,
                   theme: ThemeData(
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
             cardColor: lightCardBackground,
             dialogBackgroundColor: lightCardBackground,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: buttonGreen,
+              seedColor: primaryBrandColor,
               brightness: Brightness.light,
               surface: lightCardBackground,
               outline: lightBorder,
@@ -112,7 +112,7 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: darkBackground,
             cardColor: cardBackground,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: buttonGreen,
+              seedColor: primaryBrandColor,
               brightness: Brightness.dark,
               surface: cardBackground,
               outline: cardBorder,

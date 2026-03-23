@@ -54,7 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.dark(
-              primary: buttonGreen,
+              primary: primaryBrandColor,
               onPrimary: Colors.white,
               surface: cardBackground,
               onSurface: Colors.white,
@@ -132,12 +132,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         decoration: BoxDecoration(
                           color: _isEditing 
                               ? Colors.red.withOpacity(0.1)
-                              : buttonGreen.withOpacity(0.1),
+                              : primaryBrandColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _isEditing ? Icons.close : Icons.edit_outlined,
-                          color: _isEditing ? Colors.red : buttonGreen,
+                          color: _isEditing ? Colors.red : primaryBrandColor,
                           size: 20,
                         ),
                       ),
@@ -208,7 +208,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         setState(() => _isEditing = false);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
+                        backgroundColor: primaryBrandColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -288,7 +288,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Icon(Icons.copy, color: buttonGreen, size: 16),
+                        Icon(Icons.copy, color: primaryBrandColor, size: 16),
                       ],
                     ),
                   ),

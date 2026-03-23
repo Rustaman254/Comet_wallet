@@ -197,17 +197,22 @@ class WalletService {
         // Parse wallets list
         final walletsList = (jsonResponse['wallets'] as List?)
             ?.map((w) => {
-                  'id': w['ID'],
+                  'id': w['ID'] ?? w['id'],
                   'user_id': w['user_id'],
                   'currency': w['currency'],
-                  'balance': (w['balance'] ?? 0).toDouble(),
-                  'created_at': w['CreatedAt'],
-                  'updated_at': w['UpdatedAt'],
+                  'balance': double.tryParse((w['balance'] ?? 0).toString()) ?? 0.0,
+                  'created_at': w['CreatedAt'] ?? w['created_at'],
+                  'updated_at': w['UpdatedAt'] ?? w['updated_at'],
                 })
             .toList() ?? [];
         
         // Parse balances map
-        final balancesMap = jsonResponse['balances'] as Map<String, dynamic>? ?? {};
+        final balancesMap = <String, dynamic>{};
+        if (jsonResponse['balances'] is Map) {
+          (jsonResponse['balances'] as Map).forEach((key, value) {
+            balancesMap[key.toString()] = double.tryParse(value.toString()) ?? 0.0;
+          });
+        }
         
         // Get primary balance (first wallet or first balance)
         double primaryBalance = 0.0;
@@ -242,7 +247,7 @@ class WalletService {
           'raw': jsonResponse,
         };
       } else {
-        throw Exception('Failed to fetch wallet balance');
+        throw Exception('Failed to fetch wallet balance: ${response.statusCode}');
       }
     } catch (e) {
       AppLogger.error(

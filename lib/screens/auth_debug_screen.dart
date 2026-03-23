@@ -76,11 +76,11 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
           'Authentication Debug',
           style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.w600),
         ),
-        backgroundColor: buttonGreen,
+        backgroundColor: primaryBrandColor,
       ),
       backgroundColor: bgColor,
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: buttonGreen))
+          ? const Center(child: CircularProgressIndicator(color: primaryBrandColor))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -94,7 +94,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: (authStatus['is_authenticated'] == true)
-                            ? buttonGreen
+                            ? primaryBrandColor
                             : Colors.red.withValues(alpha: 0.5),
                         width: 2,
                       ),
@@ -117,7 +117,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                               radius: 8,
                               backgroundColor:
                                   (authStatus['is_authenticated'] == true)
-                                      ? buttonGreen
+                                      ? primaryBrandColor
                                       : Colors.red,
                             ),
                             const SizedBox(width: 12),
@@ -195,7 +195,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                         child: ElevatedButton.icon(
                           onPressed: _checkAuthStatus,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: buttonGreen,
+                            backgroundColor: primaryBrandColor,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
                           icon: const Icon(Icons.refresh),
@@ -235,7 +235,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                           ? _testTopup
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
+                        backgroundColor: primaryBrandColor,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       icon: const Icon(Icons.payment),
@@ -308,7 +308,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
               style: isCode
                   ? TextStyle(fontFamily: 'Satoshi',
                       fontSize: 11,
-                      color: buttonGreen,
+                      color: primaryBrandColor,
                     )
                   : TextStyle(fontFamily: 'Satoshi',
                       fontSize: 12,
@@ -394,7 +394,7 @@ class _AuthDebugScreenState extends State<AuthDebugScreen> {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: buttonGreen),
+            style: ElevatedButton.styleFrom(backgroundColor: primaryBrandColor),
             child: const Text('Test'),
           ),
         ],

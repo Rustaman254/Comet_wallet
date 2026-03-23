@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/colors.dart';
@@ -150,7 +152,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(color: buttonGreen),
+                  const CircularProgressIndicator(color: primaryBrandColor),
                   SizedBox(height: 16.h),
                   Text(
                     'Verifying PIN...',
@@ -233,14 +235,35 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               'N/A',
         );
       }
+    } on TokenExpiredException catch (_) {
+      await _hideLoaderDialog();
+      if (!mounted) return;
+      await TokenService.logout();
+      if (mounted && context.mounted) {
+        ToastService().showError(context, 'Session expired. Please login again.');
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const SignInScreen()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       await _hideLoaderDialog();
       if (!mounted) return;
 
       final errorMsg = e.toString();
-      
-      // Handle session expiration separately (requires logout + navigation)
-      if (errorMsg.contains('401') || errorMsg.contains('expired') || errorMsg.contains('unauthorized')) {
+
+      // Detect network errors (SocketException, host lookup failures, etc.)
+      final isNetworkError = e is SocketException ||
+          e is http.ClientException ||
+          errorMsg.contains('SocketException') ||
+          errorMsg.contains('Failed host lookup') ||
+          errorMsg.contains('Connection refused');
+
+      // Handle session expiration or network errors
+      if (isNetworkError ||
+          errorMsg.contains('401') ||
+          errorMsg.contains('expired') ||
+          errorMsg.contains('unauthorized')) {
         ToastService()
             .showError(context, 'Session expired. Please login again.');
         await TokenService.logout();
@@ -311,14 +334,35 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                   'N/A',
             );
           }
+        } on TokenExpiredException catch (_) {
+          await _hideLoaderDialog();
+          if (!mounted) return;
+          await TokenService.logout();
+          if (mounted && context.mounted) {
+            ToastService().showError(context, 'Session expired. Please login again.');
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const SignInScreen()),
+              (route) => false,
+            );
+          }
         } catch (e) {
           await _hideLoaderDialog();
           if (!mounted) return;
 
           final errorMsg = e.toString();
+
+          // Detect network errors
+          final isNetworkError = e is SocketException ||
+              e is http.ClientException ||
+              errorMsg.contains('SocketException') ||
+              errorMsg.contains('Failed host lookup') ||
+              errorMsg.contains('Connection refused');
           
-          // Handle session expiration
-          if (errorMsg.contains('401') || errorMsg.contains('expired') || errorMsg.contains('unauthorized')) {
+          // Handle session expiration or network errors
+          if (isNetworkError ||
+              errorMsg.contains('401') ||
+              errorMsg.contains('expired') ||
+              errorMsg.contains('unauthorized')) {
             ToastService()
                 .showError(context, 'Session expired. Please login again.');
             await TokenService.logout();
@@ -481,12 +525,12 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               width: 80.r,
               height: 80.r,
               decoration: BoxDecoration(
-                color: buttonGreen.withValues(alpha: 0.2),
+                color: primaryBrandColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.check_circle,
-                color: buttonGreen,
+                color: primaryBrandColor,
                 size: 50.r,
               ),
             ),
@@ -505,7 +549,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               '${widget.currency} ${widget.amount}',
               style: TextStyle(
                 fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
               ),
@@ -527,7 +571,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   padding: EdgeInsets.symmetric(vertical: 14.h),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
@@ -581,7 +625,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999.r),
                         color: isFilled
-                            ? buttonGreen
+                            ? primaryBrandColor
                             : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.3)),
                       ),
                     ),
@@ -636,7 +680,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 ? _buildKeyActionButton(
                     onPressed: _onBiometric,
                     icon: _hasFaceID ? Icons.face : Icons.fingerprint,
-                    color: buttonGreen,
+                    color: primaryBrandColor,
                   )
                 : SizedBox(width: 70.r, height: 70.r),
           ],
@@ -752,7 +796,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 '${widget.currency} ${widget.amount}',
                 style: TextStyle(
                   fontFamily: 'Satoshi',
-                  color: buttonGreen,
+                  color: primaryBrandColor,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                 ),

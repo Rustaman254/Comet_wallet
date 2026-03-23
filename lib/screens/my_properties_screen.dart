@@ -103,7 +103,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
             Expanded(
               child: _isLoading
                   ? Center(
-                      child: CircularProgressIndicator(color: buttonGreen),
+                      child: CircularProgressIndicator(color: primaryBrandColor),
                     )
                   : _investments.isEmpty
                       ? Center(
@@ -133,7 +133,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                         )
                       : RefreshIndicator(
                           onRefresh: _loadInvestments,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           child: SingleChildScrollView(
                             physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics(),
@@ -344,13 +344,13 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: buttonGreen.withValues(alpha: 0.2),
+                              color: primaryBrandColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '${investment.tokensOwned} tokens',
                               style: TextStyle(fontFamily: 'Satoshi',
-                                color: buttonGreen,
+                                color: primaryBrandColor,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -429,7 +429,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
                               color: isProfitable
-                                  ? buttonGreen
+                                  ? primaryBrandColor
                                   : Colors.red,
                               size: 14,
                             ),
@@ -438,7 +438,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
                               'KES ${profitLoss.abs().toStringAsFixed(0)}',
                               style: TextStyle(fontFamily: 'Satoshi',
                                 color: isProfitable
-                                    ? buttonGreen
+                                    ? primaryBrandColor
                                     : Colors.red,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,

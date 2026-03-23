@@ -154,10 +154,10 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: buttonGreen.withOpacity(0.1),
+                color: primaryBrandColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.check_circle_outline, color: buttonGreen, size: 40),
+              child: Icon(Icons.check_circle_outline, color: primaryBrandColor, size: 40),
             ),
             const SizedBox(height: 16),
             Text(
@@ -185,7 +185,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -248,8 +248,8 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           ),
           centerTitle: true,
           bottom: TabBar(
-            indicatorColor: buttonGreen,
-            labelColor: buttonGreen,
+            indicatorColor: primaryBrandColor,
+            labelColor: primaryBrandColor,
             unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
             labelStyle: const TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold),
             tabs: const [
@@ -357,7 +357,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   ElevatedButton(
                     onPressed: _isLoading ? null : _handleTopup,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonGreen,
+                      backgroundColor: primaryBrandColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -423,7 +423,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             height: 28,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: buttonGreen.withOpacity(0.1),
+              color: primaryBrandColor.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Text(
@@ -432,7 +432,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 fontFamily: 'Satoshi',
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: buttonGreen,
+                color: primaryBrandColor,
               ),
             ),
           ),
@@ -520,15 +520,15 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 icon: const Icon(Icons.copy, size: 18),
                 label: const Text('Copy Address', style: TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: buttonGreen,
-                  side: const BorderSide(color: buttonGreen),
+                  foregroundColor: primaryBrandColor,
+                  side: const BorderSide(color: primaryBrandColor),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
           ] else
-            const Center(child: CircularProgressIndicator(color: buttonGreen)),
+            const Center(child: CircularProgressIndicator(color: primaryBrandColor)),
           const SizedBox(height: 40),
           Text(
             'Only send USDA to this address. Sending other assets may result in permanent loss.',
@@ -544,9 +544,9 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: buttonGreen.withOpacity(0.1),
+        color: primaryBrandColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: buttonGreen, width: 1),
+        border: Border.all(color: primaryBrandColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -589,7 +589,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           const Text('Total', style: TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
           Text(
             _amountController.text.isEmpty ? '$_selectedCurrency 0.00' : '$_selectedCurrency ${_amountController.text}',
-            style: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.bold, color: buttonGreen),
+            style: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.bold, color: primaryBrandColor),
           ),
         ],
       ),

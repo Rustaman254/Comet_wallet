@@ -45,13 +45,13 @@ class KYCIntroScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color: buttonGreen.withOpacity(0.1),
+                color: primaryBrandColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.verified_user_outlined,
                 size: 80,
-                color: buttonGreen,
+                color: primaryBrandColor,
               ),
             ),
             const SizedBox(height: 40),
@@ -90,7 +90,7 @@ class KYCIntroScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -116,7 +116,7 @@ class KYCIntroScreen extends StatelessWidget {
   Widget _buildFeatureItem(BuildContext context, String text) {
     return Row(
       children: [
-        Icon(Icons.check_circle_outline, color: buttonGreen, size: 20),
+        Icon(Icons.check_circle_outline, color: primaryBrandColor, size: 20),
         const SizedBox(width: 12),
         Text(
           text,

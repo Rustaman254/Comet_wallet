@@ -6,8 +6,11 @@ import '../bloc/wallet_state.dart';
 import '../constants/colors.dart';
 import '../services/toast_service.dart';
 import '../services/wallet_service.dart';
-import 'mobile_withdraw_screen.dart';
 import '../widgets/usda_logo.dart';
+import '../utils/format_utils.dart';
+import 'mobile_withdraw_screen.dart';
+import 'send_money_screen.dart';
+import 'send_mobile_number_screen.dart';
 
 class WithdrawMoneyScreen extends StatefulWidget {
   const WithdrawMoneyScreen({super.key});
@@ -19,16 +22,28 @@ class WithdrawMoneyScreen extends StatefulWidget {
 class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
   String selectedMethod = 'Mobile Money';
   String selectedCurrency = 'KES';
-  double _balance = 0.0;
-  bool _isBalanceLoading = true;
+  late PageController _balancePageController;
+  int _currentBalancePage = 0;
 
   final List<Map<String, dynamic>> _withdrawMethods = [
     {
-      'name': 'Mobile Money',
-      'icon': Icons.phone_android_outlined,
-      'account': 'M-Pesa / T-Pesa',
+      'name': 'Withdraw to Another Wallet',
+      'icon': Icons.account_balance_wallet_outlined,
+      'account': 'Transfer to another wallet',
       'isAvailable': true,
     },
+    {
+      'name': 'Withdraw to Mobile Number',
+      'icon': Icons.phone_android_outlined,
+      'account': 'Send via mobile money',
+      'isAvailable': true,
+    },
+    // {
+    //   'name': 'Mobile Money',
+    //   'icon': Icons.phone_android_outlined,
+    //   'account': 'M-Pesa / T-Pesa',
+    //   'isAvailable': true,
+    // },
     {
       'name': 'Bank Account',
       'icon': Icons.account_balance_outlined,
@@ -46,28 +61,48 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
   @override
   void initState() {
     super.initState();
-    // Balance is now managed by WalletBloc
+    _balancePageController = PageController();
+    _balancePageController.addListener(_onBalancePageChanged);
+  }
+
+  @override
+  void dispose() {
+    _balancePageController.dispose();
+    super.dispose();
+  }
+
+  void _onBalancePageChanged() {
+    if (_balancePageController.page != null) {
+      final page = _balancePageController.page!.round();
+      if (page != _currentBalancePage) {
+        setState(() {
+          _currentBalancePage = page;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WalletBloc, WalletState>(
       builder: (context, state) {
-        // Extract balance and currency from state
-        double balance = 0.0;
-        String currency = 'KES';
+        // Extract balances from state
+        List<Map<String, dynamic>> balances = [];
         bool isLoading = state is WalletLoading;
 
         if (state is WalletLoaded) {
-          if (state.balances.isNotEmpty) {
-            currency = state.balances[0]['currency'];
-            balance = double.tryParse(state.balances[0]['amount'].toString()) ?? 0.0;
-          }
+          balances = List<Map<String, dynamic>>.from(state.balances);
         } else if (state is WalletBalanceUpdated) {
-          if (state.balances.isNotEmpty) {
-            currency = state.balances[0]['currency'];
-            balance = double.tryParse(state.balances[0]['amount'].toString()) ?? 0.0;
-          }
+          balances = List<Map<String, dynamic>>.from(state.balances);
+        }
+
+        // Get current balance info for method navigation
+        double currentBalance = 0.0;
+        String currentCurrency = 'KES';
+        if (balances.isNotEmpty && _currentBalancePage < balances.length) {
+          currentCurrency = balances[_currentBalancePage]['currency'] ?? 'KES';
+          currentBalance = double.tryParse(
+              balances[_currentBalancePage]['amount']?.toString() ?? '0') ?? 0.0;
         }
 
         return Scaffold(
@@ -115,54 +150,191 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Available Balance Card (Original Style preserved)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(20.r),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            darkGreen,
-                            darkGreen.withValues(alpha: 0.8),
-                            lightGreen.withValues(alpha: 0.3),
-                          ],
-                        ),
-                        border: Border.all(color: cardBorder, width: 1.w),
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Available Balance',
-                            style: TextStyle(fontFamily: 'Satoshi',
-                              color: Colors.white70,
-                              fontSize: 14.sp,
+
+                  // Scrollable Balance Section — PageView like Home screen
+                  SizedBox(
+                    height: 160.h,
+                    child: isLoading && balances.isEmpty
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: primaryBrandColor,
                             ),
-                          ),
-                          SizedBox(height: 8.h),
-                          isLoading && balance == 0.0
-                              ? SizedBox(
-                                  height: 32.r,
-                                  width: 32.r,
-                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.w),
-                                )
-                              : Text(
-                                  '${USDALogo.getFlag(currency)} ${currency == 'USDA' ? 'USDA (Cardano)' : currency} ${balance.toStringAsFixed(2)}',
-                                  style: TextStyle(fontFamily: 'Satoshi',
-                                    color: Colors.white,
-                                    fontSize: 32.sp,
-                                    fontWeight: FontWeight.bold,
+                          )
+                        : (balances.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(20.r),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        primaryBrandColor,
+                                        primaryBrandColor.withValues(alpha: 0.8),
+                                        secondaryBrandColor.withValues(alpha: 0.8),
+                                      ],
+                                    ),
+                                    border: Border.all(color: cardBorder, width: 1.w),
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Available Balance',
+                                        style: TextStyle(fontFamily: 'Satoshi',
+                                          color: Colors.white70,
+                                          fontSize: 14.sp,
+                                        ),
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      Text(
+                                        'KES 0.00',
+                                        style: TextStyle(fontFamily: 'Satoshi',
+                                          color: Colors.white,
+                                          fontSize: 32.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                        ],
+                              )
+                            : PageView.builder(
+                                controller: _balancePageController,
+                                itemCount: balances.length,
+                                itemBuilder: (context, index) {
+                                  final balance = balances[index];
+                                  final currency = balance['currency'] ?? '';
+                                  final isUSDA = currency == 'USDA';
+                                  final amount = double.tryParse(
+                                      balance['amount']?.toString() ?? '0') ?? 0.0;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(20.r),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: Theme.of(context).brightness == Brightness.dark
+                                              ? [
+                                                  primaryBrandColor,
+                                                  primaryBrandColor.withValues(alpha: 0.8),
+                                                  secondaryBrandColor.withValues(alpha: 0.8),
+                                                ]
+                                              : [
+                                                  const Color(0xFF2563EB),
+                                                  const Color(0xFF3B82F6),
+                                                  const Color(0xFF60A5FA),
+                                                ],
+                                        ),
+                                        border: Border.all(color: cardBorder, width: 1.w),
+                                        borderRadius: BorderRadius.circular(20.r),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Available Balance',
+                                                style: TextStyle(fontFamily: 'Satoshi',
+                                                  color: Colors.white70,
+                                                  fontSize: 14.sp,
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withValues(alpha: 0.2),
+                                                  borderRadius: BorderRadius.circular(20.r),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    isUSDA
+                                                        ? const USDALogo(size: 16)
+                                                        : Text(
+                                                            USDALogo.getFlag(currency),
+                                                            style: TextStyle(fontSize: 14.sp),
+                                                          ),
+                                                    SizedBox(width: 4.w),
+                                                    Text(
+                                                      currency,
+                                                      style: TextStyle(
+                                                        fontFamily: 'Satoshi',
+                                                        color: Colors.white,
+                                                        fontSize: 12.sp,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 16.h),
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                balance['symbol'] ?? (isUSDA ? '\$' : currency),
+                                                style: TextStyle(
+                                                  fontFamily: 'Satoshi',
+                                                  color: Colors.white.withValues(alpha: 0.7),
+                                                  fontSize: 20.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              SizedBox(width: 8.w),
+                                              Text(
+                                                FormatUtils.formatAmount(amount),
+                                                style: TextStyle(fontFamily: 'Satoshi',
+                                                  color: Colors.white,
+                                                  fontSize: 32.sp,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )),
+                  ),
+
+                  // Page Indicators
+                  if (balances.length > 1) ...[
+                    SizedBox(height: 12.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        balances.length,
+                        (index) => Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.w),
+                          width: _currentBalancePage == index ? 24.w : 8.w,
+                          height: 8.h,
+                          decoration: BoxDecoration(
+                            color: _currentBalancePage == index
+                                ? primaryBrandColor
+                                : Colors.grey[600],
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
+
                   const SizedBox(height: 24),
                   // Withdrawal Method
                   Padding(
@@ -191,12 +363,24 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                   selectedMethod = method['name'];
                                 });
                                 
-                                if (method['name'] == 'Mobile Money') {
+                                if (method['name'] == 'Withdraw to Another Wallet') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SendMoneyScreen(),
+                                    ),
+                                  );
+                                } else if (method['name'] == 'Withdraw to Mobile Number') {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SendMobileNumberScreen(),
+                                    ),
+                                  );
+                                } else if (method['name'] == 'Mobile Money') {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (_) => MobileWithdrawScreen(
-                                          currency: currency,
-                                          maxBalance: balance,
+                                          currency: currentCurrency,
+                                          maxBalance: currentBalance,
                                         ),
                                       ),
                                     );
@@ -215,7 +399,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                     children: [
                                       Icon(
                                         method['icon'],
-                                        color: isSelected ? buttonGreen : (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54),
+                                        color: isSelected ? primaryBrandColor : (Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54),
                                         size: 24.r,
                                       ),
                                       SizedBox(width: 16.w),
@@ -235,7 +419,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                           Text(
                                             method['account'],
                                             style: TextStyle(fontFamily: 'Satoshi',
-                                              color: isAvailable ? (Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45) : buttonGreen,
+                                              color: isAvailable ? (Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45) : primaryBrandColor,
                                               fontSize: 12,
                                               fontWeight: !isAvailable ? FontWeight.bold : FontWeight.normal,
                                             ),

@@ -451,10 +451,10 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: buttonGreen.withOpacity(0.12),
+                  color: primaryBrandColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: buttonGreen, size: 26),
+                child: Icon(icon, color: primaryBrandColor, size: 26),
               ),
               const SizedBox(width: 16),
               Expanded(

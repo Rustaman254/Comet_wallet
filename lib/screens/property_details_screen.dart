@@ -94,7 +94,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                               height: 8,
                               decoration: BoxDecoration(
                                 color: _currentImageIndex == index
-                                    ? buttonGreen
+                                    ? primaryBrandColor
                                     : Colors.white.withValues(alpha: 0.5),
                                 borderRadius: BorderRadius.circular(4),
                               ),
@@ -129,14 +129,14 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: buttonGreen.withValues(alpha: 0.2),
+                              color: primaryBrandColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: buttonGreen),
+                              border: Border.all(color: primaryBrandColor),
                             ),
                             child: Text(
                               widget.property.propertyType,
                               style: TextStyle(fontFamily: 'Satoshi',
-                                color: buttonGreen,
+                                color: primaryBrandColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -178,7 +178,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                               'Expected ROI',
                               '${widget.property.expectedROI}%',
                               Icons.trending_up_outlined,
-                              buttonGreen,
+                              primaryBrandColor,
                             ),
                           ),
                         ],
@@ -257,7 +257,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                                     Text(
                                       '${widget.property.fundingPercentage.toStringAsFixed(1)}%',
                                       style: TextStyle(fontFamily: 'Satoshi',
-                                        color: buttonGreen,
+                                        color: primaryBrandColor,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -272,7 +272,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                                         widget.property.fundingPercentage / 100,
                                     backgroundColor: Colors.grey[800],
                                     valueColor: AlwaysStoppedAnimation<Color>(
-                                        buttonGreen),
+                                        primaryBrandColor),
                                     minHeight: 8,
                                   ),
                                 ),
@@ -329,7 +329,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Icon(Icons.check_circle_outline,
-                                          size: 16, color: buttonGreen),
+                                          size: 16, color: primaryBrandColor),
                                       const SizedBox(width: 6),
                                       Text(
                                         amenity,
@@ -399,7 +399,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> {
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

@@ -116,11 +116,11 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? buttonGreen.withValues(alpha: 0.2)
+                                  ? primaryBrandColor.withValues(alpha: 0.2)
                                   : cardBackground,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: isSelected ? buttonGreen : cardBorder,
+                                color: isSelected ? primaryBrandColor : cardBorder,
                                 width: isSelected ? 2 : 1,
                               ),
                             ),
@@ -129,14 +129,14 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                               children: [
                                 Icon(
                                   category['icon'],
-                                  color: isSelected ? buttonGreen : category['color'],
+                                  color: isSelected ? primaryBrandColor : category['color'],
                                   size: 32,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   category['name'],
                                   style: TextStyle(fontFamily: 'Satoshi',
-                                    color: isSelected ? buttonGreen : Colors.white,
+                                    color: isSelected ? primaryBrandColor : Colors.white,
                                     fontSize: 12,
                                     fontWeight: isSelected
                                         ? FontWeight.bold
@@ -203,7 +203,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: buttonGreen,
+                                color: primaryBrandColor,
                                 width: 2,
                               ),
                             ),
@@ -297,7 +297,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
+                        backgroundColor: primaryBrandColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(

@@ -79,7 +79,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                       Text(
                         currency,
                         style: TextStyle(fontFamily: 'Satoshi',
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -123,7 +123,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                       icon: Icons.receipt_long_outlined,
                       label: 'Transaction Fee',
                       value: 'Free',
-                      valueColor: buttonGreen,
+                      valueColor: primaryBrandColor,
                     ),
                      const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
@@ -163,14 +163,14 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 8,
-                    shadowColor: buttonGreen.withValues(alpha: 0.4),
+                    shadowColor: primaryBrandColor.withValues(alpha: 0.4),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -51,7 +51,7 @@ class OnboardingScreen1 extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Welcome to Comet Wallet',
+                    'Welcome to Fusionfi',
                     style: TextStyle(
                       fontFamily: 'Outfit',
                       color: Colors.white,
@@ -82,7 +82,7 @@ class OnboardingScreen1 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -132,13 +132,13 @@ class OnboardingScreen1 extends StatelessWidget {
               value: progress,
               strokeWidth: 4.w,
               backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(buttonGreen),
+              valueColor: const AlwaysStoppedAnimation<Color>(primaryBrandColor),
             ),
           ),
           Text(
             text,
             style: TextStyle(
-              color: buttonGreen,
+              color: primaryBrandColor,
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
@@ -156,7 +156,7 @@ class OnboardingScreen1 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
+        color: isActive ? primaryBrandColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -167,7 +167,7 @@ class LineGraphPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = lightGreen
+      ..color = secondaryBrandColor
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -261,7 +261,7 @@ class OnboardingScreen2 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -320,7 +320,7 @@ class OnboardingScreen2 extends StatelessWidget {
       width: 40.w,
       height: 50.h,
       decoration: BoxDecoration(
-        color: buttonGreen,
+        color: primaryBrandColor,
         borderRadius: BorderRadius.circular(4.r),
         border: Border.all(color: Colors.white, width: 1.w),
       ),
@@ -345,7 +345,7 @@ class OnboardingScreen2 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
+        color: isActive ? primaryBrandColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -429,7 +429,7 @@ class OnboardingScreen3 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -462,7 +462,7 @@ class OnboardingScreen3 extends StatelessWidget {
         color: Colors.white,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: buttonGreen, size: 24.r),
+      child: Icon(icon, color: primaryBrandColor, size: 24.r),
     );
   }
 
@@ -471,7 +471,7 @@ class OnboardingScreen3 extends StatelessWidget {
       width: 30.w,
       height: 40.h,
       decoration: BoxDecoration(
-        color: buttonGreen,
+        color: primaryBrandColor,
         borderRadius: BorderRadius.circular(4.r),
       ),
       child: Center(
@@ -524,7 +524,7 @@ class OnboardingScreen3 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
+        color: isActive ? primaryBrandColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -535,7 +535,7 @@ class PieChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = buttonGreen
+      ..color = primaryBrandColor
       ..style = PaintingStyle.fill;
 
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
@@ -629,7 +629,7 @@ class OnboardingScreen4 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -662,7 +662,7 @@ class OnboardingScreen4 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
+        color: isActive ? primaryBrandColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );

@@ -74,7 +74,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     switch (transaction.status.toLowerCase()) {
       case 'complete':
       case 'success':
-        statusColor = buttonGreen;
+        statusColor = primaryBrandColor;
         statusIcon = Icons.check_circle;
         break;
       case 'pending':
@@ -225,7 +225,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Icon(Icons.copy, size: 16.r, color: buttonGreen),
+                    child: Icon(Icons.copy, size: 16.r, color: primaryBrandColor),
                   ),
                 ],
               ],
@@ -268,7 +268,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonGreen,
+          backgroundColor: primaryBrandColor,
           padding: EdgeInsets.symmetric(vertical: 16.h),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),

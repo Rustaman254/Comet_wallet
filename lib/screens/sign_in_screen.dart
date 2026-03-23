@@ -159,7 +159,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           _obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                         ),
                         onPressed: () {
                           setState(() {
@@ -187,7 +187,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: Text(
                       'Forget your password?',
                       style: TextStyle(
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
                       ),
@@ -210,7 +210,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _handleSignIn,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -247,7 +247,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       TextSpan(
                         text: 'Sign Up',
                         style: TextStyle(
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

@@ -9,14 +9,11 @@ import '../services/vibration_service.dart';
 import '../services/auth_service.dart';
 import '../models/user_profile.dart';
 import '../services/token_service.dart';
-import 'my_cards_screen.dart';
-import 'send_options_screen.dart';
+import 'ecitizen_services_screen.dart';
 import 'qr_scan_screen.dart';
 import 'more_options_screen.dart';
-import 'package:comet_wallet/screens/receive_money_screen.dart';
 import 'package:comet_wallet/screens/withdraw_money_screen.dart';
 import 'package:comet_wallet/screens/wallet_topup_screen.dart';
-import 'package:comet_wallet/screens/settings_screen.dart';
 import 'package:comet_wallet/screens/swap_screen.dart';
 import 'profile_screen.dart';
 import 'transactions_screen.dart';
@@ -42,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   late PageController _balancePageController;
   int _currentBalancePage = 0;
-  bool _isLoading = true;
   
   double _totalIncome = 0.0;
   double _totalExpense = 0.0;
@@ -84,40 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await prefs.setStringList('added_currencies', _addedCurrencies.toList());
   }
 
-  void _calculateSummaries(List<Transaction> transactions) {
-    double income = 0.0;
-    double expense = 0.0;
-    int pending = 0;
-    int completed = 0;
-
-    for (var tx in transactions) {
-      // Categorize by type
-      if (tx.transactionType.contains('topup') || 
-          tx.transactionType.contains('receive') ||
-          tx.transactionType.contains('deposit')) {
-        income += tx.amount;
-      } else if (tx.transactionType.contains('send') || 
-                 tx.transactionType.contains('transfer') ||
-                 tx.transactionType.contains('withdraw') ||
-                 tx.transactionType.contains('buy')) {
-        expense += tx.amount;
-      }
-
-      // Categorize by status
-      if (tx.status.toLowerCase() == 'pending') {
-        pending++;
-      } else if (tx.status.toLowerCase() == 'completed' || 
-                 tx.status.toLowerCase() == 'success') {
-        completed++;
-      }
-    }
-
-    _totalIncome = income;
-    _totalExpense = expense;
-    _pendingCount = pending;
-    _completedCount = completed;
-  }
-  
   void _loadCachedUserData() async {
     final name = await TokenService.getUserName();
     if (mounted && name != null && name.isNotEmpty) {
@@ -156,11 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (profile != null) {
             _userProfile = profile;
           }
-           _isLoading = false;
         });
       }
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
       debugPrint('HomeScreen: Error fetching profile: $e');
     }
   }
@@ -544,9 +504,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.start, // Changed to start for scrollable
                             children: [
                               _buildActionButton(
-                                Icons.arrow_upward_outlined,
-                                'Send',
-                                () => _showSendOptions(context),
+                                Icons.public,
+                                'eCitizen',
+                                () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const ECitizenServicesScreen(),
+                                    ),
+                                  );
+                                },
                                 backgroundColor: transactionSendColor,
                               ),
                               SizedBox(width: 16.w),
@@ -614,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         context.read<WalletBloc>().add(const RefreshWallet());
                       }
                     },
-                    color: buttonGreen,
+                    color: primaryBrandColor,
                     child: SingleChildScrollView(
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(
@@ -628,7 +594,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: isLoading && balances.isEmpty
                                 ? const Center(
                                     child: CircularProgressIndicator(
-                                      color: buttonGreen,
+                                      color: primaryBrandColor,
                                     ),
                                   )
                                 : (balances.isEmpty
@@ -663,14 +629,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         end: Alignment.bottomRight,
                                                         colors: Theme.of(context).brightness == Brightness.dark
                                                           ? [
-                                                              darkGreen,
-                                                              darkGreen.withValues(alpha: 0.8),
-                                                              lightGreen.withValues(alpha: 0.3),
+                                                              primaryBrandColor,
+                                                              primaryBrandColor.withValues(alpha: 0.8),
+                                                              secondaryBrandColor.withValues(alpha: 0.8),
                                                             ]
                                                           : [
-                                                              const Color(0xFF2563EB), // Bright blue
-                                                              const Color(0xFF3B82F6), // Medium blue
-                                                              const Color(0xFF60A5FA), // Light blue
+                                                              primaryBrandColor,
+                                                              primaryBrandColor.withValues(alpha: 0.8),
+                                                              secondaryBrandColor.withValues(alpha: 0.8),
                                                             ],
                                                       ),
                                                     ),
@@ -943,12 +909,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       Container(
                                                         padding: EdgeInsets.all(16.r),
                                                         decoration: BoxDecoration(
-                                                          color: buttonGreen.withOpacity(0.1),
+                                                          color: primaryBrandColor.withOpacity(0.1),
                                                           shape: BoxShape.circle,
                                                         ),
                                                         child: Icon(
                                                           Icons.add_rounded,
-                                                          color: buttonGreen,
+                                                          color: primaryBrandColor,
                                                           size: 40.r,
                                                         ),
                                                       ),
@@ -1064,7 +1030,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'See All',
                                     style: TextStyle(
                                       fontFamily: 'Satoshi',
-                                      color: buttonGreen,
+                                      color: primaryBrandColor,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -1094,14 +1060,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showSendOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => const SendOptionsScreen(),
-    );
-  }
+
 
   void _showMoreOptions(BuildContext context) {
     showModalBottomSheet(
@@ -1117,7 +1076,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
+        color: isActive ? primaryBrandColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -1184,10 +1143,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: EdgeInsets.all(6.r),
             decoration: BoxDecoration(
-              color: buttonGreen.withValues(alpha: 0.1),
+              color: primaryBrandColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: buttonGreen, size: 16.r),
+            child: Icon(icon, color: primaryBrandColor, size: 16.r),
           ),
           SizedBox(width: 8.w),
           Column(
@@ -1227,14 +1186,14 @@ class _HomeScreenState extends State<HomeScreen> {
           end: Alignment.bottomRight,
           colors: Theme.of(context).brightness == Brightness.dark
             ? [
-                darkGreen,
-                darkGreen.withValues(alpha: 0.8),
-                lightGreen.withValues(alpha: 0.3),
+                primaryBrandColor,
+                primaryBrandColor.withValues(alpha: 0.8),
+                secondaryBrandColor.withValues(alpha: 0.8),
               ]
             : [
-                const Color(0xFF2563EB), // Bright blue
-                const Color(0xFF3B82F6), // Medium blue
-                const Color(0xFF60A5FA), // Light blue
+                primaryBrandColor,
+                primaryBrandColor.withValues(alpha: 0.8),
+                secondaryBrandColor.withValues(alpha: 0.8),
               ],
         ),
         // remove border
@@ -1314,7 +1273,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTransactionList(List<Transaction> transactions) {
-    final recentTransactions = transactions.take(6).toList();
+    final recentTransactions = transactions.take(3).toList();
 
     if (recentTransactions.isEmpty) {
       return Column(
@@ -1352,7 +1311,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (transaction.status.toLowerCase()) {
       case 'complete':
       case 'success':
-        statusColor = buttonGreen;
+        statusColor = primaryBrandColor;
         break;
       case 'pending':
         statusColor = Colors.orange;
@@ -1489,7 +1448,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  DateFormat('MMM dd').format(transaction.createdAt),
+                  DateFormat('MMM dd, HH:mm').format(transaction.createdAt),
                   style: TextStyle(
                     fontFamily: 'Satoshi',
                     color: getTertiaryTextColor(context),
@@ -1514,61 +1473,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return type.split('_').map(capitalizeWord).join(' ');
   }
 
-  Widget _buildTransactionItem(String phone, String date, String amount) {
-    return Row(
-      children: [
-        Container(
-          width: 50.r,
-          height: 50.r,
-          decoration: BoxDecoration(
-            color: Colors.grey[800],
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.person_outline,
-            color: Colors.white,
-            size: 24.r,
-          ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                phone,
-                style: TextStyle(
-                  fontFamily: 'Satoshi',
-                  color: Colors.white,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                date,
-                style: TextStyle(
-                  fontFamily: 'Satoshi',
-                  color: Colors.white70,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Text(
-          amount,
-          style: TextStyle(
-            fontFamily: 'Satoshi',
-            color: Colors.white,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
+
 
   String _formatAmount(double amount) {
     if (amount % 1 == 0) {

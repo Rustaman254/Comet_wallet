@@ -104,18 +104,18 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? buttonGreen.withValues(alpha: 0.2)
+                                    ? primaryBrandColor.withValues(alpha: 0.2)
                                     : cardBackground,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected ? buttonGreen : cardBorder,
+                                  color: isSelected ? primaryBrandColor : cardBorder,
                                   width: isSelected ? 2 : 1,
                                 ),
                               ),
                               child: Text(
                                 provider,
                                 style: TextStyle(fontFamily: 'Satoshi',
-                                  color: isSelected ? buttonGreen : Colors.white,
+                                  color: isSelected ? primaryBrandColor : Colors.white,
                                   fontSize: 14,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
@@ -184,7 +184,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color: buttonGreen,
+                              color: primaryBrandColor,
                               width: 2,
                             ),
                           ),
@@ -229,11 +229,11 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? buttonGreen
+                                  ? primaryBrandColor
                                   : cardBackground,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: isSelected ? buttonGreen : cardBorder,
+                                color: isSelected ? primaryBrandColor : cardBorder,
                                 width: 1,
                               ),
                             ),
@@ -343,7 +343,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonGreen,
+                      backgroundColor: primaryBrandColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(

@@ -290,9 +290,9 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                 child: ElevatedButton(
                   onPressed: isLoading ? null : _checkStatus,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: buttonGreen.withOpacity(0.5),
+                    disabledBackgroundColor: primaryBrandColor.withOpacity(0.5),
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.r),

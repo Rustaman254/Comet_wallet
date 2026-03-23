@@ -100,7 +100,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: isSelected ? buttonGreen : Colors.white.withValues(alpha: 0.1),
+                          color: isSelected ? primaryBrandColor : Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -122,7 +122,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
             // Bids List
             Expanded(
               child: _isLoading
-                  ? Center(child: CircularProgressIndicator(color: buttonGreen))
+                  ? Center(child: CircularProgressIndicator(color: primaryBrandColor))
                   : _filteredBids.isEmpty
                       ? Center(
                           child: Column(
@@ -142,7 +142,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                         )
                       : RefreshIndicator(
                           onRefresh: _loadBids,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           child: ListView.builder(
                             padding: const EdgeInsets.symmetric(horizontal: 24.0),
                             itemCount: _filteredBids.length,
@@ -237,7 +237,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                       Text(
                         bid.bidAmount,
                         style: TextStyle(fontFamily: 'Satoshi',
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
@@ -409,7 +409,7 @@ class _TrackApplicationScreenState extends State<TrackApplicationScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.description_outlined, color: buttonGreen, size: 20),
+                          Icon(Icons.description_outlined, color: primaryBrandColor, size: 20),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(

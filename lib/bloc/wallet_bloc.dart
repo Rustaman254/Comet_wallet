@@ -30,6 +30,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      // Immediately fetch fresh data on resume (don't wait for timer)
+      add(const FetchWalletDataFromServer());
       add(const StartAutoRefresh());
     } else if (state == AppLifecycleState.paused) {
       add(const StopAutoRefresh());
@@ -60,8 +62,34 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     FetchWalletDataFromServer event,
     Emitter<WalletState> emit,
   ) async {
+    // Keep track of current balances and transactions in case of error
+    List<Map<String, dynamic>> currentBalances = [];
+    List<Transaction> currentTransactions = [];
+    double currentIncome = 0.0;
+    double currentExpense = 0.0;
+    int currentPending = 0;
+    int currentCompleted = 0;
+
+    if (state is WalletLoaded) {
+      final s = state as WalletLoaded;
+      currentBalances = s.balances;
+      currentTransactions = s.transactions;
+      currentIncome = s.totalIncome;
+      currentExpense = s.totalExpense;
+      currentPending = s.pendingCount;
+      currentCompleted = s.completedCount;
+    } else if (state is WalletBalanceUpdated) {
+      final s = state as WalletBalanceUpdated;
+      currentBalances = s.balances;
+      currentTransactions = s.transactions;
+      currentIncome = s.totalIncome;
+      currentExpense = s.totalExpense;
+      currentPending = s.pendingCount;
+      currentCompleted = s.completedCount;
+    }
+
     // Don't show loading if we already have data (for auto-refresh)
-    final shouldShowLoading = state is! WalletLoaded;
+    final shouldShowLoading = currentBalances.isEmpty;
     
     if (shouldShowLoading) {
       emit(const WalletLoading());
@@ -86,40 +114,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       final walletsList = balanceData['wallets'] as List<dynamic>? ?? [];
       final balancesMap = balanceData['balances'] as Map<String, dynamic>? ?? {};
       
-      // Extract USDA exact balance from raw response if provided there
-      final rawResponse = balanceData['raw'] as Map<String, dynamic>? ?? {};
-      if (rawResponse.containsKey('balance_usda')) {
-        balancesMap['USDA'] = double.tryParse(rawResponse['balance_usda'].toString()) ?? 0.0;
-      } else if (rawResponse['user'] != null && rawResponse['user'] is Map && (rawResponse['user'] as Map).containsKey('balance_usda')) {
-        balancesMap['USDA'] = double.tryParse((rawResponse['user'] as Map)['balance_usda'].toString()) ?? 0.0;
-      }
-      
-      // Create balance cards for each wallet
-      final balances = <Map<String, dynamic>>[];
-      
       // Use a Set to keep track of added currencies to avoid duplicates
       final addedCurrencies = <String>{};
+      final balances = <Map<String, dynamic>>[];
 
-      // First, add from wallets list (more detailed)
-      if (walletsList.isNotEmpty) {
-        for (var wallet in walletsList) {
-          final currency = wallet['currency'] as String? ?? 'USD';
-          final balance = wallet['balance']?.toString() ?? '0.00';
-          
-          if (!addedCurrencies.contains(currency)) {
-            balances.add({
-              'currency': currency,
-              'symbol': _getCurrencySymbol(currency),
-              'amount': balance,
-              'date': 'Today',
-              'change': '+0.00',
-            });
-            addedCurrencies.add(currency);
-          }
-        }
-      }
-
-      // Then add remaining from balances map (even if zero)
+      // 1. First, process the balances map (this is our primary source of truth as per requirements)
       if (balancesMap.isNotEmpty) {
         balancesMap.forEach((currency, balance) {
           if (!addedCurrencies.contains(currency)) {
@@ -135,11 +134,35 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         });
       }
 
+      // 2. Then, add any additional info from wallets list if not already present
+      // (Though balances map should cover all, wallets list might have more metadata if needed later)
+      if (walletsList.isNotEmpty) {
+        for (var wallet in walletsList) {
+          final currency = wallet['currency'] as String? ?? 'USD';
+          final balance = wallet['balance']?.toString() ?? '0.00';
+          
+          if (!addedCurrencies.contains(currency)) {
+            balances.add({
+              'currency': currency,
+              'symbol': _getCurrencySymbol(currency),
+              'amount': balance,
+              'date': 'Today',
+              'change': '+0.00',
+            });
+            addedCurrencies.add(currency);
+          } else {
+            // If already present, we trust the balances map more, 
+            // but we could update if wallets list is more specific.
+            // For now, as per user request, we stick to the balances map.
+          }
+        }
+      }
+
       // Fallback if absolutely nothing
       if (balances.isEmpty) {
         balances.add({
           'currency': 'USD',
-          'symbol': '\$',
+          'symbol': 'USD',
           'amount': '0.00',
           'date': 'Today',
           'change': '+0.00',
@@ -171,7 +194,22 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         'Error fetching wallet data',
         data: {'error': e.toString()},
       );
-      emit(WalletError(message: 'Failed to fetch wallet data: $e'));
+      
+      // Emit error but KEEP old data if available
+      if (currentBalances.isNotEmpty) {
+        emit(WalletLoaded(
+          balances: currentBalances,
+          transactions: currentTransactions,
+          totalIncome: currentIncome,
+          totalExpense: currentExpense,
+          pendingCount: currentPending,
+          completedCount: currentCompleted,
+        ));
+        // Don't emit WalletError after re-emitting valid data —
+        // this would wipe the balance from the UI state.
+      } else {
+        emit(WalletError(message: 'Failed to fetch wallet data: $e'));
+      }
     }
   }
 
@@ -566,6 +604,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         'Swap failed in BLoC',
         data: {'error': errorMessage},
       );
+
+      // Re-emit previous loaded state to preserve balances before emitting error.
+      // Without this, WalletError state has no balance data and
+      // the swap screen shows 0 balance / "Insufficient balance" on retry.
+      if (balances.isNotEmpty) {
+        emit(WalletLoaded(
+          balances: balances,
+          transactions: state is WalletLoaded ? (state as WalletLoaded).transactions : <Transaction>[],
+          totalIncome: state is WalletLoaded ? (state as WalletLoaded).totalIncome : 0.0,
+          totalExpense: state is WalletLoaded ? (state as WalletLoaded).totalExpense : 0.0,
+          pendingCount: state is WalletLoaded ? (state as WalletLoaded).pendingCount : 0,
+          completedCount: state is WalletLoaded ? (state as WalletLoaded).completedCount : 0,
+        ));
+      }
+
       emit(WalletError(message: errorMessage));
     }
   }

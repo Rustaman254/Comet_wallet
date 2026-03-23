@@ -84,7 +84,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           WebViewWidget(controller: _controller),
           if (_isLoading)
             const Center(
-              child: CircularProgressIndicator(color: buttonGreen),
+              child: CircularProgressIndicator(color: primaryBrandColor),
             ),
         ],
       ),

@@ -131,7 +131,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
           context: context,
           barrierDismissible: false,
           builder: (context) => const Center(
-            child: CircularProgressIndicator(color: buttonGreen),
+            child: CircularProgressIndicator(color: primaryBrandColor),
           ),
         );
       }
@@ -184,13 +184,13 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: buttonGreen.withValues(alpha: 0.2),
+                color: primaryBrandColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.check_circle_outline,
                 size: 50,
-                color: buttonGreen,
+                color: primaryBrandColor,
               ),
             ),
             const SizedBox(height: 24),
@@ -250,7 +250,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                       Navigator.of(context).pop(qrData); // Return data
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonGreen,
+                      backgroundColor: primaryBrandColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
@@ -404,32 +404,32 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                         Alignment.topLeft,
                         const BorderRadius.only(topLeft: Radius.circular(20)),
                          const Border(
-                          top: BorderSide(color: buttonGreen, width: 5),
-                          left: BorderSide(color: buttonGreen, width: 5),
+                          top: BorderSide(color: primaryBrandColor, width: 5),
+                          left: BorderSide(color: primaryBrandColor, width: 5),
                         ),
                       ),
                       _buildCorner(
                         Alignment.topRight,
                         const BorderRadius.only(topRight: Radius.circular(20)),
                         const Border(
-                          top: BorderSide(color: buttonGreen, width: 5),
-                          right: BorderSide(color: buttonGreen, width: 5),
+                          top: BorderSide(color: primaryBrandColor, width: 5),
+                          right: BorderSide(color: primaryBrandColor, width: 5),
                         ),
                       ),
                       _buildCorner(
                         Alignment.bottomLeft,
                         const BorderRadius.only(bottomLeft: Radius.circular(20)),
                         const Border(
-                          bottom: BorderSide(color: buttonGreen, width: 5),
-                          left: BorderSide(color: buttonGreen, width: 5),
+                          bottom: BorderSide(color: primaryBrandColor, width: 5),
+                          left: BorderSide(color: primaryBrandColor, width: 5),
                         ),
                       ),
                       _buildCorner(
                         Alignment.bottomRight,
                         const BorderRadius.only(bottomRight: Radius.circular(20)),
                         const Border(
-                          bottom: BorderSide(color: buttonGreen, width: 5),
-                          right: BorderSide(color: buttonGreen, width: 5),
+                          bottom: BorderSide(color: primaryBrandColor, width: 5),
+                          right: BorderSide(color: primaryBrandColor, width: 5),
                         ),
                       ),
                       
@@ -485,7 +485,7 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
                   ),
                   child: Icon(
                     _torchEnabled ? Icons.flash_on : Icons.flash_off,
-                    color: _torchEnabled ? buttonGreen : Colors.white,
+                    color: _torchEnabled ? primaryBrandColor : Colors.white,
                     size: 28,
                   ),
                 ),

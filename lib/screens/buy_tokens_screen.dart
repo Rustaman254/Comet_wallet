@@ -84,11 +84,11 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: buttonGreen.withValues(alpha: 0.2),
+                color: primaryBrandColor.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.check_circle_outline,
-                  color: buttonGreen, size: 40),
+                  color: primaryBrandColor, size: 40),
             ),
             const SizedBox(height: 16),
             Text(
@@ -146,7 +146,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             child: Text(
               'Done',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -190,7 +190,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
             child: Text(
               'OK',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -308,13 +308,13 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: buttonGreen.withValues(alpha: 0.2),
+                                    color: primaryBrandColor.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
                                     'ROI: ${widget.property.expectedROI}%',
                                     style: TextStyle(fontFamily: 'Satoshi',
-                                      color: buttonGreen,
+                                      color: primaryBrandColor,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -383,7 +383,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: buttonGreen),
+                                borderSide: BorderSide(color: primaryBrandColor),
                               ),
                             ),
                             onChanged: _updateTokenCount,
@@ -464,7 +464,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                               Text(
                                 'KES ${_totalAmount.toStringAsFixed(2)}',
                                 style: TextStyle(fontFamily: 'Satoshi',
-                                  color: buttonGreen,
+                                  color: primaryBrandColor,
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -475,21 +475,21 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: buttonGreen.withValues(alpha: 0.1),
+                              color: primaryBrandColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                  color: buttonGreen.withValues(alpha: 0.3)),
+                                  color: primaryBrandColor.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               children: [
                                 Icon(Icons.info_outline,
-                                    color: buttonGreen, size: 20),
+                                    color: primaryBrandColor, size: 20),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Expected annual return: KES ${(_totalAmount * widget.property.expectedROI / 100).toStringAsFixed(2)}',
                                     style: TextStyle(fontFamily: 'Satoshi',
-                                      color: buttonGreen,
+                                      color: primaryBrandColor,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -518,7 +518,7 @@ class _BuyTokensScreenState extends State<BuyTokensScreen> {
                 child: ElevatedButton(
                   onPressed: _isProcessing ? null : _processPurchase,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

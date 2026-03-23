@@ -67,7 +67,7 @@ class TenderDetailsScreen extends StatelessWidget {
                         Text(
                           tender.id,
                           style: TextStyle(fontFamily: 'Satoshi',
-                            color: buttonGreen,
+                            color: primaryBrandColor,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -78,13 +78,13 @@ class TenderDetailsScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: tender.status == 'Closing Soon' 
                                 ? Colors.orange.withValues(alpha: 0.2)
-                                : buttonGreen.withValues(alpha: 0.2),
+                                : primaryBrandColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             tender.status,
                             style: TextStyle(fontFamily: 'Satoshi',
-                              color: tender.status == 'Closing Soon' ? Colors.orange : buttonGreen,
+                              color: tender.status == 'Closing Soon' ? Colors.orange : primaryBrandColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -167,7 +167,7 @@ class TenderDetailsScreen extends StatelessWidget {
         onPressed: () {
           _showBidDialog(context);
         },
-        backgroundColor: buttonGreen,
+        backgroundColor: primaryBrandColor,
         icon: const Icon(Icons.gavel, color: Colors.white),
         label: Text(
           'Submit Bid',
@@ -193,7 +193,7 @@ class TenderDetailsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: buttonGreen),
+          Icon(icon, size: 20, color: primaryBrandColor),
           const SizedBox(height: 8),
           Text(
             label,
@@ -264,7 +264,7 @@ class TenderDetailsScreen extends StatelessWidget {
                 width: 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: buttonGreen,
+                  color: primaryBrandColor,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -311,7 +311,7 @@ class TenderDetailsScreen extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(Icons.description_outlined, color: buttonGreen, size: 20),
+              Icon(Icons.description_outlined, color: primaryBrandColor, size: 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -407,7 +407,7 @@ class TenderDetailsScreen extends StatelessWidget {
             child: Text(
               'OK',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),

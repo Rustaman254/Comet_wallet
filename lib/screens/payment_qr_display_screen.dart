@@ -115,18 +115,18 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                       size: 240.0,
                       eyeStyle: QrEyeStyle(
                         eyeShape: QrEyeShape.square,
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                       ),
                       dataModuleStyle: QrDataModuleStyle(
                         dataModuleShape: QrDataModuleShape.square,
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
                       'Scan to make payment',
                       style: TextStyle(fontFamily: 'Satoshi',
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -176,7 +176,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                           ),
                           child: Icon(
                             Icons.copy_rounded,
-                            color: buttonGreen,
+                            color: primaryBrandColor,
                             size: 24,
                           ),
                         ),
@@ -193,7 +193,7 @@ class PaymentQRDisplayScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(

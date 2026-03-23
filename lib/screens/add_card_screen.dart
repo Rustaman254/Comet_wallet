@@ -278,7 +278,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                prefixIcon: icon != null ? Icon(icon, color: Colors.white70, size: 20) : null,
                border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
                enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-               focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: buttonGreen)),
+               focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primaryBrandColor)),
                hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.white30),
                contentPadding: const EdgeInsets.only(bottom: 8, top: 8),
              ),

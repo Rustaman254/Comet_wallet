@@ -206,7 +206,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16.r),
-                            borderSide: BorderSide(color: buttonGreen, width: 1.5),
+                            borderSide: BorderSide(color: primaryBrandColor, width: 1.5),
                           ),
                           contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                           suffixIcon: IconButton(
@@ -258,10 +258,10 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                             height: 20.r,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isFilled ? buttonGreen : Colors.transparent,
+                              color: isFilled ? primaryBrandColor : Colors.transparent,
                               border: Border.all(
                                 color: isFilled
-                                    ? buttonGreen
+                                    ? primaryBrandColor
                                     : (isDark ? Colors.white30 : Colors.grey.shade400),
                                 width: 2,
                               ),
@@ -279,7 +279,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
             if (_isLoading)
               Padding(
                 padding: EdgeInsets.all(48.r),
-                child: CircularProgressIndicator(color: buttonGreen),
+                child: CircularProgressIndicator(color: primaryBrandColor),
               )
             else
               _buildKeypad(isDark),

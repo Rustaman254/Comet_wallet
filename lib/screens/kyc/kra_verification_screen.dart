@@ -146,7 +146,7 @@ class _KRAVerificationScreenState extends State<KRAVerificationScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitKRA,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -208,7 +208,7 @@ class _KRAVerificationScreenState extends State<KRAVerificationScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: buttonGreen),
+              borderSide: const BorderSide(color: primaryBrandColor),
             ),
           ),
           validator: (value) {

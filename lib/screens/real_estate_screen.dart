@@ -250,7 +250,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
           children: [
             Icon(
               Icons.info_outline,
-              color: buttonGreen,
+              color: primaryBrandColor,
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -277,7 +277,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
             child: Text(
               'OK',
               style: TextStyle(fontFamily: 'Satoshi',
-                color: buttonGreen,
+                color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),

@@ -337,13 +337,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: buttonGreen.withValues(alpha: 0.15),
+          color: primaryBrandColor.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
           child: HeroIcon(
             icon,
-            color: buttonGreen,
+            color: primaryBrandColor,
             size: 22,
           ),
         ),
@@ -378,13 +378,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: buttonGreen.withValues(alpha: 0.15),
+          color: primaryBrandColor.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Center(
           child: HeroIcon(
             icon,
-            color: buttonGreen,
+            color: primaryBrandColor,
             size: 22,
           ),
         ),
@@ -401,8 +401,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: buttonGreen,
-        activeTrackColor: buttonGreen.withValues(alpha: 0.3),
+        activeColor: primaryBrandColor,
+        activeTrackColor: primaryBrandColor.withValues(alpha: 0.3),
         inactiveThumbColor: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
         inactiveTrackColor: isDark ? Colors.grey.shade800 : lightBorder,
       ),

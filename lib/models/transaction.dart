@@ -57,7 +57,9 @@ class Transaction {
   factory Transaction.fromJson(Map<String, dynamic> json) {
     DateTime parsedDate;
     try {
-      if (json['CreatedAt'] != null) {
+      if (json['createdAt'] != null) {
+        parsedDate = DateTime.parse(json['createdAt']);
+      } else if (json['CreatedAt'] != null) {
         parsedDate = DateTime.parse(json['CreatedAt']);
       } else if (json['created_at'] != null) {
         parsedDate = DateTime.parse(json['created_at']);

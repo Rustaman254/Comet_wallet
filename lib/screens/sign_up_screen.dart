@@ -76,14 +76,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _handleSignUp() async {
     VibrationService.selectionClick();
-    if (_formKey.currentState!.validate()) {
-      // Direct safety check for password length
-      if (_passwordController.text.length < 8) {
-        VibrationService.errorVibrate();
-        ToastService().showError(context, "Password must be at least 8 characters");
-        return;
-      }
+    
+    // Direct safety check for password length
+    var passwordText = _passwordController.text;
+    if (passwordText.isNotEmpty && passwordText.length < 8) {
+      VibrationService.errorVibrate();
+      ToastService().showError(context, "Password must be at least 8 characters");
+      return;
+    }
 
+    if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
@@ -504,7 +506,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _handleSignUp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -541,7 +543,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       TextSpan(
                         text: 'Sign In',
                         style: TextStyle(
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

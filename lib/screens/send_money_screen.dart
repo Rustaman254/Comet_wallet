@@ -337,10 +337,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               width: 80.r,
               height: 80.r,
               decoration: BoxDecoration(
-                color: buttonGreen.withOpacity(0.1),
+                color: primaryBrandColor.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.check_circle_outline, color: buttonGreen, size: 50.r),
+              child: Icon(Icons.check_circle_outline, color: primaryBrandColor, size: 50.r),
             ),
             SizedBox(height: 16.h),
             Text(
@@ -365,7 +365,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 16.h),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
@@ -461,7 +461,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       ),
                       Expanded(
                         child: Text(
-                          'Send Money', // Generic title
+                          'Withdraw Money', // Generic title
                           textAlign: TextAlign.center,
                           style: TextStyle(fontFamily: 'Satoshi',
                             color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
@@ -484,9 +484,9 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       color: Colors.transparent, // Removed background color
                     ),
                     child: TabBar(
-                      indicatorColor: buttonGreen, // Primary color for indicator
+                      indicatorColor: primaryBrandColor, // Primary color for indicator
                       indicatorWeight: 2,
-                      labelColor: buttonGreen, // Primary color for active text
+                      labelColor: primaryBrandColor, // Primary color for active text
                       unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
@@ -559,7 +559,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         '${USDALogo.getFlag(_mobileCurrency)} $_mobileCurrency ', // Dynamic currency
                         style: TextStyle(
                           fontFamily: 'Satoshi',
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -568,7 +568,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         FormatUtils.formatAmount(double.tryParse(mobileBalance) ?? 0.0),
                         style: TextStyle(
                           fontFamily: 'Satoshi',
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontSize: 36.sp,
                           fontWeight: FontWeight.bold,
                         ),
@@ -657,7 +657,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _handleMobileTransfer,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -720,7 +720,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                           '${USDALogo.getFlag(selectedCurrency)} $selectedCurrency ',
                           style: TextStyle(
                             fontFamily: 'Satoshi',
-                            color: buttonGreen,
+                            color: primaryBrandColor,
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w600,
                           ),
@@ -736,7 +736,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                           ),
                           style: TextStyle(
                             fontFamily: 'Satoshi',
-                            color: buttonGreen,
+                            color: primaryBrandColor,
                             fontSize: 36.sp,
                             fontWeight: FontWeight.bold,
                           ),
@@ -748,7 +748,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       'KES 0.00',
                       style: TextStyle(
                         fontFamily: 'Satoshi',
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                         fontSize: 36.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -881,7 +881,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _handleTransfer,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -895,7 +895,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
                     : Text(
-                        'Send money',
+                        'Withdraw money',
                         style: TextStyle(fontFamily: 'Satoshi',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -967,7 +967,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         FormatUtils.formatAmount(double.tryParse(usdABalance) ?? 0.0),
                         style: TextStyle(
                           fontFamily: 'Satoshi',
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           fontSize: 36.sp,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1014,7 +1014,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 suffixIcon: IconButton(
                   icon: Icon(
                     Icons.qr_code_scanner,
-                    color: buttonGreen,
+                    color: primaryBrandColor,
                   ),
                   onPressed: () async {
                     // TODO: Implement QR scanner
@@ -1057,7 +1057,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _handleUSDATransfer,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -1137,7 +1137,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           decoration: BoxDecoration(
             color: Colors.grey[800],
             shape: BoxShape.circle,
-            border: Border.all(color: buttonGreen, width: 2.w),
+            border: Border.all(color: primaryBrandColor, width: 2.w),
           ),
           child: Center(
             child: Text(
@@ -1168,7 +1168,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? buttonGreen : Colors.grey[600],
+        color: isActive ? primaryBrandColor : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );

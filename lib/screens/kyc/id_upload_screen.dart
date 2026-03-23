@@ -62,7 +62,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
         centerTitle: true,
       ),
       body: _userId == null || !_isSmileIDReady
-          ? const Center(child: CircularProgressIndicator(color: buttonGreen))
+          ? const Center(child: CircularProgressIndicator(color: primaryBrandColor))
           : SmileIDDocumentVerification(
               userId: _userId!,
               jobId: "job_${DateTime.now().millisecondsSinceEpoch}",

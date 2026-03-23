@@ -81,7 +81,7 @@ InputDecoration buildUnderlineInputDecoration({
     ),
     focusedBorder: const UnderlineInputBorder(
       borderSide: BorderSide(
-        color: buttonGreen,
+        color: primaryBrandColor,
         width: 2,
       ),
     ),

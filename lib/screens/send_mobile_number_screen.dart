@@ -165,7 +165,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                       ),
                       Expanded(
                     child: Text(
-                      'Send to Mobile Number',
+                      'Withdraw to Mobile Number',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Satoshi',
@@ -212,7 +212,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                     '${USDALogo.getFlag(_selectedCurrency)} $_selectedCurrency ',
                                     style: TextStyle(
                                       fontFamily: 'Satoshi',
-                                      color: buttonGreen,
+                                      color: primaryBrandColor,
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -221,7 +221,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                     _getBalanceForCurrency(_selectedCurrency, balances),
                                     style: TextStyle(
                                       fontFamily: 'Satoshi',
-                                      color: buttonGreen,
+                                      color: primaryBrandColor,
                                       fontSize: 36.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -233,7 +233,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                 'KES 0.00',
                                 style: TextStyle(
                                   fontFamily: 'Satoshi',
-                                  color: buttonGreen,
+                                  color: primaryBrandColor,
                                   fontSize: 36.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -380,7 +380,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
             child: ElevatedButton(
               onPressed: _proceedToConfirm,
               style: ElevatedButton.styleFrom(
-                backgroundColor: buttonGreen,
+                backgroundColor: primaryBrandColor,
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 16.h),
                 shape: RoundedRectangleBorder(
@@ -388,7 +388,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                 ),
               ),
               child: Text(
-                'Send money',
+                'Withdraw Money',
                 style: TextStyle(
                   fontFamily: 'Satoshi',
                   fontSize: 16.sp,

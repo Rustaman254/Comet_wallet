@@ -67,7 +67,7 @@ class CustomBottomNav extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(16.r), // Comfortable click space
         decoration: BoxDecoration(
-          color: isSelected ? buttonGreen.withValues(alpha: 0.1) : Colors.transparent,
+          color: isSelected ? primaryBrandColor.withValues(alpha: 0.1) : Colors.transparent,
           shape: BoxShape.circle,
         ),
         child: Stack(
@@ -76,7 +76,7 @@ class CustomBottomNav extends StatelessWidget {
             HeroIcon(
               icon,
               color: isSelected 
-                  ? buttonGreen 
+                  ? primaryBrandColor 
                   : Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
               size: 24.r,
             ),
@@ -88,7 +88,7 @@ class CustomBottomNav extends StatelessWidget {
                     width: 6.r,
                     height: 6.r,
                     decoration: const BoxDecoration(
-                      color: buttonGreen,
+                      color: primaryBrandColor,
                       shape: BoxShape.circle,
                     ),
                   ),

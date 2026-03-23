@@ -192,7 +192,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                         },
                         icon: Icon(
                           Icons.copy_rounded,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           size: 24,
                         ),
                         padding: EdgeInsets.zero,
@@ -254,7 +254,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _generateQR,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: buttonGreen,
+                    backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 14.h),
                     shape: RoundedRectangleBorder(

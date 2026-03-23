@@ -146,7 +146,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: buttonGreen),
+                    borderSide: BorderSide(color: primaryBrandColor),
                   ),
                 ),
               ),
@@ -175,7 +175,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
             Expanded(
               child: _isLoading
                   ? Center(
-                      child: CircularProgressIndicator(color: buttonGreen),
+                      child: CircularProgressIndicator(color: primaryBrandColor),
                     )
                   : _filteredProperties.isEmpty
                       ? Center(
@@ -197,7 +197,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                         )
                       : RefreshIndicator(
                           onRefresh: _loadProperties,
-                          color: buttonGreen,
+                          color: primaryBrandColor,
                           child: ListView.builder(
                             physics: const AlwaysScrollableScrollPhysics(
                               parent: BouncingScrollPhysics(),
@@ -223,10 +223,10 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? buttonGreen : cardBackground,
+          color: isSelected ? primaryBrandColor : cardBackground,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? buttonGreen : cardBorder,
+            color: isSelected ? primaryBrandColor : cardBorder,
           ),
         ),
         child: Text(
@@ -285,7 +285,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         color: property.status == 'Available'
-                            ? buttonGreen
+                            ? primaryBrandColor
                             : Colors.orange,
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -360,7 +360,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                       _buildStatItem(
                         'ROI',
                         '${property.expectedROI}%',
-                        buttonGreen,
+                        primaryBrandColor,
                       ),
                       _buildStatItem(
                         'Price/Token',
@@ -394,7 +394,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                           Text(
                             '${property.fundingPercentage.toStringAsFixed(1)}%',
                             style: TextStyle(fontFamily: 'Satoshi',
-                              color: buttonGreen,
+                              color: primaryBrandColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
@@ -407,7 +407,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
                         child: LinearProgressIndicator(
                           value: property.fundingPercentage / 100,
                           backgroundColor: Colors.grey[800],
-                          valueColor: AlwaysStoppedAnimation<Color>(buttonGreen),
+                          valueColor: AlwaysStoppedAnimation<Color>(primaryBrandColor),
                           minHeight: 6,
                         ),
                       ),

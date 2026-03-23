@@ -80,12 +80,12 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       width: 80.r,
                       height: 80.r,
                       decoration: BoxDecoration(
-                        color: buttonGreen.withValues(alpha: 0.15),
+                        color: primaryBrandColor.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.description_outlined,
-                        color: buttonGreen,
+                        color: primaryBrandColor,
                         size: 40.r,
                       ),
                     ),
@@ -213,7 +213,7 @@ class _ECitizenDetailsScreenState extends State<ECitizenDetailsScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: buttonGreen,
+                      backgroundColor: primaryBrandColor,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(vertical: 16.h),
                       shape: RoundedRectangleBorder(

@@ -31,6 +31,9 @@ class _SwapScreenState extends State<SwapScreen> {
   // Always stores the latest rate from the API (no caching)
   double _currentRate = 0.0;
 
+  // Cache last known balances so we don't lose them on WalletError state
+  List<Map<String, dynamic>> _lastKnownBalances = [];
+
   final List<String> _availableCurrencies = [
     'KES', 'USD', 'TZS', 'UGX', 'EUR', 'GBP', 'ZAR', 'RWF', 'USDA'
   ];
@@ -116,8 +119,16 @@ class _SwapScreenState extends State<SwapScreen> {
       balances = state.balances;
     }
 
+    // Cache balances whenever we have valid data
     if (balances.isNotEmpty) {
-      final balance = balances.firstWhere(
+      _lastKnownBalances = balances;
+    }
+
+    // Use current balances if available, otherwise fall back to cached values
+    final effectiveBalances = balances.isNotEmpty ? balances : _lastKnownBalances;
+
+    if (effectiveBalances.isNotEmpty) {
+      final balance = effectiveBalances.firstWhere(
         (b) => b['currency'] == currency,
         orElse: () => {'amount': '0.0'},
       );
@@ -158,7 +169,7 @@ class _SwapScreenState extends State<SwapScreen> {
           ),
           title: Row(
             children: [
-              Icon(Icons.check_circle, color: buttonGreen, size: 28.r),
+              Icon(Icons.check_circle, color: primaryBrandColor, size: 28.r),
               SizedBox(width: 8.w),
               Expanded(
                 child: Text(
@@ -251,7 +262,7 @@ class _SwapScreenState extends State<SwapScreen> {
                   },
                   child: Row(
                     children: [
-                      Icon(Icons.open_in_new, size: 16.r, color: buttonGreen),
+                      Icon(Icons.open_in_new, size: 16.r, color: primaryBrandColor),
                       SizedBox(width: 8.w),
                       Expanded(
                         child: Text(
@@ -259,7 +270,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             fontSize: 12.sp,
-                            color: buttonGreen,
+                            color: primaryBrandColor,
                             decoration: TextDecoration.underline,
                           ),
                           maxLines: 1,
@@ -281,7 +292,7 @@ class _SwapScreenState extends State<SwapScreen> {
                   Navigator.of(context).pop(true);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonGreen,
+                  backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 14.h),
                   shape: RoundedRectangleBorder(
@@ -437,7 +448,7 @@ class _SwapScreenState extends State<SwapScreen> {
                         child: Container(
                           padding: EdgeInsets.all(8.r),
                           decoration: BoxDecoration(
-                            color: buttonGreen,
+                            color: primaryBrandColor,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Theme.of(context).scaffoldBackgroundColor,
@@ -511,7 +522,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     ElevatedButton(
                       onPressed: isLoading ? null : _handleSwap,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
+                        backgroundColor: primaryBrandColor,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(vertical: 18.h),
                         shape: RoundedRectangleBorder(
@@ -584,7 +595,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     style: TextStyle(
                       fontFamily: 'Satoshi',
                       fontSize: 12.sp,
-                      color: buttonGreen,
+                      color: primaryBrandColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -691,7 +702,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     fontFamily: 'Satoshi',
                     fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
-                    color: buttonGreen,
+                    color: primaryBrandColor,
                   ),
                 ),
               ),

@@ -80,7 +80,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                         ),
                       ),
                       focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: buttonGreen, width: 2),
+                        borderSide: BorderSide(color: primaryBrandColor, width: 2),
                       ),
                       border: UnderlineInputBorder(
                         borderSide: BorderSide(
@@ -107,13 +107,13 @@ class _AddContactScreenState extends State<AddContactScreen> {
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: _addToFavourite
-                                  ? buttonGreen
+                                  ? primaryBrandColor
                                   : Colors.white70,
                               width: 2,
                             ),
                             borderRadius: BorderRadius.circular(4),
                             color: _addToFavourite
-                                ? buttonGreen
+                                ? primaryBrandColor
                                 : Colors.transparent,
                           ),
                           child: _addToFavourite
@@ -145,7 +145,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                         Navigator.of(context).pop();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: buttonGreen,
+                        backgroundColor: primaryBrandColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
