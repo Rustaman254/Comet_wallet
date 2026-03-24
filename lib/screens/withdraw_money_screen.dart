@@ -417,7 +417,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                             ),
                                           const SizedBox(height: 4),
                                           Text(
-                                            method['account'],
+                                            method['account'] ?? '',
                                             style: TextStyle(fontFamily: 'Outfit',
                                               color: isAvailable ? (Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45) : primaryBrandColor,
                                               fontSize: 12,

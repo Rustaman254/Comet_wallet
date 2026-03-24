@@ -520,15 +520,35 @@ class _SwapScreenState extends State<SwapScreen> {
                                     color: getSecondaryTextColor(context),
                                   ),
                                 )
-                              : Text(
-                                  '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
-                                  style: TextStyle(
-                                    fontFamily: 'Outfit',
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: getTextColor(context),
+                              : _currentRate > 0 || _fromCurrency == _toCurrency
+                                ? Text(
+                                    '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
+                                    style: TextStyle(
+                                      fontFamily: 'Outfit',
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: getTextColor(context),
+                                    ),
+                                  )
+                                : GestureDetector(
+                                    onTap: _fetchExchangeRate,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Rate unavailable',
+                                          style: TextStyle(
+                                            fontFamily: 'Outfit',
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.orange,
+                                          ),
+                                        ),
+                                        SizedBox(width: 6.w),
+                                        Icon(Icons.refresh, size: 16.r, color: Colors.orange),
+                                      ],
+                                    ),
                                   ),
-                                ),
                         ],
                       ),
                     ),
@@ -537,7 +557,7 @@ class _SwapScreenState extends State<SwapScreen> {
 
                     // SWAP BUTTON
                     ElevatedButton(
-                      onPressed: isLoading ? null : _handleSwap,
+                      onPressed: (isLoading || (_currentRate <= 0 && _fromCurrency != _toCurrency)) ? null : _handleSwap,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryBrandColor,
                         foregroundColor: Colors.white,

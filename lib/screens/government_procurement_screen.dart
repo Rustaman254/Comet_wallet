@@ -102,7 +102,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                       description: 'Submit your bid for tenders',
                       color: const Color(0xFF2196F3),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Submit Bid');
+                        // _showComingSoonDialog(context, 'Submit Bid');
                       },
                     ),
                     const SizedBox(height: 16),
@@ -128,7 +128,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                       description: 'Register as a government supplier',
                       color: const Color(0xFF9C27B0),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Supplier Registration');
+                        // _showComingSoonDialog(context, 'Supplier Registration');
                       },
                     ),
                     const SizedBox(height: 16),
@@ -139,7 +139,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                       description: 'Pay for tender documents and registration',
                       color: const Color(0xFFE91E63),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Pay Procurement Fees');
+                        // _showComingSoonDialog(context, 'Pay Procurement Fees');
                       },
                     ),
                     const SizedBox(height: 16),
@@ -150,7 +150,7 @@ class _GovernmentProcurementScreenState extends State<GovernmentProcurementScree
                       description: 'Access procurement documents and guidelines',
                       color: const Color(0xFF00BCD4),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Documents & Guidelines');
+                        // _showComingSoonDialog(context, 'Documents & Guidelines');
                       },
                     ),
                   ],

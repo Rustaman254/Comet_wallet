@@ -1027,7 +1027,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   ),
                   onPressed: () async {
                     // TODO: Implement QR scanner
-                    ToastService().showInfo(context, 'QR Scanner coming soon');
+                    // ToastService().showInfo(context, 'QR Scanner coming soon');
                   },
                 ),
               ),

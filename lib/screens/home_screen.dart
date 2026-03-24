@@ -465,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           */
                           SizedBox(width: 12.w),
                           // QR code button with Badge
-                          GestureDetector(
+/*                          GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -513,7 +513,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
-                          ),
+                          ), */
                         ],
                       ),
                     ),

@@ -133,7 +133,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                       description: 'View performance metrics',
                       color: const Color(0xFF8B5CF6),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Property Analytics');
+                        // _showComingSoonDialog(context, 'Property Analytics');
                       },
                     ),
                     const SizedBox(height: 16),
@@ -144,7 +144,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                       description: 'Calculate potential returns',
                       color: const Color(0xFFEC4899),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Investment Calculator');
+                        // _showComingSoonDialog(context, 'Investment Calculator');
                       },
                     ),
                     const SizedBox(height: 16),
@@ -155,7 +155,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                       description: 'View past property transactions',
                       color: const Color(0xFF06B6D4),
                       onTap: () {
-                        _showComingSoonDialog(context, 'Transaction History');
+                        // _showComingSoonDialog(context, 'Transaction History');
                       },
                     ),
                   ],

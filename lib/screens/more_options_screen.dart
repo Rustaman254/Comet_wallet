@@ -85,6 +85,9 @@ class MoreOptionsScreen extends StatelessWidget {
       return a['isComingSoon'] ? 1 : -1;
     });
 
+    // Filter out coming soon items
+    final activeOptions = options.where((o) => o['isComingSoon'] == false).toList();
+
     return Container(
       width: double.infinity, // Ensure full width for centering/alignment
       decoration: BoxDecoration(
@@ -128,7 +131,7 @@ class MoreOptionsScreen extends StatelessWidget {
               runSpacing: 32, // Vertical space between lines
               alignment: WrapAlignment.start, // Align items to the start of the line
               crossAxisAlignment: WrapCrossAlignment.start,
-              children: options.map((option) {
+              children: activeOptions.map((option) {
                 return _buildCircularOption(
                   context,
                   option['icon'] as IconData,
