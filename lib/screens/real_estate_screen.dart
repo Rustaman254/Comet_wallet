@@ -48,7 +48,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                       child: Text(
                         'Real Estate Tokenization',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Theme.of(context).textTheme.bodyMedium?.color,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -67,8 +67,8 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                 child: Text(
                   'Invest in fractional real estate ownership through blockchain tokenization',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontFamily: 'Satoshi',
-                    color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  style: TextStyle(fontFamily: 'Outfit',
+                    color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
@@ -185,7 +185,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -211,7 +211,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -220,8 +220,8 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                    style: TextStyle(fontFamily: 'Outfit',
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
                       fontSize: 13,
                       fontWeight: FontWeight.w400,
                     ),
@@ -231,7 +231,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.4),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.4),
               size: 18,
             ),
           ],
@@ -256,7 +256,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
             const SizedBox(width: 12),
             Text(
               'Coming Soon',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -266,8 +266,8 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
         ),
         content: Text(
           '$feature functionality will be available soon. Stay tuned!',
-          style: TextStyle(fontFamily: 'Satoshi',
-            color: Colors.white.withOpacity(0.8),
+          style: TextStyle(fontFamily: 'Outfit',
+            color: Colors.white.withValues(alpha: 0.8),
             fontSize: 15,
           ),
         ),
@@ -276,7 +276,7 @@ class _RealEstateScreenState extends State<RealEstateScreen> {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'OK',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: primaryBrandColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

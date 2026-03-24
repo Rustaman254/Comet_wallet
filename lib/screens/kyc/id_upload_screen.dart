@@ -57,7 +57,7 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
         ),
         title: const Text(
           'ID Verification',
-          style: TextStyle(fontFamily: 'Satoshi', color: Colors.white),
+          style: TextStyle(fontFamily: 'Outfit', color: Colors.white),
         ),
         centerTitle: true,
       ),

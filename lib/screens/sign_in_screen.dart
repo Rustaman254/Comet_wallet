@@ -238,8 +238,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: RichText(
                   text: TextSpan(
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.7) : Colors.black.withOpacity(0.7),
+                      fontFamily: 'Outfit',
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7),
                       fontSize: 14.sp,
                     ),
                     children: [

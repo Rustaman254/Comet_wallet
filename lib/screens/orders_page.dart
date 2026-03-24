@@ -178,7 +178,7 @@ class _OrdersViewState extends State<OrdersView> {
             title: Text(
               'Orders',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -261,7 +261,7 @@ class _OrdersViewState extends State<OrdersView> {
                   Text(
                     'Total Orders',
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 13.sp,
                       fontWeight: FontWeight.w500,
@@ -271,7 +271,7 @@ class _OrdersViewState extends State<OrdersView> {
                   Text(
                     '${filteredOrders.length}',
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
@@ -294,7 +294,7 @@ class _OrdersViewState extends State<OrdersView> {
                     Text(
                       'Total Amount',
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
@@ -304,7 +304,7 @@ class _OrdersViewState extends State<OrdersView> {
                     Text(
                       '${filteredOrders.isNotEmpty ? filteredOrders.first.currency : 'KES'} ${totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.bold,
@@ -349,7 +349,7 @@ class _OrdersViewState extends State<OrdersView> {
                 child: Text(
                   filter.toUpperCase(),
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     color: isSelected
                         ? Colors.white
                         : Theme.of(context).textTheme.bodyMedium?.color,
@@ -386,7 +386,7 @@ class _OrdersViewState extends State<OrdersView> {
               Text(
                 'Error loading orders',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w500,
                   color: getTextColor(context),
@@ -396,7 +396,7 @@ class _OrdersViewState extends State<OrdersView> {
               Text(
                 errorMessage,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: getTertiaryTextColor(context),
                   fontSize: 13.sp,
                 ),
@@ -408,7 +408,7 @@ class _OrdersViewState extends State<OrdersView> {
                 icon: const Icon(Icons.refresh, color: Colors.white),
                 label: const Text('Retry',
                     style: TextStyle(
-                        fontFamily: 'Satoshi', color: Colors.white)),
+                        fontFamily: 'Outfit', color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryBrandColor,
                   shape: RoundedRectangleBorder(
@@ -437,7 +437,7 @@ class _OrdersViewState extends State<OrdersView> {
                   ? 'No orders yet'
                   : 'No ${_selectedFilter.toLowerCase()} orders',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 fontSize: 16.sp,
                 color: getTertiaryTextColor(context),
                 fontWeight: FontWeight.w500,
@@ -462,7 +462,7 @@ class _OrdersViewState extends State<OrdersView> {
             child: Text(
               date,
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 fontSize: 13.sp,
                 fontWeight: FontWeight.bold,
                 color: getTertiaryTextColor(context),
@@ -524,7 +524,7 @@ class _OrdersViewState extends State<OrdersView> {
                         ? order.externalRef
                         : order.description,
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -538,7 +538,7 @@ class _OrdersViewState extends State<OrdersView> {
                       Text(
                         order.payerEmail,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: getTertiaryTextColor(context),
                           fontSize: 12.sp,
                         ),
@@ -556,7 +556,7 @@ class _OrdersViewState extends State<OrdersView> {
                       Text(
                         order.status.toUpperCase(),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: statusCol,
                           fontSize: 10.sp,
                           fontWeight: FontWeight.bold,
@@ -574,7 +574,7 @@ class _OrdersViewState extends State<OrdersView> {
                 Text(
                   '${order.currency} ${order.amount.toStringAsFixed(2)}',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     color: Theme.of(context).textTheme.bodyLarge?.color,
                     fontSize: 15.sp,
                     fontWeight: FontWeight.bold,
@@ -584,7 +584,7 @@ class _OrdersViewState extends State<OrdersView> {
                 Text(
                   DateFormat('HH:mm').format(order.createdAt),
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     color: getTertiaryTextColor(context),
                     fontSize: 11.sp,
                   ),
@@ -649,7 +649,7 @@ class _OrdersViewState extends State<OrdersView> {
                   Text(
                     order.status.toUpperCase(),
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: statusCol,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
@@ -660,7 +660,7 @@ class _OrdersViewState extends State<OrdersView> {
                   Text(
                     '${order.currency} ${order.amount.toStringAsFixed(2)}',
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: getTextColor(context),
                       fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
@@ -707,7 +707,7 @@ class _OrdersViewState extends State<OrdersView> {
                             child: Text(
                               'Decline',
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: errorRed,
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.bold,
@@ -733,7 +733,7 @@ class _OrdersViewState extends State<OrdersView> {
                             child: Text(
                               'Approve',
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: Colors.white,
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.bold,
@@ -765,7 +765,7 @@ class _OrdersViewState extends State<OrdersView> {
             child: Text(
               label,
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: getTertiaryTextColor(context),
                 fontSize: 13.sp,
               ),
@@ -775,7 +775,7 @@ class _OrdersViewState extends State<OrdersView> {
             child: Text(
               value.isNotEmpty ? value : '—',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: getTextColor(context),
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,

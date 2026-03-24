@@ -148,7 +148,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
         title: Text(
           'Reset PIN',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
             color: getTextColor(context),
@@ -173,7 +173,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                       Text(
                         'Current Password',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: getSecondaryTextColor(context),
@@ -184,14 +184,14 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 16.sp,
                           color: getTextColor(context),
                         ),
                         decoration: InputDecoration(
                           hintText: 'Enter your password',
                           hintStyle: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             color: getTertiaryTextColor(context),
                           ),
                           filled: true,
@@ -226,7 +226,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                         _isConfirmingPin ? 'Confirm New PIN' : 'Enter New PIN',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                           color: getTextColor(context),
@@ -239,7 +239,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                             : 'Choose a 4-digit PIN',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 14.sp,
                           color: getSecondaryTextColor(context),
                         ),
@@ -352,7 +352,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
         child: Text(
           number,
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             fontSize: 24.sp,
             fontWeight: FontWeight.bold,
             color: getTextColor(context),

@@ -67,7 +67,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                       child: Text(
                         'Pay Bills',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                   children: [
                     Text(
                       'Select Bill Category',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                                 const SizedBox(height: 8),
                                 Text(
                                   category['name'],
-                                  style: TextStyle(fontFamily: 'Satoshi',
+                                  style: TextStyle(fontFamily: 'Outfit',
                                     color: isSelected ? primaryBrandColor : Colors.white,
                                     fontSize: 12,
                                     fontWeight: isSelected
@@ -169,7 +169,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                       children: [
                         Text(
                           'Account Number',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -178,14 +178,14 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                         const SizedBox(height: 16),
                         TextField(
                           controller: _accountController,
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white,
                             fontSize: 18,
                           ),
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             hintText: 'Enter account number',
-                            hintStyle: TextStyle(fontFamily: 'Satoshi',
+                            hintStyle: TextStyle(fontFamily: 'Outfit',
                               color: Colors.white38,
                             ),
                             border: OutlineInputBorder(
@@ -228,7 +228,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                       children: [
                         Text(
                           'Amount to Pay',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -237,7 +237,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                         const SizedBox(height: 16),
                         TextField(
                           controller: _amountController,
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -245,11 +245,11 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             hintText: '0.00',
-                            hintStyle: TextStyle(fontFamily: 'Satoshi',
+                            hintStyle: TextStyle(fontFamily: 'Outfit',
                               color: Colors.white38,
                             ),
                             prefixText: 'KES ',
-                            prefixStyle: TextStyle(fontFamily: 'Satoshi',
+                            prefixStyle: TextStyle(fontFamily: 'Outfit',
                               color: Colors.white70,
                               fontSize: 18,
                             ),
@@ -274,7 +274,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                             SnackBar(
                               content: Text(
                                 'Please fill all fields',
-                                style: TextStyle(fontFamily: 'Satoshi',),
+                                style: TextStyle(fontFamily: 'Outfit',),
                               ),
                               backgroundColor: Colors.red,
                             ),
@@ -306,7 +306,7 @@ class _PayBillsScreenState extends State<PayBillsScreen> {
                       ),
                       child: Text(
                         'Pay Bill',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),

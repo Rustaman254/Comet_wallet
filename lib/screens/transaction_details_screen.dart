@@ -29,7 +29,7 @@ class TransactionDetailsScreen extends StatelessWidget {
         title: Text(
           'Transaction Details',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             color: isDark ? Colors.white : Colors.black,
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,
@@ -92,7 +92,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           width: 80.r,
           height: 80.r,
           decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.1),
+            color: statusColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(statusIcon, color: statusColor, size: 40.r),
@@ -101,7 +101,7 @@ class TransactionDetailsScreen extends StatelessWidget {
         Text(
           statusText,
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             color: statusColor,
             fontSize: 14.sp,
             fontWeight: FontWeight.bold,
@@ -126,7 +126,7 @@ class TransactionDetailsScreen extends StatelessWidget {
             Text(
               '${FormatUtils.formatAmount(transaction.amount)} ${transaction.currency == 'USDA' ? 'USDA (Cardano)' : transaction.currency}',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Theme.of(context).textTheme.bodyLarge?.color,
                 fontSize: 28.sp,
                 fontWeight: FontWeight.bold,
@@ -144,10 +144,10 @@ class TransactionDetailsScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(20.r),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey[50],
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
         borderRadius: BorderRadius.circular(16.r),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey[200]!,
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey[200]!,
         ),
       ),
       child: Column(
@@ -191,7 +191,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: Colors.grey[500],
               fontSize: 14.sp,
             ),
@@ -204,7 +204,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                   child: Text(
                     value,
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
@@ -239,7 +239,7 @@ class TransactionDetailsScreen extends StatelessWidget {
   Widget _buildDivider(bool isDark) {
     return Divider(
       height: 1,
-      color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey[200],
+      color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey[200],
     );
   }
 
@@ -262,7 +262,7 @@ class TransactionDetailsScreen extends StatelessWidget {
         label: const Text(
           'View on Explorer',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),

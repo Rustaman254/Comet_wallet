@@ -135,7 +135,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 Text(
                   "Powered by",
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                     color: Colors.white,
@@ -154,7 +154,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     Text(
                       "on ",
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
                         color: Colors.white,
@@ -168,7 +168,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     Text(
                       "Cardano",
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,

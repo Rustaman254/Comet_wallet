@@ -71,7 +71,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         title: Text(
           widget.title,
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             color: isDark ? Colors.white : Colors.black,
             fontSize: 18.sp,
             fontWeight: FontWeight.bold,

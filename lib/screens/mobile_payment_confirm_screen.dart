@@ -49,7 +49,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                     child: Text(
                       'Confirm Payment',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -65,7 +65,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                 children: [
                    Text(
                     'Sending',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white60,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -78,7 +78,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                     children: [
                       Text(
                         currency,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: primaryBrandColor,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         amount,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
@@ -179,7 +179,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Text(
                         'Confirm & Send',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
@@ -203,7 +203,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'Cancel Transaction',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white60,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -243,7 +243,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white60,
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -252,7 +252,7 @@ class MobilePaymentConfirmScreen extends StatelessWidget {
                const SizedBox(height: 2),
               Text(
                 value,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: valueColor ?? Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

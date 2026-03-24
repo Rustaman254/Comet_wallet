@@ -158,7 +158,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                     'Verifying PIN...',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: isDark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
@@ -421,7 +421,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             Text(
               'Transaction Failed',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -432,7 +432,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               errorMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Colors.white70,
                 fontSize: 14.sp,
               ),
@@ -454,7 +454,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 child: Text(
                   'Try Again',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -538,7 +538,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             Text(
               'Payment Successful!',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -548,7 +548,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             Text(
               '${widget.currency} ${widget.amount}',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: primaryBrandColor,
                 fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
@@ -558,7 +558,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             Text(
               'sent to ${widget.recipientName}',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Colors.white70,
                 fontSize: 14.sp,
               ),
@@ -580,7 +580,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 child: Text(
                   'Done',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -635,7 +635,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                     Text(
                       '*',
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,
@@ -704,7 +704,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           child: Text(
             number,
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: isDark ? Colors.white : Colors.black,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,
@@ -775,7 +775,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 'Enter your PIN',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: getTextColor(context),
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -785,7 +785,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 'Confirm this transaction securely.',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: getSecondaryTextColor(context),
                   fontSize: 14.sp,
                 ),
@@ -795,7 +795,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 '${widget.currency} ${widget.amount}',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: primaryBrandColor,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
@@ -805,7 +805,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               Text(
                 'to ${widget.recipientName}',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: getTextColor(context),
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w400,

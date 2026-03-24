@@ -138,7 +138,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                           child: Text(
                             'Withdraw Money',
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                               fontSize: 24.sp,
                               fontWeight: FontWeight.bold,
@@ -185,7 +185,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                     children: [
                                       Text(
                                         'Available Balance',
-                                        style: TextStyle(fontFamily: 'Satoshi',
+                                        style: TextStyle(fontFamily: 'Outfit',
                                           color: Colors.white70,
                                           fontSize: 14.sp,
                                         ),
@@ -193,7 +193,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                       SizedBox(height: 8.h),
                                       Text(
                                         'KES 0.00',
-                                        style: TextStyle(fontFamily: 'Satoshi',
+                                        style: TextStyle(fontFamily: 'Outfit',
                                           color: Colors.white,
                                           fontSize: 32.sp,
                                           fontWeight: FontWeight.bold,
@@ -246,7 +246,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                             children: [
                                               Text(
                                                 'Available Balance',
-                                                style: TextStyle(fontFamily: 'Satoshi',
+                                                style: TextStyle(fontFamily: 'Outfit',
                                                   color: Colors.white70,
                                                   fontSize: 14.sp,
                                                 ),
@@ -270,7 +270,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                                     Text(
                                                       currency,
                                                       style: TextStyle(
-                                                        fontFamily: 'Satoshi',
+                                                        fontFamily: 'Outfit',
                                                         color: Colors.white,
                                                         fontSize: 12.sp,
                                                         fontWeight: FontWeight.bold,
@@ -288,7 +288,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                               Text(
                                                 balance['symbol'] ?? (isUSDA ? '\$' : currency),
                                                 style: TextStyle(
-                                                  fontFamily: 'Satoshi',
+                                                  fontFamily: 'Outfit',
                                                   color: Colors.white.withValues(alpha: 0.7),
                                                   fontSize: 20.sp,
                                                   fontWeight: FontWeight.w500,
@@ -297,7 +297,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                               SizedBox(width: 8.w),
                                               Text(
                                                 FormatUtils.formatAmount(amount),
-                                                style: TextStyle(fontFamily: 'Satoshi',
+                                                style: TextStyle(fontFamily: 'Outfit',
                                                   color: Colors.white,
                                                   fontSize: 32.sp,
                                                   fontWeight: FontWeight.bold,
@@ -344,7 +344,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                       children: [
                         Text(
                           'Withdrawal Method',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
@@ -409,7 +409,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                           children: [
                                             Text(
                                               method['name'],
-                                              style: TextStyle(fontFamily: 'Satoshi',
+                                              style: TextStyle(fontFamily: 'Outfit',
                                                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                                               fontSize: 16.sp,
                                               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -418,7 +418,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                           const SizedBox(height: 4),
                                           Text(
                                             method['account'],
-                                            style: TextStyle(fontFamily: 'Satoshi',
+                                            style: TextStyle(fontFamily: 'Outfit',
                                               color: isAvailable ? (Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black45) : primaryBrandColor,
                                               fontSize: 12,
                                               fontWeight: !isAvailable ? FontWeight.bold : FontWeight.normal,

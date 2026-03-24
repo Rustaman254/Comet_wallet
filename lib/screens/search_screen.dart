@@ -44,7 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   Text(
                     'Search',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -81,11 +81,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 child: TextField(
                   controller: _searchController,
-                  style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
+                  style: TextStyle(fontFamily: 'Outfit',color: Colors.white),
                   decoration: InputDecoration(
                     icon: const Icon(Icons.search, color: Colors.white70),
                     hintText: 'Search',
-                    hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.white30),
+                    hintStyle: TextStyle(fontFamily: 'Outfit',color: Colors.white30),
                     border: InputBorder.none,
                     suffixIcon: const Icon(Icons.close, color: Colors.white70, size: 18),
                   ),
@@ -137,7 +137,7 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -145,7 +145,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 Text(
                   subtitle,
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Colors.white38,
                     fontSize: 13,
                   ),
@@ -155,7 +155,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           Text(
             amount,
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w500,

@@ -401,7 +401,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: primaryBrandColor,
+        activeThumbColor: primaryBrandColor,
         activeTrackColor: primaryBrandColor.withValues(alpha: 0.3),
         inactiveThumbColor: isDark ? Colors.grey.shade700 : Colors.grey.shade400,
         inactiveTrackColor: isDark ? Colors.grey.shade800 : lightBorder,

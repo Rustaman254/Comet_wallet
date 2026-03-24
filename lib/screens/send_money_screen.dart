@@ -337,7 +337,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               width: 80.r,
               height: 80.r,
               decoration: BoxDecoration(
-                color: primaryBrandColor.withOpacity(0.1),
+                color: primaryBrandColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.check_circle_outline, color: primaryBrandColor, size: 50.r),
@@ -345,7 +345,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             SizedBox(height: 16.h),
             Text(
               response['message'] ?? 'Transfer Successful',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -370,7 +370,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   padding: EdgeInsets.symmetric(vertical: 16.h),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                 ),
-                child: Text('Done', style: TextStyle(fontFamily: 'Satoshi',fontWeight: FontWeight.bold, fontSize: 16.sp)),
+                child: Text('Done', style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.bold, fontSize: 16.sp)),
               ),
             ),
             SizedBox(height: 16.h),
@@ -386,8 +386,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54, fontSize: 14.sp)),
-          Text(value, style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54, fontSize: 14.sp)),
+          Text(value, style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 14.sp, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -463,7 +463,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         child: Text(
                           'Withdraw Money', // Generic title
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -489,7 +489,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       labelColor: primaryBrandColor, // Primary color for active text
                       unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       labelStyle: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -544,7 +544,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   Text(
                     'Available Balance',
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Colors.white70,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -558,7 +558,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       Text(
                         '${USDALogo.getFlag(_mobileCurrency)} $_mobileCurrency ', // Dynamic currency
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: primaryBrandColor,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
@@ -567,7 +567,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       Text(
                         FormatUtils.formatAmount(double.tryParse(mobileBalance) ?? 0.0),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: primaryBrandColor,
                           fontSize: 36.sp,
                           fontWeight: FontWeight.bold,
@@ -584,7 +584,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Send to Mobile Money',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Colors.white,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -672,7 +672,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       )
                     : Text(
                         'Send to Mobile',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -704,7 +704,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   Text(
                     'Available Balance',
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -719,7 +719,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         Text(
                           '${USDALogo.getFlag(selectedCurrency)} $selectedCurrency ',
                           style: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             color: primaryBrandColor,
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w600,
@@ -735,7 +735,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                             ) ?? 0.0
                           ),
                           style: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             color: primaryBrandColor,
                             fontSize: 36.sp,
                             fontWeight: FontWeight.bold,
@@ -747,7 +747,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     Text(
                       'KES 0.00',
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: primaryBrandColor,
                         fontSize: 36.sp,
                         fontWeight: FontWeight.bold,
@@ -762,7 +762,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Please enter the payment details',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -836,7 +836,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         Text(
                           selectedCurrency,
                           style: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                             fontSize: 16.sp,
                           ),
@@ -896,7 +896,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       )
                     : Text(
                         'Withdraw money',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -935,7 +935,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       Text(
                         'Available ',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -944,7 +944,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       Text(
                         ' Balance',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -966,7 +966,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       Text(
                         FormatUtils.formatAmount(double.tryParse(usdABalance) ?? 0.0),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: primaryBrandColor,
                           fontSize: 36.sp,
                           fontWeight: FontWeight.bold,
@@ -983,7 +983,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Text(
               'Transfer USDA (Cardano) to Address',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -1072,7 +1072,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       )
                     : Text(
                         'Transfer USDA (Cardano)',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1101,10 +1101,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             width: 60.r,
             height: 60.r,
             decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.1) : Colors.grey[200],
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.1) : Colors.grey[200],
               shape: BoxShape.circle,
               border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.3) : Colors.grey[400]!,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.3) : Colors.grey[400]!,
                 width: 2.w,
               ),
             ),
@@ -1117,7 +1117,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           SizedBox(height: 8.h),
           Text(
             'Add',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
@@ -1142,7 +1142,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           child: Center(
             child: Text(
               name[0],
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 20.sp,
                 fontWeight: FontWeight.bold,
@@ -1153,7 +1153,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         SizedBox(height: 8.h),
         Text(
           name,
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,

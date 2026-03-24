@@ -111,7 +111,7 @@ class MoreOptionsScreen extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             'More Options',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -191,7 +191,7 @@ class MoreOptionsScreen extends StatelessWidget {
                       ),
                       child: Text(
                         'Coming Soon',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 8,
                           fontWeight: FontWeight.bold,
@@ -204,7 +204,7 @@ class MoreOptionsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               label,
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 fontSize: 13,
                 fontWeight: FontWeight.w400,

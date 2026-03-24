@@ -102,7 +102,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -114,7 +114,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     Text(
                       _isEditing ? 'Edit Profile' : 'Personal Information',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -131,8 +131,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: _isEditing 
-                              ? Colors.red.withOpacity(0.1)
-                              : primaryBrandColor.withOpacity(0.1),
+                              ? Colors.red.withValues(alpha: 0.1)
+                              : primaryBrandColor.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -167,7 +167,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _nameController.text,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -217,7 +217,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       child: Text(
                         'Save Changes',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -256,7 +256,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   Text(
                     'Cardano Wallet Address',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Colors.white30,
                       fontSize: 12,
                     ),
@@ -278,7 +278,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Flexible(
                           child: Text(
                             address,
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -313,14 +313,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Text(
                 label,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white30,
                   fontSize: 12,
                 ),
               ),
               Text(
                 controller.text,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -337,7 +337,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Colors.white70,
             fontSize: 14,
           ),
@@ -345,7 +345,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         const SizedBox(height: 4),
         TextFormField(
           controller: controller,
-          style: TextStyle(fontFamily: 'Satoshi',color: Colors.white, fontSize: 16),
+          style: TextStyle(fontFamily: 'Outfit',color: Colors.white, fontSize: 16),
           decoration: buildUnderlineInputDecoration(
             context: context,
             label: '',
@@ -371,14 +371,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               Text(
                 'Birth Date',
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white30,
                   fontSize: 12,
                 ),
               ),
               Text(
                 dateStr,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -395,7 +395,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           'Birth Date',
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Colors.white70,
             fontSize: 14,
           ),

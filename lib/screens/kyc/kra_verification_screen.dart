@@ -112,7 +112,7 @@ class _KRAVerificationScreenState extends State<KRAVerificationScreen> {
               Text(
                 'Please provide your ID and KRA PIN for verification.',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 ),
               ),
               const SizedBox(height: 32),
@@ -195,16 +195,16 @@ class _KRAVerificationScreenState extends State<KRAVerificationScreen> {
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
+            fillColor: Colors.white.withValues(alpha: 0.05),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

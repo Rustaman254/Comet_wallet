@@ -154,7 +154,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: primaryBrandColor.withOpacity(0.1),
+                color: primaryBrandColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.check_circle_outline, color: primaryBrandColor, size: 40),
@@ -163,7 +163,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             Text(
               response['message'] ?? 'Top-up successful!',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontFamily: 'Satoshi',
+              style: const TextStyle(fontFamily: 'Outfit',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -190,7 +190,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Back to Home', style: TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
+                child: const Text('Back to Home', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 20),
@@ -206,12 +206,12 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontFamily: 'Satoshi', color: Colors.white70, fontSize: 14)),
+          Text(label, style: const TextStyle(fontFamily: 'Outfit', color: Colors.white70, fontSize: 14)),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(fontFamily: 'Satoshi', color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontFamily: 'Outfit', color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -240,7 +240,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           ),
           title: Text(
             'Top-up Funds',
-            style: TextStyle(fontFamily: 'Satoshi',
+            style: TextStyle(fontFamily: 'Outfit',
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
@@ -251,7 +251,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             indicatorColor: primaryBrandColor,
             labelColor: primaryBrandColor,
             unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
-            labelStyle: const TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold),
+            labelStyle: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold),
             tabs: const [
               Tab(text: 'Mobile Money'),
               Tab(text: 'USDA (Cardano)'),
@@ -288,7 +288,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 items: ['M-Pesa', 'T-Kash'].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value, style: const TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
+                    child: Text(value, style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
                   );
                 }).toList(),
                 onChanged: (newValue) {
@@ -308,14 +308,14 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 children: [
                   _buildInfoCard('Add Funds to Your Wallet', 'Enter the amount you want to add. Funds will be transferred via M-Pesa/Mobile Money.'),
                   const SizedBox(height: 32),
-                  Text('Phone Number', style: TextStyle(fontFamily: 'Satoshi', color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7), fontSize: 14)),
+                  Text('Phone Number', style: TextStyle(fontFamily: 'Outfit', color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7), fontSize: 14)),
                   const SizedBox(height: 8),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
                         width: 100,
-                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3) ?? Colors.grey, width: 1))),
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.3) ?? Colors.grey, width: 1))),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _selectedCountryCode,
@@ -332,7 +332,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                         child: TextFormField(
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
-                          style: const TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w500),
                           maxLength: 9,
                           decoration: buildUnderlineInputDecoration(context: context, label: '', hintText: '7XX XXX XXX').copyWith(counterText: ''),
                           validator: (v) => (v == null || v.isEmpty) ? 'Required' : (!v.startsWith('7') || v.length != 9) ? 'Invalid' : null,
@@ -341,7 +341,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Text('Amount', style: TextStyle(fontFamily: 'Satoshi', color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7), fontSize: 14)),
+                  Text('Amount', style: TextStyle(fontFamily: 'Outfit', color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7), fontSize: 14)),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _amountController,
@@ -362,7 +362,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: _isLoading ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Proceed to Payment', style: TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
+                    child: _isLoading ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('Proceed to Payment', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -399,7 +399,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 Text(
                   'Note: The account should be the user\'s mobile phone number.',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 14,
                     fontStyle: FontStyle.italic,
                     color: Theme.of(context).textTheme.bodySmall?.color,
@@ -423,13 +423,13 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             height: 28,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: primaryBrandColor.withOpacity(0.1),
+              color: primaryBrandColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Text(
               number,
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: primaryBrandColor,
@@ -441,7 +441,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             child: Text(
               text,
               style: const TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -485,7 +485,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
             Text(
               'Your Cardano Address',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 fontSize: 14,
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
               ),
@@ -502,7 +502,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 _cardanoAddress!,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
@@ -518,7 +518,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                   ToastService().showSuccess(context, 'Address copied to clipboard');
                 },
                 icon: const Icon(Icons.copy, size: 18),
-                label: const Text('Copy Address', style: TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
+                label: const Text('Copy Address', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primaryBrandColor,
                   side: const BorderSide(color: primaryBrandColor),
@@ -533,7 +533,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           Text(
             'Only send USDA to this address. Sending other assets may result in permanent loss.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: 'Satoshi', fontSize: 12, color: Colors.orange.withValues(alpha: 0.8)),
+            style: TextStyle(fontFamily: 'Outfit', fontSize: 12, color: Colors.orange.withValues(alpha: 0.8)),
           ),
         ],
       ),
@@ -544,16 +544,16 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: primaryBrandColor.withOpacity(0.1),
+        color: primaryBrandColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: primaryBrandColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text(subtitle, style: const TextStyle(fontFamily: 'Satoshi', fontSize: 12, color: Colors.white70)),
+          Text(subtitle, style: const TextStyle(fontFamily: 'Outfit', fontSize: 12, color: Colors.white70)),
         ],
       ),
     );
@@ -563,10 +563,10 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Currency', style: TextStyle(fontFamily: 'Satoshi', color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7), fontSize: 14)),
+        Text('Currency', style: TextStyle(fontFamily: 'Outfit', color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7), fontSize: 14)),
         const SizedBox(height: 8),
         Container(
-          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3) ?? Colors.grey, width: 1))),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.3) ?? Colors.grey, width: 1))),
           child: DropdownButton<String>(
             isExpanded: true,
             underline: Container(),
@@ -586,10 +586,10 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('Total', style: TextStyle(fontFamily: 'Satoshi', fontWeight: FontWeight.bold)),
+          const Text('Total', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
           Text(
             _amountController.text.isEmpty ? '$_selectedCurrency 0.00' : '$_selectedCurrency ${_amountController.text}',
-            style: const TextStyle(fontFamily: 'Satoshi', fontSize: 16, fontWeight: FontWeight.bold, color: primaryBrandColor),
+            style: const TextStyle(fontFamily: 'Outfit', fontSize: 16, fontWeight: FontWeight.bold, color: primaryBrandColor),
           ),
         ],
       ),

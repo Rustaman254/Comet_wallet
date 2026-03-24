@@ -181,7 +181,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             ),
         title: Text(
           'Transactions',
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             color: Theme.of(context).textTheme.bodyMedium?.color,
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
@@ -246,10 +246,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: _runFilter,
-              style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).textTheme.bodyMedium?.color),
+              style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).textTheme.bodyMedium?.color),
               decoration: InputDecoration(
                 hintText: 'Search transactions...',
-                hintStyle: TextStyle(fontFamily: 'Satoshi',color: Colors.grey[500], fontSize: 14.sp),
+                hintStyle: TextStyle(fontFamily: 'Outfit',color: Colors.grey[500], fontSize: 14.sp),
                 border: InputBorder.none,
                 icon: Icon(Icons.search, color: primaryBrandColor, size: 20.r),
               ),
@@ -276,7 +276,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     ),
                     child: Text(
                       filter.toUpperCase(),
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: isSelected ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 12.sp,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -306,12 +306,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             SizedBox(height: 16.h),
             Text(
               'Error loading transactions',
-              style: TextStyle(fontFamily: 'Satoshi', fontSize: 18.sp, fontWeight: FontWeight.w500),
+              style: TextStyle(fontFamily: 'Outfit', fontSize: 18.sp, fontWeight: FontWeight.w500),
             ),
             SizedBox(height: 8.h),
             Text(
               state.message,
-              style: TextStyle(fontFamily: 'Satoshi', color: Colors.grey[500]),
+              style: TextStyle(fontFamily: 'Outfit', color: Colors.grey[500]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -328,7 +328,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             SizedBox(height: 16.h),
             Text(
               'No matches found',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 fontSize: 16.sp,
                 color: Colors.grey[400],
                 fontWeight: FontWeight.w500,
@@ -371,7 +371,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           child: Text(
             date,
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               fontSize: 13.sp,
               fontWeight: FontWeight.bold,
               color: Colors.grey[500],
@@ -456,12 +456,12 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         padding: EdgeInsets.all(16.r),
         decoration: BoxDecoration(
           color: Theme.of(context).brightness == Brightness.dark 
-              ? Colors.white.withOpacity(0.05) 
+              ? Colors.white.withValues(alpha: 0.05) 
               : Colors.grey[50],
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: Theme.of(context).brightness == Brightness.dark 
-                ? Colors.white.withOpacity(0.1) 
+                ? Colors.white.withValues(alpha: 0.1) 
                 : Colors.grey[200]!,
           ),
         ),
@@ -471,7 +471,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               width: 44.r,
               height: 44.r,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(
@@ -488,7 +488,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   Text(
                     _formatTransactionType(transaction.transactionType),
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -500,7 +500,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       Text(
                         transaction.phoneNumber.isNotEmpty ? transaction.phoneNumber : 'N/A',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: Colors.grey[500],
                           fontSize: 12.sp,
                         ),
@@ -518,7 +518,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       Text(
                         transaction.status.toUpperCase(),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: statusColor,
                           fontSize: 10.sp,
                           fontWeight: FontWeight.bold,
@@ -549,7 +549,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                     Text(
                       FormatUtils.formatAmount(transaction.amount),
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                         fontSize: 15.sp,
                         fontWeight: FontWeight.bold,
@@ -561,7 +561,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 Text(
                   DateFormat('MMM dd, HH:mm').format(transaction.createdAt),
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     color: Colors.grey[500],
                     fontSize: 11.sp,
                   ),

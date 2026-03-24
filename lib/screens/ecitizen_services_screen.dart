@@ -34,7 +34,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         SnackBar(
           content: Text(
             'Please enter a reference number',
-            style: const TextStyle(fontFamily: 'Satoshi'),
+            style: const TextStyle(fontFamily: 'Outfit'),
           ),
           backgroundColor: Colors.red,
         ),
@@ -75,7 +75,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
           SnackBar(
             content: Text(
               e.toString().replaceAll('Exception: ', ''),
-              style: const TextStyle(fontFamily: 'Satoshi'),
+              style: const TextStyle(fontFamily: 'Outfit'),
             ),
             backgroundColor: Colors.red,
           ),
@@ -97,7 +97,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         title: Text(
           'Select Currency',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             color: textColor,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
               title: Text(
                 currency,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: textColor,
                   fontSize: 16,
                 ),
@@ -140,7 +140,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
     final labelColor = isDark ? Colors.grey[400] : Colors.grey[600];
     final iconColor = isDark ? Colors.white : Colors.black87;
     final borderColor = isDark ? Colors.white24 : Colors.black12;
-    final arrowBg = isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.06);
+    final arrowBg = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06);
 
     return Scaffold(
       backgroundColor: scaffoldBg,
@@ -179,7 +179,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                               'E-Citizen Services',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: textColor,
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.bold,
@@ -201,7 +201,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                           Text(
                             'Reference Number',
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               color: labelColor,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -211,7 +211,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                           TextField(
                             controller: _referenceController,
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               color: textColor,
                               fontSize: 16.sp,
                             ),
@@ -228,7 +228,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                           Text(
                             'Currency',
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               color: labelColor,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -259,7 +259,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                                   Text(
                                     selectedCurrency,
                                     style: TextStyle(
-                                      fontFamily: 'Satoshi',
+                                      fontFamily: 'Outfit',
                                       color: textColor,
                                       fontSize: 16.sp,
                                     ),
@@ -267,7 +267,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                                   const Spacer(),
                                   Icon(
                                     Icons.keyboard_arrow_down,
-                                    color: iconColor.withOpacity(0.7),
+                                    color: iconColor.withValues(alpha: 0.7),
                                   ),
                                 ],
                               ),
@@ -292,7 +292,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryBrandColor,
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: primaryBrandColor.withOpacity(0.5),
+                    disabledBackgroundColor: primaryBrandColor.withValues(alpha: 0.5),
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.r),
@@ -311,7 +311,7 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                       : Text(
                           'Check Status',
                           style: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                           ),

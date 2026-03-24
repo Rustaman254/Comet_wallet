@@ -144,7 +144,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
         title: Text(
           'Smile ID Verification',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             color: isDark ? Colors.white : lightPrimaryText,
           ),
         ),
@@ -225,7 +225,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
               onPressed: () => setState(() => _activeFlow = null),
             ),
             title: const Text('Smart Selfie',
-                style: TextStyle(fontFamily: 'Satoshi', color: Colors.white)),
+                style: TextStyle(fontFamily: 'Outfit', color: Colors.white)),
             centerTitle: true,
           ),
           body: SmileIDSmartSelfieEnrollment(
@@ -247,7 +247,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
               onPressed: () => setState(() => _activeFlow = null),
             ),
             title: const Text('Document Verification',
-                style: TextStyle(fontFamily: 'Satoshi', color: Colors.white)),
+                style: TextStyle(fontFamily: 'Outfit', color: Colors.white)),
             centerTitle: true,
           ),
           body: SmileIDDocumentVerification(
@@ -281,7 +281,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
               onPressed: () => setState(() => _activeFlow = null),
             ),
             title: const Text('Biometric KYC',
-                style: TextStyle(fontFamily: 'Satoshi', color: Colors.white)),
+                style: TextStyle(fontFamily: 'Outfit', color: Colors.white)),
             centerTitle: true,
           ),
           body: SmileIDBiometricKYC(
@@ -304,9 +304,9 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: errorRed.withOpacity(0.15),
+          color: errorRed.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: errorRed.withOpacity(0.3)),
+          border: Border.all(color: errorRed.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -316,7 +316,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
               child: Text(
                 'Smile ID failed to initialise. Please restart the app or check your connection.',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 13,
                   color: isDark ? Colors.white : lightPrimaryText,
                 ),
@@ -331,9 +331,9 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: warningOrange.withOpacity(0.12),
+          color: warningOrange.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: warningOrange.withOpacity(0.3)),
+          border: Border.all(color: warningOrange.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -350,7 +350,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
               child: Text(
                 'Preparing Smile ID…',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 13,
                   color: isDark ? Colors.white : lightPrimaryText,
                 ),
@@ -364,9 +364,9 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: successGreen.withOpacity(0.12),
+        color: successGreen.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: successGreen.withOpacity(0.3)),
+        border: Border.all(color: successGreen.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -377,7 +377,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
             child: Text(
               'Smile ID is ready. Choose a verification method below.',
               style: TextStyle(
-                fontFamily: 'Satoshi',
+                fontFamily: 'Outfit',
                 fontSize: 13,
                 color: isDark ? Colors.white : lightPrimaryText,
               ),
@@ -395,7 +395,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
         Text(
           'Verify Your Identity',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             fontSize: 24,
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : lightPrimaryText,
@@ -405,7 +405,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
         Text(
           'Choose one of the methods below. The process takes less than 2 minutes and unlocks higher transaction limits.',
           style: TextStyle(
-            fontFamily: 'Satoshi',
+            fontFamily: 'Outfit',
             fontSize: 14,
             color: isDark ? Colors.white70 : lightSecondaryText,
             height: 1.5,
@@ -439,7 +439,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
             boxShadow: [
               if (!isDark)
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -451,7 +451,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: primaryBrandColor.withOpacity(0.12),
+                  color: primaryBrandColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: primaryBrandColor, size: 26),
@@ -464,7 +464,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
                     Text(
                       title,
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: isDark ? Colors.white : lightPrimaryText,
@@ -474,7 +474,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         fontSize: 13,
                         color: isDark ? Colors.white60 : lightSecondaryText,
                       ),
@@ -501,8 +501,8 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: SmileIDConfig.useSandbox
-                ? warningOrange.withOpacity(0.15)
-                : successGreen.withOpacity(0.15),
+                ? warningOrange.withValues(alpha: 0.15)
+                : successGreen.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
@@ -520,7 +520,7 @@ class _SmileIDKycScreenState extends State<SmileIDKycScreen> {
               Text(
                 SmileIDConfig.useSandbox ? 'Sandbox' : 'Production',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: SmileIDConfig.useSandbox

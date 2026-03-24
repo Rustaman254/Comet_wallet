@@ -237,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Add New Currency',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                   color: getTextColor(context),
@@ -266,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       title: Text(
                         '${USDALogo.getFlag(currency)} ${currency == 'USDA' ? 'USDA (Cardano)' : currency}',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: getTextColor(context),
                           fontWeight: FontWeight.w600,
                         ),
@@ -390,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Text(
                                       getInitials(_userProfile?.name ?? 'User'),
                                       style: TextStyle(
-                                        fontFamily: 'Satoshi',
+                                        fontFamily: 'Outfit',
                                         color: getTextColor(context),
                                         fontSize: 20.sp,
                                         fontWeight: FontWeight.bold,
@@ -426,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 40.r,
                             height: 40.r,
                             decoration: BoxDecoration(
-                              color: getTextColor(context).withOpacity(0.1),
+                              color: getTextColor(context).withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -462,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Text(
                                     'Coming Soon',
                                     style: TextStyle(
-                                      fontFamily: 'Satoshi',
+                                      fontFamily: 'Outfit',
                                       color: Colors.white,
                                       fontSize: 8.sp,
                                       fontWeight: FontWeight.bold,
@@ -475,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: 40.r,
                                   height: 40.r,
                                   decoration: BoxDecoration(
-                                    color: getTextColor(context).withOpacity(0.1),
+                                    color: getTextColor(context).withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -664,7 +664,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   Text(
                                                                     'Total Balance',
                                                                     style: TextStyle(
-                                                                      fontFamily: 'Satoshi',
+                                                                      fontFamily: 'Outfit',
                                                                       color: Colors.white.withValues(alpha: 0.9),
                                                                       fontSize: 16.sp,
                                                                       fontWeight: FontWeight.bold,
@@ -697,7 +697,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                          Text(
                                                                             currency,
                                                                             style: TextStyle(
-                                                                              fontFamily: 'Satoshi',
+                                                                              fontFamily: 'Outfit',
                                                                               color: Colors.white,
                                                                               fontSize: 12.sp,
                                                                               fontWeight: FontWeight.bold,
@@ -718,7 +718,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   Text(
                                                                     balance['symbol'] ?? (isUSDA ? '\$' : currency),
                                                                     style: TextStyle(
-                                                                      fontFamily: 'Satoshi',
+                                                                      fontFamily: 'Outfit',
                                                                       color: Colors.white.withValues(alpha: 0.7),
                                                                       fontSize: 20.sp,
                                                                       fontWeight: FontWeight.w500,
@@ -728,7 +728,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   Text(
                                                                     balanceAmount,
                                                                     style: TextStyle(
-                                                                      fontFamily: 'Satoshi',
+                                                                      fontFamily: 'Outfit',
                                                                       color: Colors.white,
                                                                       fontSize: 32.sp,
                                                                       fontWeight: FontWeight.bold,
@@ -787,7 +787,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                      Text(
                                                                        'Powered by Cardano',
                                                                        style: TextStyle(
-                                                                         fontFamily: 'Satoshi',
+                                                                         fontFamily: 'Outfit',
                                                                          color: Colors.white70,
                                                                          fontSize: 11.sp,
                                                                          fontWeight: FontWeight.w500,
@@ -806,7 +806,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                          Text(
                                                                            'Cardano Address',
                                                                            style: TextStyle(
-                                                                             fontFamily: 'Satoshi',
+                                                                             fontFamily: 'Outfit',
                                                                              color: Colors.white54,
                                                                              fontSize: 10.sp,
                                                                            ),
@@ -829,7 +829,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                      ? '${_userProfile!.cardanoAddress.substring(0, 10)}...${_userProfile!.cardanoAddress.substring(_userProfile!.cardanoAddress.length - 8)}'
                                                                                      : (_userProfile?.cardanoAddress ?? '...'),
                                                                                  style: TextStyle(
-                                                                                   fontFamily: 'Satoshi',
+                                                                                   fontFamily: 'Outfit',
                                                                                    color: Colors.white.withValues(alpha: 0.9),
                                                                                    fontSize: 13.sp,
                                                                                    fontWeight: FontWeight.w500,
@@ -856,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                          child: Text(
                                                                            'Swap',
                                                                            style: TextStyle(
-                                                                             fontFamily: 'Satoshi',
+                                                                             fontFamily: 'Outfit',
                                                                              color: Colors.black,
                                                                              fontSize: 14.sp,
                                                                              fontWeight: FontWeight.bold,
@@ -871,7 +871,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   Text(
                                                                     DateFormat('d MMMM yyyy').format(DateTime.now()), 
                                                                     style: TextStyle(
-                                                                      fontFamily: 'Satoshi',
+                                                                      fontFamily: 'Outfit',
                                                                       color: Colors.white.withValues(alpha: 0.7),
                                                                       fontSize: 16.sp, 
                                                                       fontWeight: FontWeight.w500,
@@ -909,7 +909,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       Container(
                                                         padding: EdgeInsets.all(16.r),
                                                         decoration: BoxDecoration(
-                                                          color: primaryBrandColor.withOpacity(0.1),
+                                                          color: primaryBrandColor.withValues(alpha: 0.1),
                                                           shape: BoxShape.circle,
                                                         ),
                                                         child: Icon(
@@ -922,7 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       Text(
                                                         'Add New Currency',
                                                         style: TextStyle(
-                                                          fontFamily: 'Satoshi',
+                                                          fontFamily: 'Outfit',
                                                           color: getTextColor(context),
                                                           fontSize: 18.sp,
                                                           fontWeight: FontWeight.bold,
@@ -933,7 +933,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         'Get a multi-currency wallet in seconds',
                                                         textAlign: TextAlign.center,
                                                         style: TextStyle(
-                                                          fontFamily: 'Satoshi',
+                                                          fontFamily: 'Outfit',
                                                           color: getSecondaryTextColor(context),
                                                           fontSize: 14.sp,
                                                         ),
@@ -1010,7 +1010,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(
                                   'Transaction',
                                   style: TextStyle(
-                                    fontFamily: 'Satoshi',
+                                    fontFamily: 'Outfit',
                                     color: getTextColor(context),
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.bold,
@@ -1029,7 +1029,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Text(
                                     'See All',
                                     style: TextStyle(
-                                      fontFamily: 'Satoshi',
+                                      fontFamily: 'Outfit',
                                       color: primaryBrandColor,
                                       fontSize: 14.sp,
                                       fontWeight: FontWeight.w500,
@@ -1108,7 +1108,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             label,
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: getTextColor(context),
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
@@ -1131,7 +1131,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? null 
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -1156,7 +1156,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: getSecondaryTextColor(context),
                   fontSize: 10.sp,
                 ),
@@ -1164,7 +1164,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 value,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: getTextColor(context),
                   fontSize: 13.sp,
                   fontWeight: FontWeight.bold,
@@ -1208,7 +1208,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'Total Balance',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: Colors.white70,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.w400,
@@ -1224,7 +1224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text(
                   'KES',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     color: Colors.white,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
@@ -1240,7 +1240,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 'KES',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: Colors.white70,
                   fontSize: 25.sp,
                   fontWeight: FontWeight.w500,
@@ -1250,7 +1250,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 '0.00',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: Colors.white,
                   fontSize: 35.sp,
                   fontWeight: FontWeight.bold,
@@ -1262,7 +1262,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             'Top up to start transacting',
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: Colors.white70,
               fontSize: 14.sp,
             ),
@@ -1284,7 +1284,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             'No recent transactions',
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: Colors.grey[600],
               fontSize: 16.sp,
             ),
@@ -1358,7 +1358,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 48.r,
               height: 48.r,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(
@@ -1375,7 +1375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     _formatTransactionType(transaction.transactionType),
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: getTextColor(context),
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -1389,7 +1389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? transaction.phoneNumber
                             : 'N/A',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: getSecondaryTextColor(context),
                           fontSize: 11.sp,
                         ),
@@ -1407,7 +1407,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         transaction.status.toUpperCase(),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: statusColor,
                           fontSize: 9.sp,
                           fontWeight: FontWeight.bold,
@@ -1438,7 +1438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       FormatUtils.formatAmount(transaction.amount),
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: getTextColor(context),
                         fontSize: 15.sp,
                         fontWeight: FontWeight.bold,
@@ -1450,7 +1450,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   DateFormat('MMM dd, HH:mm').format(transaction.createdAt),
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     color: getTertiaryTextColor(context),
                     fontSize: 10.sp,
                   ),

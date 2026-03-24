@@ -57,7 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
+                          color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -69,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     Text(
                       'Profile',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -79,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1),
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -113,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 16),
                     Text(
                       _userName,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
@@ -123,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Text(
                         _userRole,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: getSecondaryTextColor(context),
                           fontSize: 13.sp,
                         ),
@@ -186,19 +186,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.1) ?? Colors.white10,
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.1) ?? Colors.white10,
               width: 1,
             ),
           ),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7), size: 22),
+            Icon(icon, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7), size: 22),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 14, // Requested size
                   fontWeight: FontWeight.w500,
@@ -214,7 +214,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Text(
                   badgeCount.toString(),
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -224,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             else
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.3),
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.3),
                 size: 14,
               ),
           ],

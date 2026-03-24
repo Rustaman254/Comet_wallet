@@ -64,7 +64,7 @@ class CustomToast extends StatelessWidget {
             Expanded(
               child: Text(
                 message,
-                style: TextStyle(fontFamily: 'Satoshi',
+                style: TextStyle(fontFamily: 'Outfit',
                   color: Colors.black87,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

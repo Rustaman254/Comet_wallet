@@ -137,7 +137,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                     child: Text(
                       'Receive Money',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 children: [
                   Text(
                     'Your Mobile Wallet Number',
-                    style: TextStyle(fontFamily: 'Satoshi',
+                    style: TextStyle(fontFamily: 'Outfit',
                       color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
                       fontSize: 14,
                     ),
@@ -172,7 +172,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                           },
                           child: Text(
                             walletAddress,
-                            style: TextStyle(fontFamily: 'Satoshi',
+                            style: TextStyle(fontFamily: 'Outfit',
                               color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[600] : Colors.black,
                               fontSize: 32.sp,
                               fontWeight: FontWeight.bold,
@@ -210,15 +210,15 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 children: [
                    Text(
                     'Amount (${USDALogo.getFlag('KES')} KES)',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withOpacity(0.7),
+                    style: TextStyle(fontFamily: 'Outfit',
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _amountController,
-                    style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
+                    style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
@@ -229,15 +229,15 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   const SizedBox(height: 24),
                   Text(
                     'Description',
-                    style: TextStyle(fontFamily: 'Satoshi',
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withOpacity(0.7),
+                    style: TextStyle(fontFamily: 'Outfit',
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _descriptionController,
-                    style: TextStyle(fontFamily: 'Satoshi',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
+                    style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
@@ -269,7 +269,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                               color: Colors.white, strokeWidth: 2.w))
                       : Text(
                           'Generate QR Code',
-                          style: TextStyle(fontFamily: 'Satoshi',
+                          style: TextStyle(fontFamily: 'Outfit',
                             fontSize: 16.sp,
                             fontWeight: FontWeight.bold,
                           ),

@@ -123,7 +123,7 @@ class USDABadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(height / 2),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4A90E2).withOpacity(0.3),
+            color: const Color(0xFF4A90E2).withValues(alpha: 0.3),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -141,7 +141,7 @@ class USDABadge extends StatelessWidget {
           Text(
             'USDA (Cardano)',
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: Colors.white,
               fontSize: height * 0.45,
               fontWeight: FontWeight.bold,

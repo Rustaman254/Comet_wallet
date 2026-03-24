@@ -28,8 +28,8 @@ class KYCIntroScreen extends StatelessWidget {
             },
             child: Text(
               'Skip',
-              style: TextStyle(fontFamily: 'Satoshi',
-                color: Colors.white.withOpacity(0.6),
+              style: TextStyle(fontFamily: 'Outfit',
+                color: Colors.white.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -45,7 +45,7 @@ class KYCIntroScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color: primaryBrandColor.withOpacity(0.1),
+                color: primaryBrandColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -57,7 +57,7 @@ class KYCIntroScreen extends StatelessWidget {
             const SizedBox(height: 40),
             Text(
               'Verify Your Identity',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -67,9 +67,9 @@ class KYCIntroScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'To protect your account and unlock all features, we need to verify your identity. This process is quick and secure.',
-              style: TextStyle(fontFamily: 'Satoshi',
+              style: TextStyle(fontFamily: 'Outfit',
                 fontSize: 16,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -99,7 +99,7 @@ class KYCIntroScreen extends StatelessWidget {
                 ),
                 child: Text(
                   'Start Verification',
-                  style: TextStyle(fontFamily: 'Satoshi',
+                  style: TextStyle(fontFamily: 'Outfit',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -120,7 +120,7 @@ class KYCIntroScreen extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           text,
-          style: TextStyle(fontFamily: 'Satoshi',
+          style: TextStyle(fontFamily: 'Outfit',
             fontSize: 14,
             color: Colors.white,
           ),

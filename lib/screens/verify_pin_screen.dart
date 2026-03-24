@@ -80,7 +80,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
     
     _biometricColorAnimation = ColorTween(
       begin: primaryBrandColor,
-      end: primaryBrandColor.withOpacity(0.5),
+      end: primaryBrandColor.withValues(alpha: 0.5),
     ).animate(
       CurvedAnimation(
         parent: _biometricPulseController,
@@ -187,7 +187,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -202,7 +202,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                     'Verifying PIN...',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       color: isDark ? Colors.white : Colors.black,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
@@ -414,7 +414,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                         borderRadius: BorderRadius.circular(999.r),
                         color: isFilled
                             ? primaryBrandColor
-                            : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withOpacity(0.3)),
+                            : (isDark ? Colors.white.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.3)),
                       ),
                     ),
                   ),
@@ -423,7 +423,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                     Text(
                       '*',
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: isDark ? Colors.white : Colors.black,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,
@@ -448,7 +448,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           child: Text(
             number,
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               color: isDark ? Colors.white : Colors.black,
               fontSize: 24.sp,
               fontWeight: FontWeight.w500,
@@ -493,7 +493,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               boxShadow: _isBiometricScanning
                   ? [
                       BoxShadow(
-                        color: primaryBrandColor.withOpacity(0.3),
+                        color: primaryBrandColor.withValues(alpha: 0.3),
                         blurRadius: 10 * _biometricPulseController.value,
                         spreadRadius: 2 * _biometricPulseController.value,
                       )
@@ -542,7 +542,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
               child: Text(
                 '0',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w500,
@@ -590,7 +590,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                             child: Text(
                               getInitials(_userName),
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: Theme.of(context).brightness == Brightness.dark 
                                     ? Colors.white 
                                     : Colors.black,
@@ -608,10 +608,10 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                             Text(
                               'Welcome back,',
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: Theme.of(context).brightness == Brightness.dark 
-                                    ? Colors.white.withOpacity(0.7) 
-                                    : Colors.black.withOpacity(0.7),
+                                    ? Colors.white.withValues(alpha: 0.7) 
+                                    : Colors.black.withValues(alpha: 0.7),
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -620,7 +620,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                             Text(
                               _userName,
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: Theme.of(context).brightness == Brightness.dark 
                                     ? Colors.white 
                                     : Colors.black,
@@ -636,7 +636,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                         child: Text(
                           'Enter your PIN',
                           style: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             color: Theme.of(context).brightness == Brightness.dark 
                                 ? Colors.white 
                                 : Colors.black,
@@ -655,7 +655,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                           child: Text(
                             'Wrong PIN.',
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               color: Colors.red,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
@@ -679,7 +679,7 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                           child: Text(
                             'Forgot PIN?',
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               color: primaryBrandColor,
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w500,

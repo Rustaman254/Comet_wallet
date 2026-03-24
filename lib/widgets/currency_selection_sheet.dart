@@ -52,7 +52,7 @@ class CurrencySelectionSheet extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
@@ -92,9 +92,9 @@ class CurrencySelectionSheet extends StatelessWidget {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
                         decoration: isSelected ? BoxDecoration(
-                          color: primaryBrandColor.withOpacity(0.1),
+                          color: primaryBrandColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: primaryBrandColor.withOpacity(0.3)),
+                          border: Border.all(color: primaryBrandColor.withValues(alpha: 0.3)),
                         ) : null,
                         child: Row(
                           children: [
@@ -104,7 +104,7 @@ class CurrencySelectionSheet extends StatelessWidget {
                               child: Text(
                                 _getCurrencyName(currency),
                                 style: TextStyle(
-                                  fontFamily: 'Satoshi',
+                                  fontFamily: 'Outfit',
                                   fontSize: 16.sp,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                                   color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,

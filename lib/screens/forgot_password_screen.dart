@@ -41,7 +41,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Text(
                 'Forgot Password',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                   fontSize: 28.sp,
                   fontWeight: FontWeight.bold,
@@ -51,8 +51,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Text(
                 'Enter your email address to reset your password',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
-                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withOpacity(0.6) : Colors.black.withOpacity(0.6),
+                  fontFamily: 'Outfit',
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.6) : Colors.black.withValues(alpha: 0.6),
                   fontSize: 14.sp,
                 ),
               ),
@@ -65,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Text(
                       'Email Address',
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w400,
@@ -118,7 +118,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Text(
                 'Send Reset Link',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                 ),

@@ -67,7 +67,7 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
         ),
         title: Text(
           'Selfie Verification',
-          style: TextStyle(fontFamily: 'Satoshi',color: Colors.white),
+          style: TextStyle(fontFamily: 'Outfit',color: Colors.white),
         ),
         centerTitle: true,
       ),

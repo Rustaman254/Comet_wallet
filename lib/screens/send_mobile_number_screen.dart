@@ -168,7 +168,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                       'Withdraw to Mobile Number',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Satoshi',
+                        fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -196,7 +196,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                             Text(
                               'Available Balance',
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 color: Colors.white70,
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w400,
@@ -211,7 +211,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                   Text(
                                     '${USDALogo.getFlag(_selectedCurrency)} $_selectedCurrency ',
                                     style: TextStyle(
-                                      fontFamily: 'Satoshi',
+                                      fontFamily: 'Outfit',
                                       color: primaryBrandColor,
                                       fontSize: 20.sp,
                                       fontWeight: FontWeight.w600,
@@ -220,7 +220,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                   Text(
                                     _getBalanceForCurrency(_selectedCurrency, balances),
                                     style: TextStyle(
-                                      fontFamily: 'Satoshi',
+                                      fontFamily: 'Outfit',
                                       color: primaryBrandColor,
                                       fontSize: 36.sp,
                                       fontWeight: FontWeight.bold,
@@ -232,7 +232,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                               Text(
                                 'KES 0.00',
                                 style: TextStyle(
-                                  fontFamily: 'Satoshi',
+                                  fontFamily: 'Outfit',
                                   color: primaryBrandColor,
                                   fontSize: 36.sp,
                                   fontWeight: FontWeight.bold,
@@ -247,7 +247,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                       Text(
                         'Please enter the payment details',
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 20.sp,
                           fontWeight: FontWeight.bold,
@@ -286,7 +286,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
                                 icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70, size: 20),
                                 isExpanded: true,
                                 style: TextStyle(
-                                  fontFamily: 'Satoshi',
+                                  fontFamily: 'Outfit',
                                   color: Colors.white,
                                   fontSize: 14.sp,
                                   fontWeight: FontWeight.w500,
@@ -390,7 +390,7 @@ class _SendMobileNumberScreenState extends State<SendMobileNumberScreen> {
               child: Text(
                 'Withdraw Money',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                 ),

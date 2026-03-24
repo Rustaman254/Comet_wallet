@@ -175,7 +175,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 child: Text(
                   'Swap Successful',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                     color: getTextColor(context),
@@ -191,7 +191,7 @@ class _SwapScreenState extends State<SwapScreen> {
               Text(
                 state.message,
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 14.sp,
                   color: getSecondaryTextColor(context),
                 ),
@@ -200,7 +200,7 @@ class _SwapScreenState extends State<SwapScreen> {
               Text(
                 'Updated Balances',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                   color: getTextColor(context),
@@ -220,7 +220,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           Text(
                             entry.key,
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                               color: getTextColor(context),
@@ -231,7 +231,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       Text(
                         _formatBalance(entry.value),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                           color: getTextColor(context),
@@ -246,7 +246,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 Text(
                   'Transaction details',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
                     color: getTextColor(context),
@@ -268,7 +268,7 @@ class _SwapScreenState extends State<SwapScreen> {
                         child: Text(
                           state.txId!,
                           style: TextStyle(
-                            fontFamily: 'Satoshi',
+                            fontFamily: 'Outfit',
                             fontSize: 12.sp,
                             color: primaryBrandColor,
                             decoration: TextDecoration.underline,
@@ -303,7 +303,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 child: Text(
                   'Done',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                   ),
@@ -398,7 +398,7 @@ class _SwapScreenState extends State<SwapScreen> {
           title: Text(
             'Swap',
             style: TextStyle(
-              fontFamily: 'Satoshi',
+              fontFamily: 'Outfit',
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,
               color: getTextColor(context),
@@ -489,7 +489,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           Text(
                             'Exchange Rate',
                             style: TextStyle(
-                              fontFamily: 'Satoshi',
+                              fontFamily: 'Outfit',
                               fontSize: 14.sp,
                               color: getSecondaryTextColor(context),
                             ),
@@ -506,7 +506,7 @@ class _SwapScreenState extends State<SwapScreen> {
                               : Text(
                                   '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
                                   style: TextStyle(
-                                    fontFamily: 'Satoshi',
+                                    fontFamily: 'Outfit',
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.w600,
                                     color: getTextColor(context),
@@ -542,7 +542,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           : Text(
                               'Swap Now',
                               style: TextStyle(
-                                fontFamily: 'Satoshi',
+                                fontFamily: 'Outfit',
                                 fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -582,7 +582,7 @@ class _SwapScreenState extends State<SwapScreen> {
               Text(
                 isFrom ? 'You pay' : 'You receive',
                 style: TextStyle(
-                  fontFamily: 'Satoshi',
+                  fontFamily: 'Outfit',
                   fontSize: 14.sp,
                   color: getSecondaryTextColor(context),
                 ),
@@ -593,7 +593,7 @@ class _SwapScreenState extends State<SwapScreen> {
                   child: Text(
                     'Balance: ${balance.toStringAsFixed(2)} $currency',
                     style: TextStyle(
-                      fontFamily: 'Satoshi',
+                      fontFamily: 'Outfit',
                       fontSize: 12.sp,
                       color: primaryBrandColor,
                       fontWeight: FontWeight.w600,
@@ -611,7 +611,7 @@ class _SwapScreenState extends State<SwapScreen> {
                         controller: controller,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 28.sp,
                           fontWeight: FontWeight.bold,
                           color: getTextColor(context),
@@ -648,7 +648,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     : Text(
                         controller.text,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 28.sp,
                           fontWeight: FontWeight.bold,
                           color: getTextColor(context),
@@ -671,7 +671,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       Text(
                         currency == 'USDA' ? 'USDA (Cardano)' : currency,
                         style: TextStyle(
-                          fontFamily: 'Satoshi',
+                          fontFamily: 'Outfit',
                           fontSize: 16.sp,
                           fontWeight: FontWeight.bold,
                           color: getTextColor(context),
@@ -699,7 +699,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 child: Text(
                   'MAX',
                   style: TextStyle(
-                    fontFamily: 'Satoshi',
+                    fontFamily: 'Outfit',
                     fontSize: 12.sp,
                     fontWeight: FontWeight.bold,
                     color: primaryBrandColor,

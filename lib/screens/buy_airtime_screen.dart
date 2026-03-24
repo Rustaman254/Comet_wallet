@@ -62,7 +62,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       child: Text(
                         'Buy Airtime',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -82,7 +82,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                   children: [
                     Text(
                       'Select Network',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -114,7 +114,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                               ),
                               child: Text(
                                 provider,
-                                style: TextStyle(fontFamily: 'Satoshi',
+                                style: TextStyle(fontFamily: 'Outfit',
                                   color: isSelected ? primaryBrandColor : Colors.white,
                                   fontSize: 14,
                                   fontWeight: isSelected
@@ -146,7 +146,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     children: [
                       Text(
                         'Phone Number',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -155,14 +155,14 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _phoneController,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 18,
                         ),
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
                           hintText: '+254 712 345 678',
-                          hintStyle: TextStyle(fontFamily: 'Satoshi',
+                          hintStyle: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white38,
                           ),
                           prefixIcon: const Icon(
@@ -203,7 +203,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                   children: [
                     Text(
                       'Select Amount (KES)',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -239,7 +239,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                             ),
                             child: Text(
                               'KES $amount',
-                              style: TextStyle(fontFamily: 'Satoshi',
+                              style: TextStyle(fontFamily: 'Outfit',
                                 color: Colors.white,
                                 fontSize: 14,
                                 fontWeight: isSelected
@@ -269,7 +269,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     children: [
                       Text(
                         'Or Enter Custom Amount',
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -278,7 +278,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _amountController,
-                        style: TextStyle(fontFamily: 'Satoshi',
+                        style: TextStyle(fontFamily: 'Outfit',
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -291,11 +291,11 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: '0',
-                          hintStyle: TextStyle(fontFamily: 'Satoshi',
+                          hintStyle: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white38,
                           ),
                           prefixText: 'KES ',
-                          prefixStyle: TextStyle(fontFamily: 'Satoshi',
+                          prefixStyle: TextStyle(fontFamily: 'Outfit',
                             color: Colors.white70,
                             fontSize: 18,
                           ),
@@ -320,7 +320,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                           SnackBar(
                             content: Text(
                               'Please fill all fields',
-                              style: TextStyle(fontFamily: 'Satoshi',),
+                              style: TextStyle(fontFamily: 'Outfit',),
                             ),
                             backgroundColor: Colors.red,
                           ),
@@ -352,7 +352,7 @@ class _BuyAirtimeScreenState extends State<BuyAirtimeScreen> {
                     ),
                     child: Text(
                       'Buy Airtime',
-                      style: TextStyle(fontFamily: 'Satoshi',
+                      style: TextStyle(fontFamily: 'Outfit',
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

@@ -10,18 +10,18 @@ InputDecoration buildEquityInputDecoration({
 }) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   final textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.white;
-  final fillColor = isDark ? Colors.white.withOpacity(0.05) : Colors.grey[100];
-  final borderColor = isDark ? Colors.white.withOpacity(0.1) : Colors.grey[300];
+  final fillColor = isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[100];
+  final borderColor = isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey[300];
 
   return InputDecoration(
     labelText: label,
     labelStyle: TextStyle(
-      color: textColor.withOpacity(0.7),
+      color: textColor.withValues(alpha: 0.7),
       fontSize: 14,
     ),
     hintText: hintText,
     hintStyle: TextStyle(
-      color: textColor.withOpacity(0.4),
+      color: textColor.withValues(alpha: 0.4),
       fontSize: 15,
     ),
     prefixIcon: prefixIcon,
@@ -35,7 +35,7 @@ InputDecoration buildEquityInputDecoration({
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: equityMaroon, width: 2),
+      borderSide: const BorderSide(color: primaryBrandColor, width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),

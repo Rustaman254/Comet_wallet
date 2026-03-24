@@ -161,12 +161,12 @@ class ModernInput {
       ),
       labelStyle: TextStyle(
         color: isDark ? Colors.white70 : lightSecondaryText,
-        fontFamily: 'Satoshi',
+        fontFamily: 'Outfit',
         fontWeight: FontWeight.w500,
       ),
       hintStyle: TextStyle(
         color: isDark ? Colors.white30 : lightTertiaryText,
-        fontFamily: 'Satoshi',
+        fontFamily: 'Outfit',
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
@@ -199,11 +199,11 @@ class ModernInput {
       ),
       labelStyle: TextStyle(
         color: isDark ? Colors.white70 : lightSecondaryText,
-        fontFamily: 'Satoshi',
+        fontFamily: 'Outfit',
       ),
       hintStyle: TextStyle(
         color: isDark ? Colors.white30 : lightTertiaryText,
-        fontFamily: 'Satoshi',
+        fontFamily: 'Outfit',
       ),
     );
   }
