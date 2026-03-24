@@ -10,6 +10,8 @@ import '../bloc/orders_event.dart';
 import '../bloc/orders_state.dart';
 import '../services/orders_service.dart';
 import 'enter_pin_screen.dart';
+import 'main_wrapper.dart';
+
 
 // ─── OrdersPage ──────────────────────────────────────────────────────────────
 
@@ -173,7 +175,14 @@ class _OrdersViewState extends State<OrdersView> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back,
                   color: Theme.of(context).textTheme.bodyMedium?.color),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (_) => const MainWrapper(initialIndex: 0),
+                  ),
+                  (route) => false,
+                );
+              },
             ),
             title: Text(
               'Orders',

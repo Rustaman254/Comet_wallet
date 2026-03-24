@@ -4,7 +4,7 @@ import '../constants/colors.dart';
 import '../widgets/usda_logo.dart';
 
 class CurrencySelectionSheet extends StatelessWidget {
-  final List<String> currencies; // List of currency codes
+  final List<Map<String, String>> currencies; // List of {code: 'USD', name: 'US Dollar'}
   final String? selectedCurrency;
   final Function(String) onCurrencySelected;
   final String title;
@@ -19,17 +19,25 @@ class CurrencySelectionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Prioritize USDA (move to top)
-    final sortedCurrencies = List<String>.from(currencies);
+    // 1. Sort currencies: USDA first, then others alphabetically by code
+    final sortedCurrencies = List<Map<String, String>>.from(currencies);
     
-    // Remove duplicates if any
-    final uniqueCurrencies = sortedCurrencies.toSet().toList();
+    // Remove duplicates if any (by code)
+    final Map<String, Map<String, String>> uniqueMap = {};
+    for (var currency in sortedCurrencies) {
+      if (currency['code'] != null) {
+        uniqueMap[currency['code']!] = currency;
+      }
+    }
+    final uniqueCurrenciesList = uniqueMap.values.toList();
     
     // Sort logic: USDA first, then others
-    uniqueCurrencies.sort((a, b) {
-      if (a == 'USDA') return -1;
-      if (b == 'USDA') return 1;
-      return a.compareTo(b);
+    uniqueCurrenciesList.sort((a, b) {
+      final codeA = a['code'] ?? '';
+      final codeB = b['code'] ?? '';
+      if (codeA == 'USDA') return -1;
+      if (codeB == 'USDA') return 1;
+      return codeA.compareTo(codeB);
     });
 
     return Container(
@@ -73,19 +81,21 @@ class CurrencySelectionSheet extends StatelessWidget {
               child: ListView.separated(
                 physics: const BouncingScrollPhysics(),
                 shrinkWrap: true,
-                itemCount: uniqueCurrencies.length,
+                itemCount: uniqueCurrenciesList.length,
                 separatorBuilder: (_, __) => Divider(
                   color: Theme.of(context).brightness == Brightness.dark ? Colors.white12 : Colors.grey[200],
                 ),
                 itemBuilder: (context, index) {
-                  final currency = uniqueCurrencies[index];
-                  final isSelected = currency == selectedCurrency;
+                  final currencyData = uniqueCurrenciesList[index];
+                  final code = currencyData['code'] ?? '';
+                  final name = currencyData['name'] ?? code;
+                  final isSelected = code == selectedCurrency;
                   
                   return Material(
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        onCurrencySelected(currency);
+                        onCurrencySelected(code);
                         Navigator.pop(context);
                       },
                       borderRadius: BorderRadius.circular(12.r),
@@ -98,17 +108,31 @@ class CurrencySelectionSheet extends StatelessWidget {
                         ) : null,
                         child: Row(
                           children: [
-                            _buildCurrencyIcon(currency, size: 32.r, context: context),
+                            _buildCurrencyIcon(code, size: 32.r, context: context),
                             SizedBox(width: 16.w),
                             Expanded(
-                              child: Text(
-                                _getCurrencyName(currency),
-                                style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  fontSize: 16.sp,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                                ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: TextStyle(
+                                      fontFamily: 'Outfit',
+                                      fontSize: 16.sp,
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                    ),
+                                  ),
+                                  if (name != code)
+                                    Text(
+                                      code,
+                                      style: TextStyle(
+                                        fontFamily: 'Outfit',
+                                        fontSize: 12.sp,
+                                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.black54,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                             if (isSelected)
@@ -128,7 +152,6 @@ class CurrencySelectionSheet extends StatelessWidget {
   }
 
   String _getCurrencyName(String code) {
-    if (code == 'USDA') return 'USDA (Cardano)';
     return code;
   }
 

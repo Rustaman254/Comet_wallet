@@ -236,7 +236,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 10.h),
       child: Column(
         children: [
-          Container(
+/*          Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
@@ -255,7 +255,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               ),
             ),
           ),
-          SizedBox(height: 12.h),
+          SizedBox(height: 12.h), */
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(

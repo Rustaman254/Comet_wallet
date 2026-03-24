@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
+import '../bloc/wallet_state.dart';
 import '../constants/colors.dart';
 import '../services/wallet_service.dart';
 import '../services/logger_service.dart';
@@ -560,22 +561,67 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
   }
 
   Widget _buildCurrencySelection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Currency', style: TextStyle(fontFamily: 'Outfit', color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7), fontSize: 14)),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.3) ?? Colors.grey, width: 1))),
-          child: DropdownButton<String>(
-            isExpanded: true,
-            underline: Container(),
-            value: _selectedCurrency,
-            onChanged: (v) => setState(() => _selectedCurrency = v!),
-            items: ['KES', 'USD', 'EUR'].map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-          ),
-        ),
-      ],
+    return BlocBuilder<WalletBloc, WalletState>(
+      builder: (context, state) {
+        List<Map<String, String>> supportedCurrencies = [];
+        if (state is WalletLoaded) {
+          supportedCurrencies = state.supportedCurrencies ?? [];
+        } else if (state is WalletBalanceUpdated) {
+          supportedCurrencies = state.supportedCurrencies ?? [];
+        }
+
+        if (supportedCurrencies.isEmpty) {
+          // Fallback to basic currencies if not yet loaded
+          supportedCurrencies = [
+            {'code': 'KES', 'name': 'KES'},
+            {'code': 'USD', 'name': 'USD'},
+            {'code': 'EUR', 'name': 'EUR'},
+          ];
+        }
+
+        // Ensure current selection is valid
+        if (!supportedCurrencies.any((c) => c['code'] == _selectedCurrency)) {
+          _selectedCurrency = supportedCurrencies.first['code']!;
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Currency',
+                style: TextStyle(
+                    fontFamily: 'Outfit',
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.color
+                        ?.withValues(alpha: 0.7),
+                    fontSize: 14)),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                          color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withValues(alpha: 0.3) ??
+                              Colors.grey,
+                          width: 1))),
+              child: DropdownButton<String>(
+                isExpanded: true,
+                underline: Container(),
+                value: _selectedCurrency,
+                onChanged: (v) => setState(() => _selectedCurrency = v!),
+                items: supportedCurrencies.map((c) {
+                  return DropdownMenuItem(
+                      value: c['code'], child: Text(c['code']!));
+                }).toList(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

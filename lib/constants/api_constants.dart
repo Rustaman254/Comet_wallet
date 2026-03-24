@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'https://api.fusionfi.io/api/v1'; // https://api.fusionfi.io - https://api.yeshara.network
+  static const String baseUrl = 'https://api.yeshara.network/api/v1'; // https://api.fusionfi.io - https://api.yeshara.network
   static const String loginEndpoint = '$baseUrl/users/login';
   static const String registerEndpoint = '$baseUrl/users/create';
   static const String userProfileEndpoint = '$baseUrl/users/profile';
@@ -30,4 +30,5 @@ class ApiConstants {
 
   // Forex endpoints
   static const String forexRatesEndpoint = '$baseUrl/forex/rates';
+  static const String currenciesEndpoint = 'https://api.yeshara.network/api/v1/forex/currencies';
 }

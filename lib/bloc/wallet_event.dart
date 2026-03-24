@@ -109,3 +109,7 @@ class TransferUSDA extends WalletEvent {
   @override
   List<Object?> get props => [recipientAddress, amount];
 }
+
+class FetchSupportedCurrencies extends WalletEvent {
+  const FetchSupportedCurrencies();
+}

@@ -336,13 +336,30 @@ class _SwapScreenState extends State<SwapScreen> {
   }
 
   void _showCurrencyPicker(bool isFrom) {
+    final state = context.read<WalletBloc>().state;
+    List<Map<String, String>> supportedCurrencies = [];
+    
+    if (state is WalletLoaded) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    } else if (state is WalletBalanceUpdated) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    }
+
+    if (supportedCurrencies.isEmpty) {
+      // Fallback to hardcoded if not yet fetched
+      supportedCurrencies = _availableCurrencies.map((code) => {
+        'code': code,
+        'name': code == 'USDA' ? 'USDA (Cardano)' : code,
+      }).toList();
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return CurrencySelectionSheet(
-          currencies: _availableCurrencies,
+          currencies: supportedCurrencies,
           selectedCurrency: isFrom ? _fromCurrency : _toCurrency,
           onCurrencySelected: (currency) {
             setState(() {

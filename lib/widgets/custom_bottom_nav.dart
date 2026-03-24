@@ -41,11 +41,9 @@ class CustomBottomNav extends StatelessWidget {
                 _buildNavItem(context, 0, HeroIcons.home),
                 SizedBox(width: 8.w),
                 // Card removed
-                _buildNavItem(context, 1, HeroIcons.clock),
+                _buildNavItem(context, 1, HeroIcons.listBullet),
                 SizedBox(width: 8.w),
-                _buildNavItem(context, 2, HeroIcons.shoppingBag),
-                SizedBox(width: 8.w),
-                _buildNavItem(context, 3, HeroIcons.cog6Tooth),
+                _buildNavItem(context, 2, HeroIcons.checkBadge),
               ],
             ),
             ),

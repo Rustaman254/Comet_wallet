@@ -9,6 +9,10 @@ import '../services/token_service.dart';
 import '../utils/input_decoration.dart';
 import 'payment_qr_display_screen.dart';
 import 'sign_in_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_state.dart';
+import '../widgets/currency_selection_sheet.dart';
 import '../widgets/usda_logo.dart';
 
 class ReceiveMoneyScreen extends StatefulWidget {
@@ -22,6 +26,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
   String walletAddress = 'Loading...';
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  String _selectedCurrency = 'KES';
   bool _isLoading = false;
 
   @override
@@ -60,7 +65,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
       final amount = double.tryParse(_amountController.text) ?? 0.0;
       final response = await WalletService.createPaymentLink(
         amount: amount,
-        currency: 'KES',
+        currency: _selectedCurrency,
         description: _descriptionController.text.isEmpty
             ? 'Payment to $walletAddress'
             : _descriptionController.text,
@@ -83,7 +88,8 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
       if (mounted) {
         final errorMsg = e.toString();
         if (errorMsg.contains('401') || errorMsg.contains('expired')) {
-          ToastService().showError(context, 'Session expired. Please login again.');
+          ToastService().showError(
+              context, 'Session expired. Please login again.');
           await TokenService.logout();
           if (mounted) {
             Navigator.of(context).pushAndRemoveUntil(
@@ -102,6 +108,34 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
         });
       }
     }
+  }
+
+  void _showCurrencyPicker() {
+    final state = context.read<WalletBloc>().state;
+    List<Map<String, String>> supportedCurrencies = [];
+
+    if (state is WalletLoaded) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    } else if (state is WalletBalanceUpdated) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    }
+
+    if (supportedCurrencies.isEmpty) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CurrencySelectionSheet(
+        currencies: supportedCurrencies,
+        selectedCurrency: _selectedCurrency,
+        onCurrencySelected: (currency) {
+          setState(() {
+            _selectedCurrency = currency;
+          });
+        },
+      ),
+    );
   }
 
   @override
@@ -123,12 +157,16 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                       width: 40.r,
                       height: 40.r,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.black.withValues(alpha: 0.3) : Colors.grey[200],
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black.withValues(alpha: 0.3)
+                            : Colors.grey[200],
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.arrow_back_outlined,
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
                         size: 20.r,
                       ),
                     ),
@@ -137,8 +175,11 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                     child: Text(
                       'Receive Money',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: 'Outfit',
-                        color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
                         fontSize: 24.sp,
                         fontWeight: FontWeight.bold,
                       ),
@@ -155,8 +196,11 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 children: [
                   Text(
                     'Your Mobile Wallet Number',
-                    style: TextStyle(fontFamily: 'Outfit',
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white70
+                          : Colors.black54,
                       fontSize: 14,
                     ),
                   ),
@@ -167,13 +211,19 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Clipboard.setData(ClipboardData(text: walletAddress));
-                            ToastService().showSuccess(context, 'Copied to clipboard!');
+                            Clipboard.setData(
+                                ClipboardData(text: walletAddress));
+                            ToastService()
+                                .showSuccess(context, 'Copied to clipboard!');
                           },
                           child: Text(
                             walletAddress,
-                            style: TextStyle(fontFamily: 'Outfit',
-                              color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[600] : Colors.black,
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.grey[600]
+                                  : Colors.black,
                               fontSize: 32.sp,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
@@ -188,7 +238,8 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                       IconButton(
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: walletAddress));
-                          ToastService().showSuccess(context, 'Copied to clipboard!');
+                          ToastService()
+                              .showSuccess(context, 'Copied to clipboard!');
                         },
                         icon: Icon(
                           Icons.copy_rounded,
@@ -208,18 +259,69 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
-                    'Amount (${USDALogo.getFlag('KES')} KES)',
-                    style: TextStyle(fontFamily: 'Outfit',
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7),
-                      fontSize: 14,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Amount',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withValues(alpha: 0.7)
+                              : Colors.black.withValues(alpha: 0.7),
+                          fontSize: 14,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: _showCurrencyPicker,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: primaryBrandColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                                color: primaryBrandColor.withValues(alpha: 0.3),
+                                width: 1.w),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _selectedCurrency == 'USDA'
+                                  ? const USDALogo(size: 16)
+                                  : Text(
+                                      USDALogo.getFlag(_selectedCurrency),
+                                      style: TextStyle(fontSize: 14.sp),
+                                    ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                _selectedCurrency,
+                                style: TextStyle(
+                                  fontFamily: 'Outfit',
+                                  color: primaryBrandColor,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Icon(Icons.keyboard_arrow_down,
+                                  size: 14, color: primaryBrandColor),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _amountController,
-                    style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: TextStyle(
+                        fontFamily: 'Outfit',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 16),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',
@@ -229,15 +331,23 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   const SizedBox(height: 24),
                   Text(
                     'Description',
-                    style: TextStyle(fontFamily: 'Outfit',
-                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.7) : Colors.black.withValues(alpha: 0.7),
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : Colors.black.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _descriptionController,
-                    style: TextStyle(fontFamily: 'Outfit',color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black, fontSize: 16),
+                    style: TextStyle(
+                        fontFamily: 'Outfit',
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                        fontSize: 16),
                     decoration: buildUnderlineInputDecoration(
                       context: context,
                       label: '',

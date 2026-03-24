@@ -25,6 +25,42 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     on<StopAutoRefresh>(_onStopAutoRefresh);
     on<SwapCurrencies>(_onSwapCurrencies);
     on<TransferUSDA>(_onTransferUSDA);
+    on<FetchSupportedCurrencies>(_onFetchSupportedCurrencies);
+    
+    // Initial fetch
+    add(const FetchSupportedCurrencies());
+  }
+
+  Future<void> _onFetchSupportedCurrencies(
+    FetchSupportedCurrencies event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      final currencies = await WalletService.fetchSupportedCurrencies();
+      
+      if (state is WalletLoaded) {
+        emit((state as WalletLoaded).copyWith(supportedCurrencies: currencies));
+      } else if (state is WalletBalanceUpdated) {
+        final s = state as WalletBalanceUpdated;
+        emit(WalletLoaded(
+          balances: s.balances,
+          transactions: s.transactions,
+          supportedCurrencies: currencies,
+          totalIncome: s.totalIncome,
+          totalExpense: s.totalExpense,
+          pendingCount: s.pendingCount,
+          completedCount: s.completedCount,
+        ));
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Failed to fetch currencies in BLoC',
+        data: {'error': e.toString()},
+      );
+      // We don't emit error state here as we want to keep the main wallet state 
+      // and maybe fall back to hardcoded currencies if needed in the UI.
+    }
   }
 
   @override
@@ -69,7 +105,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     double currentExpense = 0.0;
     int currentPending = 0;
     int currentCompleted = 0;
-
+    List<Map<String, String>> currentSupportedCurrencies = [];
+    
     if (state is WalletLoaded) {
       final s = state as WalletLoaded;
       currentBalances = s.balances;
@@ -78,6 +115,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       currentExpense = s.totalExpense;
       currentPending = s.pendingCount;
       currentCompleted = s.completedCount;
+      currentSupportedCurrencies = s.supportedCurrencies ?? [];
     } else if (state is WalletBalanceUpdated) {
       final s = state as WalletBalanceUpdated;
       currentBalances = s.balances;
@@ -86,6 +124,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       currentExpense = s.totalExpense;
       currentPending = s.pendingCount;
       currentCompleted = s.completedCount;
+      currentSupportedCurrencies = s.supportedCurrencies ?? [];
     }
 
     // Don't show loading if we already have data (for auto-refresh)
@@ -183,6 +222,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       emit(WalletLoaded(
         balances: balances,
         transactions: transactionsList,
+        supportedCurrencies: currentSupportedCurrencies,
         totalIncome: summaries['income']!,
         totalExpense: summaries['expense']!,
         pendingCount: summaries['pending']!.toInt(),
@@ -200,6 +240,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         emit(WalletLoaded(
           balances: currentBalances,
           transactions: currentTransactions,
+          supportedCurrencies: currentSupportedCurrencies,
           totalIncome: currentIncome,
           totalExpense: currentExpense,
           pendingCount: currentPending,
@@ -299,6 +340,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       emit(WalletBalanceUpdated(
         balances: updatedBalances,
         transactions: updatedTransactions,
+        supportedCurrencies: currentState.supportedCurrencies,
         totalIncome: summaries['income'] as double,
         totalExpense: summaries['expense'] as double,
         pendingCount: summaries['pending'] as int,
@@ -372,6 +414,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       emit(WalletBalanceUpdated(
         balances: updatedBalances,
         transactions: updatedTransactions,
+        supportedCurrencies: currentState.supportedCurrencies,
         totalIncome: summaries['income'] as double,
         totalExpense: summaries['expense'] as double,
         pendingCount: summaries['pending'] as int,
@@ -428,6 +471,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       emit(WalletBalanceUpdated(
         balances: updatedBalances,
         transactions: currentState.transactions,
+        supportedCurrencies: currentState.supportedCurrencies,
         totalIncome: summaries['income'] as double,
         totalExpense: summaries['expense'] as double,
         pendingCount: summaries['pending'] as int,
@@ -453,6 +497,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       emit(WalletBalanceUpdated(
         balances: currentState.balances,
         transactions: updatedTransactions,
+        supportedCurrencies: currentState.supportedCurrencies,
         totalIncome: summaries['income'] as double,
         totalExpense: summaries['expense'] as double,
         pendingCount: summaries['pending'] as int,
@@ -612,6 +657,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         emit(WalletLoaded(
           balances: balances,
           transactions: state is WalletLoaded ? (state as WalletLoaded).transactions : <Transaction>[],
+          supportedCurrencies: state is WalletLoaded ? (state as WalletLoaded).supportedCurrencies : <Map<String, String>>[],
           totalIncome: state is WalletLoaded ? (state as WalletLoaded).totalIncome : 0.0,
           totalExpense: state is WalletLoaded ? (state as WalletLoaded).totalExpense : 0.0,
           pendingCount: state is WalletLoaded ? (state as WalletLoaded).pendingCount : 0,
@@ -678,6 +724,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         emit(WalletBalanceUpdated(
           balances: currentState.balances,
           transactions: updatedTransactions,
+          supportedCurrencies: currentState.supportedCurrencies,
           totalIncome: summaries['income'] as double,
           totalExpense: summaries['expense'] as double,
           pendingCount: summaries['pending'] as int,

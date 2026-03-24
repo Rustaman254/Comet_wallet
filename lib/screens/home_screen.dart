@@ -196,9 +196,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showAddCurrencyDialog() {
-    final List<String> availableCurrencies = [
-      'KES', 'USD', 'USDA', 'UGX', 'TZS', 'RWF', 'EUR', 'GBP', 'ZAR'
-    ];
+    final state = context.read<WalletBloc>().state;
+    List<Map<String, String>> supportedCurrencies = [];
+    
+    if (state is WalletLoaded) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    } else if (state is WalletBalanceUpdated) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    }
+
+    if (supportedCurrencies.isEmpty) {
+      // Fallback to hardcoded if not yet fetched
+      final List<String> fallbackCurrencies = [
+        'KES', 'USD', 'USDA', 'UGX', 'TZS', 'RWF', 'EUR', 'GBP', 'ZAR'
+      ];
+      supportedCurrencies = fallbackCurrencies.map((code) => {
+        'code': code,
+        'name': code == 'USDA' ? 'USDA (Cardano)' : code,
+      }).toList();
+    }
     
     // Determine local currency same as in build method
     final localCurrency = _userProfile?.location.toUpperCase() == 'KENYA' ? 'KES' : 
@@ -214,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     
     // Available currencies to add (those NOT visible)
-    final List<String> toAdd = availableCurrencies.where((c) => !visibleCurrencies.contains(c)).toList();
+    final List<Map<String, String>> toAdd = supportedCurrencies.where((c) => !visibleCurrencies.contains(c['code'])).toList();
 
     if (toAdd.isEmpty) {
       ToastService().showSuccess(context, 'You have all available currencies on your dashboard!');
@@ -250,7 +266,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: toAdd.length,
                   separatorBuilder: (_, __) => Divider(color: getBorderColor(context)),
                   itemBuilder: (context, index) {
-                    final currency = toAdd[index];
+                    final currencyData = toAdd[index];
+                    final currency = currencyData['code'] ?? '';
+                    final name = currencyData['name'] ?? currency;
+                    
                     return ListTile(
                       leading: currency == 'USDA' 
                         ? const USDALogo(size: 32)
@@ -264,13 +283,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                       title: Text(
-                        '${USDALogo.getFlag(currency)} ${currency == 'USDA' ? 'USDA (Cardano)' : currency}',
+                        name,
                         style: TextStyle(
                           fontFamily: 'Outfit',
                           color: getTextColor(context),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      subtitle: name != currency ? Text(
+                        currency,
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          color: getSecondaryTextColor(context),
+                          fontSize: 12.sp,
+                        ),
+                      ) : null,
                       onTap: () async {
                         setState(() {
                           _addedCurrencies.add(currency);
@@ -1016,26 +1043,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                TextButton(
-                                  onPressed: () {
-                                    VibrationService.lightImpact();
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const TransactionsScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    'See All',
-                                    style: TextStyle(
-                                      fontFamily: 'Outfit',
-                                      color: primaryBrandColor,
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
+                                // TextButton(
+                                //   onPressed: () {
+                                //     VibrationService.lightImpact();
+                                //     Navigator.of(context).push(
+                                //       MaterialPageRoute(
+                                //         builder: (_) =>
+                                //             const TransactionsScreen(),
+                                //       ),
+                                //     );
+                                //   },
+                                //   child: Text(
+                                //     'See All',
+                                //     style: TextStyle(
+                                //       fontFamily: 'Outfit',
+                                //       color: primaryBrandColor,
+                                //       fontSize: 14.sp,
+                                //       fontWeight: FontWeight.w500,
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
@@ -1043,10 +1070,46 @@ class _HomeScreenState extends State<HomeScreen> {
                           // Transaction list
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 24.w),
-                            child: _buildTransactionList(
-                                transactions),
+                            child: Column(
+                              children: [
+                                _buildTransactionList(transactions),
+                                if (transactions.isNotEmpty) ...[
+                                  SizedBox(height: 12.h),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        VibrationService.lightImpact();
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) => const TransactionsScreen(),
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: primaryBrandColor,
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12.r),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'See All Transactions',
+                                        style: TextStyle(
+                                          fontFamily: 'Outfit',
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
-                          SizedBox(height: 24.h),
+                          SizedBox(height: 110.h),
                         ],
                       ),
                     ),

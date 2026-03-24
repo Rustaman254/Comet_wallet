@@ -395,24 +395,33 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
 
   void _showCurrencyDialog() {
     final state = context.read<WalletBloc>().state;
+    List<Map<String, String>> supportedCurrencies = [];
     List<Map<String, dynamic>> balances = [];
+    
     if (state is WalletLoaded) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
       balances = state.balances;
     } else if (state is WalletBalanceUpdated) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
       balances = state.balances;
     }
 
-    if (balances.isEmpty) return;
+    if (supportedCurrencies.isEmpty && balances.isNotEmpty) {
+      // Fallback to balances if supportedCurrencies not yet fetched
+      supportedCurrencies = balances.map((b) => {
+        'code': b['currency'].toString(),
+        'name': b['currency'].toString(),
+      }).toList();
+    }
     
-    // Extract currency codes
-    final currencies = balances.map((b) => b['currency'] as String).toList();
+    if (supportedCurrencies.isEmpty) return;
     
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => CurrencySelectionSheet(
-        currencies: currencies,
+        currencies: supportedCurrencies,
         selectedCurrency: selectedCurrency,
         onCurrencySelected: (currency) {
           final index = balances.indexWhere((b) => b['currency'] == currency);

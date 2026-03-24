@@ -843,4 +843,53 @@ class WalletService {
       throw Exception('USDA Transfer error: $e');
     }
   }
+
+  /// Fetch supported currencies from the forex endpoint
+  static Future<List<Map<String, String>>> fetchSupportedCurrencies() async {
+    try {
+      AppLogger.debug(
+        LogTags.payment,
+        'Fetching supported currencies',
+      );
+
+      final response = await AuthenticatedHttpClient.get(
+        Uri.parse(ApiConstants.currenciesEndpoint),
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        final currenciesList = (jsonResponse['currencies'] as List?)
+            ?.map((c) => {
+                  'code': (c['code'] ?? '').toString(),
+                  'name': (c['name'] ?? '').toString(),
+                })
+            .toList() ?? [];
+
+        AppLogger.success(
+          LogTags.payment,
+          'Supported currencies fetched successfully',
+          data: {'count': currenciesList.length},
+        );
+
+        return currenciesList;
+      } else {
+        AppLogger.error(
+          LogTags.payment,
+          'Failed to fetch supported currencies',
+          data: {
+            'status_code': response.statusCode,
+            'body': response.body,
+          },
+        );
+        throw Exception('Failed to fetch currencies: ${response.statusCode}');
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Failed to fetch supported currencies',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Currencies fetch error: $e');
+    }
+  }
 }

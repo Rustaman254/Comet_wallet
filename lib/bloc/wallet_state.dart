@@ -19,6 +19,7 @@ class WalletLoading extends WalletState {
 class WalletLoaded extends WalletState {
   final List<Map<String, dynamic>> balances;
   final List<Transaction> transactions;
+  final List<Map<String, String>>? supportedCurrencies;
   final double totalIncome;
   final double totalExpense;
   final int pendingCount;
@@ -27,6 +28,7 @@ class WalletLoaded extends WalletState {
   const WalletLoaded({
     required this.balances,
     required this.transactions,
+    this.supportedCurrencies = const [],
     required this.totalIncome,
     required this.totalExpense,
     required this.pendingCount,
@@ -37,6 +39,7 @@ class WalletLoaded extends WalletState {
   List<Object?> get props => [
     balances,
     transactions,
+    supportedCurrencies ?? const [],
     totalIncome,
     totalExpense,
     pendingCount,
@@ -46,6 +49,7 @@ class WalletLoaded extends WalletState {
   WalletLoaded copyWith({
     List<Map<String, dynamic>>? balances,
     List<Transaction>? transactions,
+    List<Map<String, String>>? supportedCurrencies,
     double? totalIncome,
     double? totalExpense,
     int? pendingCount,
@@ -54,6 +58,7 @@ class WalletLoaded extends WalletState {
     return WalletLoaded(
       balances: balances ?? this.balances,
       transactions: transactions ?? this.transactions,
+      supportedCurrencies: supportedCurrencies ?? this.supportedCurrencies,
       totalIncome: totalIncome ?? this.totalIncome,
       totalExpense: totalExpense ?? this.totalExpense,
       pendingCount: pendingCount ?? this.pendingCount,
@@ -74,6 +79,7 @@ class WalletError extends WalletState {
 class WalletBalanceUpdated extends WalletState {
   final List<Map<String, dynamic>> balances;
   final List<Transaction> transactions;
+  final List<Map<String, String>>? supportedCurrencies;
   final double totalIncome;
   final double totalExpense;
   final int pendingCount;
@@ -82,6 +88,7 @@ class WalletBalanceUpdated extends WalletState {
   const WalletBalanceUpdated({
     required this.balances,
     required this.transactions,
+    this.supportedCurrencies = const [],
     required this.totalIncome,
     required this.totalExpense,
     required this.pendingCount,
@@ -92,6 +99,7 @@ class WalletBalanceUpdated extends WalletState {
   List<Object?> get props => [
     balances,
     transactions,
+    supportedCurrencies ?? const [],
     totalIncome,
     totalExpense,
     pendingCount,

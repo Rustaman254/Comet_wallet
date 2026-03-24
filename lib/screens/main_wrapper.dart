@@ -3,7 +3,6 @@ import '../widgets/custom_bottom_nav.dart';
 import 'home_screen.dart';
 import 'transactions_screen.dart';
 import 'orders_page.dart';
-import 'settings_screen.dart';
 import 'verify_pin_screen.dart';
 import '../services/session_service.dart';
 import '../services/logger_service.dart';
@@ -30,7 +29,6 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
     // Cards screen removed
     const TransactionsScreen(),
     const OrdersPage(),
-    const SettingsScreen(),
   ];
 
   @override

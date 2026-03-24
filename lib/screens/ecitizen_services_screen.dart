@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_state.dart';
 import '../constants/colors.dart';
 import '../utils/input_decoration.dart';
 import '../services/ecitizen_service.dart';
@@ -19,8 +22,6 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   final TextEditingController _referenceController = TextEditingController();
   String selectedCurrency = 'USD';
   bool isLoading = false;
-
-  final List<String> currencies = ['USD', 'KES', 'EUR', 'USDA'];
 
   @override
   void dispose() {
@@ -85,9 +86,27 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   }
 
   void _showCurrencyDialog() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final state = context.read<WalletBloc>().state;
+    List<Map<String, String>> supportedCurrencies = [];
+
+    if (state is WalletLoaded) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    } else if (state is WalletBalanceUpdated) {
+      supportedCurrencies = state.supportedCurrencies ?? [];
+    }
+
+    if (supportedCurrencies.isEmpty) {
+      supportedCurrencies = [
+        {'code': 'KES', 'name': 'Kenyan Shilling'},
+        {'code': 'USD', 'name': 'US Dollar'},
+        {'code': 'EUR', 'name': 'Euro'},
+        {'code': 'USDA', 'name': 'USDA (Cardano)'},
+      ];
+    }
+
     final bgColor = Theme.of(context).cardColor;
-    final textColor = Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
+    final textColor =
+        Theme.of(context).textTheme.bodyMedium?.color ?? Colors.black;
 
     showDialog(
       context: context,
@@ -105,18 +124,30 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: currencies.map((currency) {
+          children: supportedCurrencies.map((currencyData) {
+            final currency = currencyData['code']!;
+            final name = currencyData['name']!;
             final isUsda = currency == 'USDA';
             return ListTile(
               leading: isUsda
-                  ? USDALogo(size: 20)
-                  : null,
+                  ? const USDALogo(size: 20)
+                  : Text(USDALogo.getFlag(currency),
+                      style: const TextStyle(fontSize: 18)),
               title: Text(
                 currency,
                 style: TextStyle(
                   fontFamily: 'Outfit',
                   color: textColor,
                   fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text(
+                name,
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  color: textColor.withValues(alpha: 0.6),
+                  fontSize: 12,
                 ),
               ),
               onTap: () {
