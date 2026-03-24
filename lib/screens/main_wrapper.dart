@@ -3,6 +3,7 @@ import '../widgets/custom_bottom_nav.dart';
 import 'home_screen.dart';
 import 'transactions_screen.dart';
 import 'orders_page.dart';
+import 'more_options_screen.dart';
 import 'verify_pin_screen.dart';
 import '../services/session_service.dart';
 import '../services/logger_service.dart';
@@ -97,12 +98,25 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
   }
 
   void onTabChanged(int index) {
+    if (index == 3) {
+      _showMoreOptions();
+      return;
+    }
     setState(() {
       _currentIndex = index;
     });
     
     // Record activity on tab change
     SessionService.recordActivity();
+  }
+
+  void _showMoreOptions() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const MoreOptionsScreen(),
+    );
   }
 
   @override
