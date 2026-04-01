@@ -5,68 +5,74 @@ import '../constants/api_constants.dart';
 import '../constants/colors.dart';
 import '../utils/responsive_utils.dart';
 import '../utils/input_decoration.dart';
-import 'verify_token_screen.dart';
+import 'reset_password_screen.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class VerifyTokenScreen extends StatefulWidget {
+  final String prefillToken;
+
+  const VerifyTokenScreen({super.key, required this.prefillToken});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<VerifyTokenScreen> createState() => _VerifyTokenScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _tokenController = TextEditingController();
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Token field left empty — user pastes it from their email
+  }
+
+  @override
   void dispose() {
-    _emailController.dispose();
+    _tokenController.dispose();
     super.dispose();
   }
 
-  Future<void> _sendResetToken() async {
+  Future<void> _verifyToken() async {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _isLoading = true);
 
     try {
-      // POST {{BASE_URL}}/users/reset-token
-      // Payload: {"email": "user@example.com"}
+      // POST {{BASE_URL}}/users/verify-token
+      // Payload: {"token": "fc04..."}
       final response = await http.post(
-        Uri.parse(ApiConstants.resetTokenEndpoint),
+        Uri.parse(ApiConstants.verifyTokenEndpoint),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': _emailController.text.trim()}),
+        body: jsonEncode({'token': _tokenController.text.trim()}),
       );
 
-      // Success: {"message": "Reset token sent successfully", "token": "fc04..."}
+      // Success: {"message": "Token is valid", "user_id": 122}
       final data = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (!mounted) return;
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final token = (data['token'] ?? '') as String;
-        final message = data['message'] ?? 'Reset token sent successfully';
-
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          data['message'] == 'Token is valid') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message),
+            content: const Text('Token verified!'),
             backgroundColor: Colors.green[700],
-            duration: const Duration(seconds: 4),
           ),
         );
 
-        // Navigate to verify token screen, passing the token
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => VerifyTokenScreen(prefillToken: token),
+            builder: (_) => ResetPasswordScreen(
+              token: _tokenController.text.trim(),
+            ),
           ),
         );
       } else {
-        _showError(data['message'] ?? 'Something went wrong. Please try again.');
+        _showError(data['message'] ?? 'Invalid or expired token.');
       }
     } catch (_) {
-      if (mounted) _showError('Connection error. Please check your internet connection.');
+      if (mounted) _showError('Connection error. Please try again.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -107,7 +113,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   children: [
                     SizedBox(height: 24.h),
                     Text(
-                      'Forgot Password?',
+                      'Verify Token',
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         color: textColor,
@@ -117,7 +123,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     SizedBox(height: 12.h),
                     Text(
-                      'Enter your email address and we\'ll send a reset token to get you back in.',
+                      'Enter the reset token from the API response to verify your identity.',
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         color: subTextColor,
@@ -126,7 +132,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     SizedBox(height: 48.h),
                     Text(
-                      'Email Address',
+                      'Reset Token',
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         color: textColor,
@@ -136,25 +142,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     SizedBox(height: 8.h),
                     TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _tokenController,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         color: textColor,
-                        fontSize: 16,
+                        fontSize: 14,
+                        letterSpacing: 0.5,
                       ),
+                      maxLines: 3,
+                      minLines: 1,
                       decoration: buildUnderlineInputDecoration(
                         context: context,
                         label: '',
-                        hintText: 'Enter your email',
-                        prefixIcon: Icon(Icons.email_outlined, color: primaryBrandColor),
+                        hintText: 'Paste the token here',
+                        prefixIcon: Icon(Icons.vpn_key_outlined, color: primaryBrandColor),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$').hasMatch(value.trim())) {
-                          return 'Enter a valid email address';
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter the reset token';
                         }
                         return null;
                       },
@@ -163,7 +169,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _sendResetToken,
+                        onPressed: _isLoading ? null : _verifyToken,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryBrandColor,
                           foregroundColor: Colors.white,
@@ -174,7 +180,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Send Reset Link',
+                          'Verify Token',
                           style: TextStyle(
                             fontFamily: 'Outfit',
                             fontSize: 16.sp,

@@ -113,3 +113,39 @@ class TransferUSDA extends WalletEvent {
 class FetchSupportedCurrencies extends WalletEvent {
   const FetchSupportedCurrencies();
 }
+
+class TillPayment extends WalletEvent {
+  final String tillNumber;
+  final double amount;
+  final String narration;
+  final String? pin;
+
+  const TillPayment({
+    required this.tillNumber,
+    required this.amount,
+    required this.narration,
+    this.pin,
+  });
+
+  @override
+  List<Object?> get props => [tillNumber, amount, narration, pin];
+}
+
+class BankTransfer extends WalletEvent {
+  final double amount;
+  final String bankCode;
+  final String creditAccount;
+  final String narration;
+  final String? pin;
+
+  const BankTransfer({
+    required this.amount,
+    required this.bankCode,
+    required this.creditAccount,
+    required this.narration,
+    this.pin,
+  });
+
+  @override
+  List<Object?> get props => [amount, bankCode, creditAccount, narration, pin];
+}

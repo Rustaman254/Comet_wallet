@@ -25,7 +25,9 @@ class CustomBottomNav extends StatelessWidget {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? const Color(0xFF2A3441) // Brighter for better contrast
+                  : Colors.white,
               borderRadius: BorderRadius.circular(40.r), // Pill shape
               boxShadow: [
                 BoxShadow(

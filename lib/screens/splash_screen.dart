@@ -142,39 +142,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ),
                 ),
                 const SizedBox(height: 8),
-                Image.asset(
-                  'assets/images/Logo anzens_white.png',
+                SvgPicture.asset(
+                  'assets/images/nzens_logo.svg',
                   height: 24,
                   fit: BoxFit.contain,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "on ",
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SvgPicture.asset(
-                      'assets/images/cardano_logo.svg',
-                      height: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      "Cardano",
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
                 ),
               ],
             ),

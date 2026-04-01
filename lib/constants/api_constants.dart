@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'https://api.yeshara.network/api/v1'; // https://api.fusionfi.io - https://api.yeshara.network
+  static const String baseUrl = 'https://api.fusionfi.io/api/v1'; // https://api.fusionfi.io - https://api.yeshara.network
   static const String loginEndpoint = '$baseUrl/users/login';
   static const String registerEndpoint = '$baseUrl/users/create';
   static const String userProfileEndpoint = '$baseUrl/users/profile';
@@ -11,6 +11,8 @@ class ApiConstants {
   static const String transactionsListEndpoint = '$baseUrl/transactions/list';
   static const String paymentLinksEndpoint = '$baseUrl/payment-links';
   static const String walletSendMoneyEndpoint = '$baseUrl/wallet/send-money';
+  static const String walletTillPaymentEndpoint = '$baseUrl/wallet/till-payment';
+  static const String walletBankTransferEndpoint = '$baseUrl/wallet/bank-transfer';
   static const String verifyPinEndpoint = '$baseUrl/users/verify-pin';
   static const String resetPinEndpoint = '$baseUrl/users/reset-pin';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
@@ -31,4 +33,9 @@ class ApiConstants {
   // Forex endpoints
   static const String forexRatesEndpoint = '$baseUrl/forex/rates';
   static const String currenciesEndpoint = 'https://api.yeshara.network/api/v1/forex/currencies';
+
+  // Forgot password endpoints
+  static const String resetTokenEndpoint = '$baseUrl/users/reset-token';
+  static const String verifyTokenEndpoint = '$baseUrl/users/verify-token';
+  static const String resetPasswordEndpoint = '$baseUrl/users/reset-password';
 }

@@ -11,6 +11,7 @@ import '../utils/format_utils.dart';
 import 'mobile_withdraw_screen.dart';
 import 'send_money_screen.dart';
 import 'send_mobile_number_screen.dart';
+import 'bank_withdraw_screen.dart';
 
 class WithdrawMoneyScreen extends StatefulWidget {
   const WithdrawMoneyScreen({super.key});
@@ -47,8 +48,8 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
     {
       'name': 'Bank Account',
       'icon': Icons.account_balance_outlined,
-      'account': 'Coming Soon',
-      'isAvailable': false,
+      'account': 'Pesalink / Bank Transfer',
+      'isAvailable': true,
     },
     {
       'name': 'ATM Withdraw',
@@ -382,6 +383,12 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                           currency: currentCurrency,
                                           maxBalance: currentBalance,
                                         ),
+                                      ),
+                                    );
+                                } else if (method['name'] == 'Bank Account') {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const BankWithdrawScreen(),
                                       ),
                                     );
                                 }

@@ -4,6 +4,7 @@ import '../constants/colors.dart';
 import 'ecitizen_services_screen.dart';
 import 'withdraw_money_screen.dart';
 import 'receive_money_screen.dart';
+import 'till_payment_screen.dart';
 import '../services/toast_service.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
@@ -26,21 +27,21 @@ class MoreOptionsScreen extends StatelessWidget {
         },
         'isComingSoon': false,
       },
-      // {
-      //   'icon': Icons.public,
-      //   'label': 'E-Citizen',
-      //   'onTap': () {
-      //     Navigator.pop(context);
-      //     Navigator.of(context).push(
-      //       MaterialPageRoute(
-      //         builder: (_) => const ECitizenServicesScreen(),
-      //       ),
-      //     );
-      //   },
-      //   'isComingSoon': false,
-      // },
       {
-        'icon': Icons.phone_outlined,
+        'icon': Icons.shopping_bag_outlined,
+        'label': 'Buy Goods',
+        'onTap': () {
+          Navigator.pop(context);
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const TillPaymentScreen(),
+            ),
+          );
+        },
+        'isComingSoon': false,
+      },
+      {
+        'icon': Icons.public,
         'label': 'Buy Airtime',
         'onTap': () {
           Navigator.pop(context);

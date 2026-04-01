@@ -275,29 +275,10 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Image.asset(
-                    'assets/images/Logo anzens_white.png',
+                  SvgPicture.asset(
+                    'assets/images/nzens_logo.svg',
                     height: 24,
                     fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "on ",
-                        style: TextStyle(
-                          fontFamily: 'Outfit',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Image.asset(
-                        'assets/images/cardano_logo_new.png',
-                        height: 20,
-                      ),
-                    ],
                   ),
                 ],
               ),

@@ -20,7 +20,7 @@ class ECitizenServicesScreen extends StatefulWidget {
 
 class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   final TextEditingController _referenceController = TextEditingController();
-  String selectedCurrency = 'USD';
+  String selectedCurrency = 'USDA';
   bool isLoading = false;
 
   @override
@@ -86,23 +86,11 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
   }
 
   void _showCurrencyDialog() {
-    final state = context.read<WalletBloc>().state;
-    List<Map<String, String>> supportedCurrencies = [];
-
-    if (state is WalletLoaded) {
-      supportedCurrencies = state.supportedCurrencies ?? [];
-    } else if (state is WalletBalanceUpdated) {
-      supportedCurrencies = state.supportedCurrencies ?? [];
-    }
-
-    if (supportedCurrencies.isEmpty) {
-      supportedCurrencies = [
-        {'code': 'KES', 'name': 'Kenyan Shilling'},
-        {'code': 'USD', 'name': 'US Dollar'},
-        {'code': 'EUR', 'name': 'Euro'},
-        {'code': 'USDA', 'name': 'USDA (Cardano)'},
-      ];
-    }
+    // Restrict currencies to KES and USDA only for eCitizen
+    final List<Map<String, String>> supportedCurrencies = [
+      {'code': 'KES', 'name': 'Kenyan Shilling'},
+      {'code': 'USDA', 'name': 'USDA (Cardano)'},
+    ];
 
     final bgColor = Theme.of(context).cardColor;
     final textColor =
@@ -282,9 +270,9 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
                                 children: [
                                   selectedCurrency == 'USDA'
                                       ? USDALogo(size: 20)
-                                      : Icon(
-                                          Icons.monetization_on_outlined,
-                                          color: iconColor,
+                                      : Text(
+                                          USDALogo.getFlag(selectedCurrency),
+                                          style: const TextStyle(fontSize: 18),
                                         ),
                                   SizedBox(width: 12.w),
                                   Text(

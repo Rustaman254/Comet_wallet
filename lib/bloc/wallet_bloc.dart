@@ -26,6 +26,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     on<SwapCurrencies>(_onSwapCurrencies);
     on<TransferUSDA>(_onTransferUSDA);
     on<FetchSupportedCurrencies>(_onFetchSupportedCurrencies);
+    on<TillPayment>(_onTillPayment);
+    on<BankTransfer>(_onBankTransfer);
     
     // Initial fetch
     add(const FetchSupportedCurrencies());
@@ -565,7 +567,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       } else if (tx.transactionType.contains('send') ||
           tx.transactionType.contains('transfer') ||
           tx.transactionType.contains('withdraw') ||
-          tx.transactionType.contains('buy')) {
+          tx.transactionType.contains('buy') ||
+          tx.transactionType.contains('till_payment')) {
         expense += tx.amount;
       }
 
@@ -742,6 +745,181 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         data: {'error': e.toString()},
       );
       emit(WalletError(message: 'USDA Transfer failed: $e'));
+    }
+  }
+
+  Future<void> _onTillPayment(
+    TillPayment event,
+    Emitter<WalletState> emit,
+  ) async {
+    if (state is! WalletLoaded) return;
+
+    final currentState = state as WalletLoaded;
+
+    try {
+      AppLogger.debug(
+        LogTags.payment,
+        'Processing till payment in BLoC',
+        data: {
+          'till_number': event.tillNumber,
+          'amount': event.amount,
+        },
+      );
+
+      // Optimistic update
+      final updatedBalances = currentState.balances.map((balance) {
+        if (balance['currency'] == 'KES') {
+          final currentAmount = double.tryParse(balance['amount'].toString()) ?? 0.0;
+          return {
+            ...balance,
+            'amount': (currentAmount - event.amount).toString(),
+          };
+        }
+        return balance;
+      }).toList();
+
+      // Create transaction record
+      final timestamp = DateTime.now();
+      final newTransaction = Transaction(
+        id: timestamp.millisecondsSinceEpoch,
+        userID: 0,
+        amount: event.amount,
+        transactionType: 'till_payment',
+        status: 'pending',
+        phoneNumber: event.tillNumber,
+        createdAt: timestamp,
+        currency: 'KES',
+        transactionId: 'TILL-${timestamp.millisecondsSinceEpoch}',
+      );
+
+      final updatedTransactions = [newTransaction, ...currentState.transactions];
+      final summaries = _calculateSummaries(updatedTransactions);
+
+      emit(WalletBalanceUpdated(
+        balances: updatedBalances,
+        transactions: updatedTransactions,
+        supportedCurrencies: currentState.supportedCurrencies,
+        totalIncome: summaries['income'] as double,
+        totalExpense: summaries['expense'] as double,
+        pendingCount: summaries['pending'] as int,
+        completedCount: summaries['completed'] as int,
+      ));
+
+      // Call service
+      await WalletService.tillPayment(
+        tillNumber: event.tillNumber,
+        amount: event.amount,
+        narration: event.narration,
+        pin: event.pin,
+      );
+
+      // Fetch fresh data from server to sync
+      add(const FetchWalletDataFromServer());
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Till payment failed in BLoC',
+        data: {'error': e.toString()},
+      );
+      emit(WalletError(message: 'Till payment failed: $e'));
+      
+      // Re-fetch data to restore balance if optimistic update failed
+      add(const FetchWalletDataFromServer());
+    }
+  }
+
+  Future<void> _onBankTransfer(
+    BankTransfer event,
+    Emitter<WalletState> emit,
+  ) async {
+    if (state is! WalletLoaded) return;
+
+    final currentState = state as WalletLoaded;
+
+    try {
+      AppLogger.debug(
+        LogTags.payment,
+        'Processing bank transfer in BLoC',
+        data: {
+          'bank_code': event.bankCode,
+          'amount': event.amount,
+        },
+      );
+
+      // Emit loading state for the UI to show overlay
+      emit(const BankTransferLoading());
+
+      // Optimistic update for the balances list (internal state tracking)
+      final updatedBalances = currentState.balances.map((balance) {
+        if (balance['currency'] == 'KES') {
+          final currentAmount = double.tryParse(balance['amount'].toString()) ?? 0.0;
+          return {
+            ...balance,
+            'amount': (currentAmount - event.amount).toString(),
+          };
+        }
+        return balance;
+      }).toList();
+
+      // Create transaction record
+      final timestamp = DateTime.now();
+      final newTransaction = Transaction(
+        id: timestamp.millisecondsSinceEpoch,
+        userID: 0,
+        amount: event.amount,
+        transactionType: 'bank_transfer',
+        status: 'pending',
+        phoneNumber: event.creditAccount,
+        createdAt: timestamp,
+        currency: 'KES',
+        transactionId: 'BANK-${timestamp.millisecondsSinceEpoch}',
+      );
+
+      final updatedTransactions = [newTransaction, ...currentState.transactions];
+      final summaries = _calculateSummaries(updatedTransactions);
+
+      // We don't emit WalletBalanceUpdated here because we want to stay in 
+      // BankTransferLoading until the API call finishes.
+      // But we prepare the data for the next state.
+
+      // Call service
+      final response = await WalletService.bankTransfer(
+        amount: event.amount,
+        bankCode: event.bankCode,
+        creditAccount: event.creditAccount,
+        narration: event.narration,
+        pin: event.pin,
+      );
+
+      // Emit success state with message from API
+      emit(BankTransferSuccess(
+        message: response['message'] ?? 'Bank transfer initiated successfully',
+        transactionId: response['transaction_id']?.toString(),
+      ));
+
+      // Refresh wallet data in background AFTER emitting success
+      add(const FetchWalletDataFromServer());
+
+      // After a short delay, return to regular loaded state with updated data
+      // This is handled by FetchWalletDataFromServer above, which will emit WalletLoaded.
+      
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Bank transfer failed in BLoC',
+        data: {'error': e.toString()},
+      );
+      
+      // Clean up "Exception: " prefix if present
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      
+      emit(WalletError(message: errorMessage));
+      
+      // Re-fetch data to restore balance if optimistic update failed
+      add(const FetchWalletDataFromServer());
     }
   }
 

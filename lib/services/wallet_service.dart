@@ -844,6 +844,87 @@ class WalletService {
     }
   }
 
+  /// Pay to a merchant till number
+  static Future<Map<String, dynamic>> tillPayment({
+    required String tillNumber,
+    required double amount,
+    required String narration,
+    String? pin,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final requestBody = {
+        'till_number': tillNumber,
+        'amount': amount,
+        'narration': narration,
+        if (pin != null) 'pin': pin,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.walletTillPaymentEndpoint,
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await AuthenticatedHttpClient.post(
+        Uri.parse(ApiConstants.walletTillPaymentEndpoint),
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Till payment initiated successfully',
+          data: {
+            'till_number': tillNumber,
+            'amount': amount,
+            'transaction_id': jsonResponse['transaction_id'],
+          },
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.walletTillPaymentEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Till payment failed: ${response.statusCode}'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Till payment error',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Till payment error: $e');
+    }
+  }
+
   /// Fetch supported currencies from the forex endpoint
   static Future<List<Map<String, String>>> fetchSupportedCurrencies() async {
     try {
@@ -890,6 +971,84 @@ class WalletService {
         data: {'error': e.toString()},
       );
       throw Exception('Currencies fetch error: $e');
+    }
+  }
+
+  /// Transfer funds to a bank account (Pesalink)
+  static Future<Map<String, dynamic>> bankTransfer({
+    required double amount,
+    required String bankCode,
+    required String creditAccount,
+    required String narration,
+    String? pin,
+  }) async {
+    final startTime = DateTime.now();
+
+    try {
+      final token = await TokenService.getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('User not authenticated');
+      }
+
+      final requestBody = {
+        'amount': amount == amount.toInt() ? amount.toInt() : amount,
+        'bank_code': bankCode,
+        'credit_account': creditAccount,
+        'narration': narration,
+      };
+
+      AppLogger.logAPIRequest(
+        endpoint: ApiConstants.walletBankTransferEndpoint,
+        method: 'POST',
+        body: requestBody,
+      );
+
+      final response = await AuthenticatedHttpClient.post(
+        Uri.parse(ApiConstants.walletBankTransferEndpoint),
+        body: jsonEncode(requestBody),
+      );
+
+      final duration = DateTime.now().difference(startTime);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+
+        AppLogger.success(
+          LogTags.payment,
+          'Bank transfer response received',
+          data: jsonResponse,
+        );
+
+        return jsonResponse;
+      } else {
+        Map<String, dynamic> errorResponse;
+        try {
+          errorResponse = jsonDecode(response.body);
+        } catch (_) {
+          errorResponse = {'error': response.body};
+        }
+
+        AppLogger.logAPIResponse(
+          endpoint: ApiConstants.walletBankTransferEndpoint,
+          method: 'POST',
+          statusCode: response.statusCode,
+          duration: duration,
+          response: errorResponse,
+        );
+
+        throw Exception(
+          errorResponse['message'] ?? 
+          errorResponse['error'] ??
+          'Bank transfer failed'
+        );
+      }
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Bank transfer error',
+        data: {'error': e.toString()},
+      );
+      throw Exception('Bank transfer error: $e');
     }
   }
 }

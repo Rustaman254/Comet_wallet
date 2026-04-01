@@ -139,3 +139,20 @@ class WalletSwapSuccess extends WalletState {
   @override
   List<Object?> get props => [message, amountCredited, fromCurrency, toCurrency, balanceUsda, balances, txId, explorerLink];
 }
+
+class BankTransferLoading extends WalletState {
+  const BankTransferLoading();
+}
+
+class BankTransferSuccess extends WalletState {
+  final String message;
+  final String? transactionId;
+
+  const BankTransferSuccess({
+    required this.message,
+    this.transactionId,
+  });
+
+  @override
+  List<Object?> get props => [message, transactionId];
+}
