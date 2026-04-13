@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'flavors.dart';
 import 'package:smile_id/smile_id.dart';
 import 'package:smile_id/generated/smileid_messages.g.dart';
 import 'package:flutter/services.dart';
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
                 onPointerMove: (_) => SessionService.recordActivity(),
                 child: MaterialApp(
                   navigatorKey: MyApp.navigatorKey,
-                  title: 'Fusionfi',
+                  title: F.title,
                   debugShowCheckedModeBanner: false,
                   themeMode: currentMode,
                   theme: ThemeData(

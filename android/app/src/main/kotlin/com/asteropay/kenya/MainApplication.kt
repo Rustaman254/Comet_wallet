@@ -1,4 +1,4 @@
-package com.cometswitch.kenya
+package com.asteropay.kenya
 
 import android.app.Application
 import android.util.Log
