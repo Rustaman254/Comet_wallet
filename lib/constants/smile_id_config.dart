@@ -7,7 +7,7 @@ class SmileIDConfig {
 
   // ── Environment toggle ───────────────────────────────────────────
   /// Set to `false` before shipping a production build.
-  static const bool useSandbox = true;
+  static const bool useSandbox = false;
 
   // ── Partner credentials ──────────────────────────────────────────
   static const String partnerId = '6482';

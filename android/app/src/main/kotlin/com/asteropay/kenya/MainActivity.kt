@@ -1,4 +1,4 @@
-package com.cometswitch.kenya
+package com.asteropay.kenya
 
 import android.util.Log
 import io.flutter.embedding.android.FlutterFragmentActivity

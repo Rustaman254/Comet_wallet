@@ -52,7 +52,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         body: jsonEncode({"email": _emailController.text.trim()}),
       );
 
-      // Expected Response (success): 
+      // Expected Response (success):
       // {"message": "Reset token sent successfully", "token": "fc04..."}
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -85,9 +85,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   void _showError(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: errorRed),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: errorRed));
   }
 
   @override
@@ -105,7 +105,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           appBar: _buildAppBar(context),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -123,7 +126,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Text(
                       'Enter your email address to receive a password reset token.',
                       textAlign: TextAlign.center,
-                      style: _poppinsStyle(fontSize: 16, color: Colors.grey[600]),
+                      style: _poppinsStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
                     ),
                     const SizedBox(height: 48),
                     TextFormField(
@@ -134,8 +140,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         icon: Icons.email_outlined,
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter your email';
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        if (value == null || value.isEmpty)
+                          return 'Please enter your email';
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
                           return 'Enter a valid email address';
                         }
                         return null;
@@ -232,9 +241,9 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
 
   void _showError(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: errorRed),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: errorRed));
   }
 
   @override
@@ -252,7 +261,10 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
           appBar: _buildAppBar(context),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -270,7 +282,10 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
                     Text(
                       'Enter the reset token that was sent to your email.',
                       textAlign: TextAlign.center,
-                      style: _poppinsStyle(fontSize: 16, color: Colors.grey[600]),
+                      style: _poppinsStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
                     ),
                     const SizedBox(height: 48),
                     TextFormField(
@@ -280,7 +295,8 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
                         icon: Icons.vpn_key_outlined,
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Please enter the token';
+                        if (value == null || value.isEmpty)
+                          return 'Please enter the token';
                         return null;
                       },
                     ),
@@ -308,11 +324,7 @@ class ResetPasswordScreen extends StatefulWidget {
   final String token;
   final int? userId; // Included in case API needs it
 
-  const ResetPasswordScreen({
-    super.key,
-    required this.token,
-    this.userId,
-  });
+  const ResetPasswordScreen({super.key, required this.token, this.userId});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -322,7 +334,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -372,9 +384,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   void _showError(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: errorRed),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(msg), backgroundColor: errorRed));
   }
 
   @override
@@ -393,7 +405,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           appBar: _buildAppBar(context),
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32.0,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -411,10 +426,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     Text(
                       'Create a new strong password.',
                       textAlign: TextAlign.center,
-                      style: _poppinsStyle(fontSize: 16, color: Colors.grey[600]),
+                      style: _poppinsStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
                     ),
                     const SizedBox(height: 48),
-                    
+
                     // Pre-filled token (read-only)
                     TextFormField(
                       initialValue: widget.token,
@@ -422,10 +440,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       decoration: _buildInputDecoration(
                         label: 'Token',
                         icon: Icons.vpn_key_outlined,
-                      ).copyWith(
-                        fillColor: Colors.grey[100],
-                        filled: true,
-                      ),
+                      ).copyWith(fillColor: Colors.grey[100], filled: true),
                     ),
                     const SizedBox(height: 24),
 
@@ -438,10 +453,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         icon: Icons.lock_outline,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Colors.grey[600],
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -449,8 +468,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           return 'Please enter a password';
                         }
                         // Min 12 chars, at least 1 uppercase, 1 lowercase, 1 number, 1 symbol
-                        if (!RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$').hasMatch(value)) {
-                          return 'Min 12 chars, 1 uppercase, 1 lowercase, 1 number, 1 symbol (@$!%*?&)';
+                        if (!RegExp(
+                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$',
+                        ).hasMatch(value)) {
+                          return 'Min 12 chars, 1 uppercase, 1 lowercase, 1 number, 1 symbol (@'
+                              r'!%*?&)';
                         }
                         return null;
                       },
@@ -466,10 +488,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         icon: Icons.lock_outline,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureConfirmPassword ? Icons.visibility_off : Icons.visibility,
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: Colors.grey[600],
                           ),
-                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          onPressed: () => setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          ),
                         ),
                       ),
                       validator: (value) {
@@ -548,7 +575,10 @@ InputDecoration _buildInputDecoration({
   );
 }
 
-Widget _buildPrimaryButton({required String text, required VoidCallback onPressed}) {
+Widget _buildPrimaryButton({
+  required String text,
+  required VoidCallback onPressed,
+}) {
   return SizedBox(
     width: double.infinity,
     height: 56,
@@ -559,16 +589,11 @@ Widget _buildPrimaryButton({required String text, required VoidCallback onPresse
         foregroundColor: Colors.white,
         elevation: 4,
         shadowColor: primaryBlue.withValues(alpha: 0.4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       child: Text(
         text,
-        style: _poppinsStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
+        style: _poppinsStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     ),
   );

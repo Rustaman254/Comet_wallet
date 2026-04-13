@@ -6,7 +6,6 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 // Load keystore properties
@@ -17,7 +16,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.cometswitch.kenya"
+    namespace = "com.asteropay.kenya"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -27,7 +26,7 @@ android {
     }
 
     buildFeatures {
-        compose = true
+        buildConfig = true
     }
 
     kotlin {
@@ -39,13 +38,27 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.cometswitch.kenya"
+        applicationId = "com.asteropay.kenya"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion // flutter.minSdkVersion
+        minSdk = 24 // Required for Smile ID stability
         targetSdk = 35 //flutter.targetSdkVersion
-        versionCode = 123
-        versionName = "123.0.0"
+        versionCode = 125
+        versionName = "1.3.0"
+    }
+
+    flavorDimensions += "app"
+
+    productFlavors {
+        create("sandbox") {
+            dimension = "app"
+            applicationIdSuffix = ".sandbox"
+            resValue("string", "app_name", "Fusionfy Sandbox")
+        }
+        create("production") {
+            dimension = "app"
+            resValue("string", "app_name", "Fusionfy")
+        }
     }
 
     signingConfigs {
@@ -60,6 +73,12 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -70,7 +89,7 @@ android {
 
     packaging {
         jniLibs {
-            useLegacyPackaging = false
+            useLegacyPackaging = true
         }
         resources {
             excludes.add("META-INF/versions/9/OSGI-INF/MANIFEST.MF")

@@ -1,0 +1,4 @@
+#include "Generated.xcconfig"
+
+AS_APP_NAME = Fusionfy
+AS_APP_BUNDLE_ID = com.asteropay.kenya

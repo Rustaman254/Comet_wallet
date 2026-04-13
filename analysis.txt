@@ -1,2 +1,166 @@
+Resolving dependencies...
+Downloading packages...
+  archive 4.0.7 (4.0.9 available)
+  async 2.13.0 (2.13.1 available)
+  bloc 8.1.4 (9.2.0 available)
+  camera 0.10.6 (0.12.0+1 available)
+  camera_android 0.10.10+14 (0.10.10+16 available)
+  camera_avfoundation 0.9.22+8 (0.10.1 available)
+  camera_web 0.3.5+2 (0.3.5+3 available)
+  cross_file 0.3.5+1 (0.3.5+2 available)
+  csv 6.0.0 (8.0.0 available)
+  cupertino_icons 1.0.8 (1.0.9 available)
+  ffi 2.1.4 (2.2.0 available)
+  flutter_bloc 8.1.6 (9.1.1 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.34 available)
+  flutter_svg 2.2.3 (2.2.4 available)
+  google_fonts 6.3.3 (8.0.2 available)
+  image 4.7.2 (4.8.0 available)
+  intl 0.19.0 (0.20.2 available)
+  json_annotation 4.9.0 (4.11.0 available)
+  lints 6.0.0 (6.1.0 available)
+  local_auth 2.3.0 (3.0.1 available)
+  local_auth_android 1.0.56 (2.0.7 available)
+  local_auth_darwin 1.6.1 (2.0.3 available)
+  local_auth_windows 1.0.11 (2.0.1 available)
+  meta 1.17.0 (1.18.2 available)
+  mobile_scanner 7.1.4 (7.2.0 available)
+  path_provider_android 2.2.22 (2.3.1 available)
+  path_provider_foundation 2.5.1 (2.6.0 available)
+  petitparser 7.0.1 (7.0.2 available)
+  posix 6.0.3 (6.5.0 available)
+  share_plus 12.0.1 (12.0.2 available)
+  shared_preferences 2.5.4 (2.5.5 available)
+  shared_preferences_android 2.4.18 (2.4.23 available)
+  shared_preferences_platform_interface 2.4.1 (2.4.2 available)
+  smile_id 11.2.7 (11.2.9 available)
+  source_span 1.10.1 (1.10.2 available)
+  test_api 0.7.10 (0.7.11 available)
+  url_launcher_android 6.3.28 (6.3.29 available)
+  url_launcher_ios 6.3.6 (6.4.1 available)
+  uuid 4.5.2 (4.5.3 available)
+  vector_graphics 1.1.19 (1.1.21 available)
+  vector_graphics_compiler 1.1.20 (1.2.0 available)
+  vector_math 2.2.0 (2.3.0 available)
+  webview_flutter_android 4.10.11 (4.10.15 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.1 available)
+  webview_flutter_wkwebview 3.23.6 (3.24.2 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+46 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
 Analyzing comet_wallet...                                       
 
+warning • Unused import: 'dart:convert' • get_balance_test.dart:1:8 • unused_import
+warning • Unused import: 'dart:io' • get_balance_test.dart:2:8 • unused_import
+warning • Unused import: 'package:shared_preferences/shared_preferences.dart' • get_balance_test.dart:3:8 • unused_import
+warning • The value of the local variable 'updatedBalances' isn't used • lib/bloc/wallet_bloc.dart:853:13 • unused_local_variable
+warning • The value of the local variable 'summaries' isn't used • lib/bloc/wallet_bloc.dart:879:13 • unused_local_variable
+warning • Unused import: 'package:smile_id/smile_id.dart' • lib/main.dart:2:8 • unused_import
+warning • Unused import: 'package:smile_id/generated/smileid_messages.g.dart' • lib/main.dart:3:8 • unused_import
+warning • Unused import: 'package:heroicons/heroicons.dart' • lib/main.dart:6:8 • unused_import
+warning • Unused import: 'constants/smile_id_config.dart' • lib/main.dart:11:8 • unused_import
+   info • Unnecessary use of multiple underscores • lib/main.dart:56:43 • unnecessary_underscores
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth_debug_screen.dart:366:21 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/auth_debug_screen.dart:382:21 • use_build_context_synchronously
+   info • Unnecessary use of multiple underscores • lib/screens/bank_withdraw_screen.dart:260:47 • unnecessary_underscores
+   info • Don't use 'BuildContext's across async gaps • lib/screens/bank_withdraw_screen.dart:352:39 • use_build_context_synchronously
+   info • Parameter 'key' could be a super parameter • lib/screens/debug_token_screen.dart:8:9 • use_super_parameters
+   info • Unnecessary use of 'toList' in a spread • lib/screens/debug_token_screen.dart:205:34 • unnecessary_to_list_in_spreads
+warning • Unused import: 'package:flutter_bloc/flutter_bloc.dart' • lib/screens/ecitizen_services_screen.dart:4:8 • unused_import
+warning • Unused import: '../bloc/wallet_bloc.dart' • lib/screens/ecitizen_services_screen.dart:5:8 • unused_import
+warning • Unused import: '../bloc/wallet_state.dart' • lib/screens/ecitizen_services_screen.dart:6:8 • unused_import
+warning • Unused import: '../models/ecitizen_bill.dart' • lib/screens/ecitizen_services_screen.dart:10:8 • unused_import
+   info • The private field _isBiometricScanning could be 'final' • lib/screens/enter_pin_screen.dart:46:8 • prefer_final_fields
+warning • The value of the field '_isBiometricScanning' isn't used • lib/screens/enter_pin_screen.dart:46:8 • unused_field
+warning • The value of the local variable 'hasFingerprint' isn't used • lib/screens/enter_pin_screen.dart:83:11 • unused_local_variable
+  error • Expected an identifier • lib/screens/forgot_password_screens.dart:453:97 • missing_identifier
+warning • The declaration '_showComingSoonDialog' isn't referenced • lib/screens/government_procurement_screen.dart:238:8 • unused_element
+warning • Unused import: 'qr_scan_screen.dart' • lib/screens/home_screen.dart:13:8 • unused_import
+   info • Unnecessary use of multiple underscores • lib/screens/home_screen.dart:267:41 • unnecessary_underscores
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/home_screen.dart:307:39 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/home_screen.dart:308:25 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/home_screen.dart:312:52 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/screens/home_screen.dart:639:47 • avoid_print
+   info • Unnecessary braces in a string interpolation • lib/screens/home_screen.dart:1016:36 • unnecessary_brace_in_string_interps
+   info • Unnecessary braces in a string interpolation • lib/screens/home_screen.dart:1022:36 • unnecessary_brace_in_string_interps
+warning • Unused import: 'package:smile_id/products/models/model.dart' • lib/screens/kyc/id_upload_screen.dart:3:8 • unused_import
+warning • Unused import: 'package:smile_id/smile_id.dart' • lib/screens/kyc/kra_verification_screen.dart:2:8 • unused_import
+warning • Unused import: '../../utils/input_decoration.dart' • lib/screens/kyc/kra_verification_screen.dart:9:8 • unused_import
+warning • Unused import: '../home_screen.dart' • lib/screens/kyc/liveness_check_screen.dart:5:8 • unused_import
+warning • The value of the field '_isSubmitting' isn't used • lib/screens/kyc/smile_id_kyc_screen.dart:29:8 • unused_field
+warning • Unused import: 'ecitizen_services_screen.dart' • lib/screens/more_options_screen.dart:4:8 • unused_import
+warning • Unused import: 'withdraw_money_screen.dart' • lib/screens/more_options_screen.dart:5:8 • unused_import
+warning • Unused import: 'property_details_screen.dart' • lib/screens/my_properties_screen.dart:6:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps • lib/screens/onboarding_page_view.dart:34:20 • use_build_context_synchronously
+warning • The declaration '_buildBar' isn't referenced • lib/screens/onboarding_screens.dart:110:10 • unused_element
+warning • The declaration '_buildProgressCircle' isn't referenced • lib/screens/onboarding_screens.dart:121:10 • unused_element
+warning • The declaration '_buildCoinStack' isn't referenced • lib/screens/onboarding_screens.dart:289:10 • unused_element
+warning • The declaration '_buildDollarBill' isn't referenced • lib/screens/onboarding_screens.dart:318:10 • unused_element
+warning • The declaration '_buildFloatingIcon' isn't referenced • lib/screens/onboarding_screens.dart:457:10 • unused_element
+warning • The declaration '_buildDollarBill' isn't referenced • lib/screens/onboarding_screens.dart:469:10 • unused_element
+warning • The declaration '_buildCoinStack' isn't referenced • lib/screens/onboarding_screens.dart:490:10 • unused_element
+warning • Unused import: 'my_cards_screen.dart' • lib/screens/profile_screen.dart:6:8 • unused_import
+   info • The private field _userRole could be 'final' • lib/screens/profile_screen.dart:20:10 • prefer_final_fields
+warning • Unused import: '../constants/api_constants.dart' • lib/screens/qr_scan_screen.dart:6:8 • unused_import
+warning • The declaration '_showComingSoonDialog' isn't referenced • lib/screens/real_estate_screen.dart:243:8 • unused_element
+warning • Unused import: '../services/wallet_service.dart' • lib/screens/send_mobile_number_screen.dart:7:8 • unused_import
+warning • The value of the field '_currentBalancePage' isn't used • lib/screens/send_mobile_number_screen.dart:30:7 • unused_field
+warning • The value of the field '_isLoadingBalance' isn't used • lib/screens/send_mobile_number_screen.dart:31:8 • unused_field
+   info • The private field _balances could be 'final' • lib/screens/send_mobile_number_screen.dart:43:30 • prefer_final_fields
+warning • Unused import: '../services/token_service.dart' • lib/screens/send_money_screen.dart:13:8 • unused_import
+warning • Unused import: '../services/logger_service.dart' • lib/screens/send_money_screen.dart:14:8 • unused_import
+warning • The value of the field '_isAmountFocused' isn't used • lib/screens/send_money_screen.dart:48:8 • unused_field
+warning • The value of the field '_favorites' isn't used • lib/screens/send_money_screen.dart:51:22 • unused_field
+warning • The declaration '_onAmountChanged' isn't referenced • lib/screens/send_money_screen.dart:124:8 • unused_element
+warning • The value of the local variable 'response' isn't used • lib/screens/send_money_screen.dart:229:13 • unused_local_variable
+warning • The declaration '_buildSendToMobileTab' isn't referenced • lib/screens/send_money_screen.dart:531:10 • unused_element
+warning • The declaration '_buildAddContactButton' isn't referenced • lib/screens/send_money_screen.dart:1100:10 • unused_element
+warning • The declaration '_buildContactAvatar' isn't referenced • lib/screens/send_money_screen.dart:1140:10 • unused_element
+warning • The declaration '_buildPageIndicator' isn't referenced • lib/screens/send_money_screen.dart:1175:10 • unused_element
+warning • Unused import: 'home_screen.dart' • lib/screens/settings_screen.dart:5:8 • unused_import
+warning • Unused import: '../utils/component_styles.dart' • lib/screens/settings_screen.dart:11:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/settings_screen.dart:476:30 • use_build_context_synchronously
+warning • Unused import: 'package:shared_preferences/shared_preferences.dart' • lib/screens/sign_in_screen.dart:3:8 • unused_import
+warning • Unused import: 'home_screen.dart' • lib/screens/splash_screen.dart:10:8 • unused_import
+warning • The value of the field '_fadeAnimation' isn't used • lib/screens/splash_screen.dart:23:26 • unused_field
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/till_payment_screen.dart:219:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/till_payment_screen.dart:272:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/till_payment_screen.dart:327:37 • deprecated_member_use
+warning • Unused import: '../services/wallet_service.dart' • lib/screens/transactions_screen.dart:8:8 • unused_import
+warning • Unused import: 'package:url_launcher/url_launcher.dart' • lib/screens/transactions_screen.dart:11:8 • unused_import
+warning • Unused import: 'package:webview_flutter/webview_flutter.dart' • lib/screens/transactions_screen.dart:16:8 • unused_import
+   info • The private field _transactions could be 'final' • lib/screens/transactions_screen.dart:30:21 • prefer_final_fields
+warning • The value of the field '_transactions' isn't used • lib/screens/transactions_screen.dart:30:21 • unused_field
+   info • The private field _isLoading could be 'final' • lib/screens/transactions_screen.dart:32:8 • prefer_final_fields
+warning • The value of the field '_isLoading' isn't used • lib/screens/transactions_screen.dart:32:8 • unused_field
+warning • The value of the field '_error' isn't used • lib/screens/transactions_screen.dart:33:11 • unused_field
+   info • 'Share' is deprecated and shouldn't be used. Use SharePlus instead • lib/screens/transactions_screen.dart:148:13 • deprecated_member_use
+   info • 'shareXFiles' is deprecated and shouldn't be used. Use SharePlus.instance.share() instead • lib/screens/transactions_screen.dart:148:19 • deprecated_member_use
+   info • 'onPopInvoked' is deprecated and shouldn't be used. Use onPopInvokedWithResult instead. This feature was deprecated after v3.22.0-12.0.pre • lib/screens/transactions_screen.dart:162:9 • deprecated_member_use
+warning • The value of the local variable 'sortedHeaders' isn't used • lib/screens/transactions_screen.dart:352:18 • unused_local_variable
+warning • The value of the field '_correctPin' isn't used • lib/screens/verify_pin_screen.dart:29:16 • unused_field
+warning • The value of the field '_hasFingerprint' isn't used • lib/screens/verify_pin_screen.dart:42:8 • unused_field
+   info • Don't use 'BuildContext's across async gaps • lib/screens/verify_pin_screen.dart:241:22 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/verify_pin_screen.dart:257:11 • use_build_context_synchronously
+warning • The exception variable 'e' isn't used, so the 'catch' clause can be removed • lib/screens/verify_pin_screen.dart:261:39 • unused_catch_clause
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/screens/verify_pin_screen.dart:311:9 • use_build_context_synchronously
+warning • Unused import: 'package:flutter_screenutil/flutter_screenutil.dart' • lib/screens/wallet_topup_screen.dart:5:8 • unused_import
+warning • Unused import: '../services/toast_service.dart' • lib/screens/withdraw_money_screen.dart:7:8 • unused_import
+warning • Unused import: '../services/wallet_service.dart' • lib/screens/withdraw_money_screen.dart:8:8 • unused_import
+warning • This default clause is covered by the previous cases • lib/services/biometric_service.dart:171:7 • unreachable_switch_default
+warning • The value of the local variable 'duration' isn't used • lib/services/ecitizen_service.dart:39:13 • unused_local_variable
+warning • The value of the local variable 'duration' isn't used • lib/services/ecitizen_service.dart:118:13 • unused_local_variable
+   info • Don't invoke 'print' in production code • lib/services/procurement_service.dart:13:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/procurement_service.dart:25:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/procurement_service.dart:37:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/procurement_service.dart:48:7 • avoid_print
+warning • Unused import: 'dart:convert' • lib/services/real_estate_service.dart:1:8 • unused_import
+warning • Unused import: 'package:http/http.dart' • lib/services/real_estate_service.dart:2:8 • unused_import
+warning • Unused import: '../constants/api_constants.dart' • lib/services/real_estate_service.dart:3:8 • unused_import
+warning • Unused import: '../services/token_service.dart' • lib/services/real_estate_service.dart:5:8 • unused_import
+   info • Unnecessary use of multiple underscores • lib/widgets/currency_selection_sheet.dart:85:39 • unnecessary_underscores
+warning • The declaration '_getCurrencyName' isn't referenced • lib/widgets/currency_selection_sheet.dart:154:10 • unused_element
+warning • Unused import: '../constants/colors.dart' • lib/widgets/custom_bottom_nav.dart:3:8 • unused_import
+
+111 issues found. (ran in 6.5s)
