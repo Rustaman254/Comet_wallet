@@ -10,7 +10,12 @@ import '../home_screen.dart';
 /// Screen that initialises and launches the Sumsub KYC SDK, then displays
 /// the verification result and allows re-launch if needed.
 class SumsubKycScreen extends StatefulWidget {
-  const SumsubKycScreen({super.key});
+  final Widget? nextScreen;
+
+  const SumsubKycScreen({
+    super.key,
+    this.nextScreen,
+  });
 
   @override
   State<SumsubKycScreen> createState() => _SumsubKycScreenState();
@@ -225,10 +230,16 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
               'Your identity has been verified. You now have full access to all features.',
           actionLabel: 'Continue',
           onAction: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
-            );
+            if (widget.nextScreen != null) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => widget.nextScreen!),
+              );
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                (route) => false,
+              );
+            }
           },
         );
       case 'pending':
@@ -241,12 +252,18 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
           title: 'KYC Pending',
           subtitle:
               'Your documents are being reviewed. This usually takes a few minutes.',
-          actionLabel: 'Go Home',
+          actionLabel: 'Continue',
           onAction: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
-            );
+            if (widget.nextScreen != null) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => widget.nextScreen!),
+              );
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                (route) => false,
+              );
+            }
           },
         );
       case 'rejected':

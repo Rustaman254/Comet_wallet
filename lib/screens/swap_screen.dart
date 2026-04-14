@@ -403,91 +403,127 @@ class _SwapScreenState extends State<SwapScreen> {
           ToastService().showError(context, state.message);
         }
       },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: getTextColor(context)),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text(
-            'Swap',
-            style: TextStyle(
-              fontFamily: 'Outfit',
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: getTextColor(context),
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: BlocBuilder<WalletBloc, WalletState>(
-          builder: (context, state) {
-            final isLoading = state is WalletSwapLoading;
-            final fromBalance = _getBalanceForCurrency(_fromCurrency, state);
+      child: BlocBuilder<WalletBloc, WalletState>(
+        builder: (context, state) {
+          final isLoading = state is WalletSwapLoading;
+          final fromBalance = _getBalanceForCurrency(_fromCurrency, state);
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final swapCardColor = isDark ? const Color(0xFF28333F) : getCardColor(context);
 
-            return SingleChildScrollView(
+          return Scaffold(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back, color: getTextColor(context)),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              title: Text(
+                'Swap',
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                  color: getTextColor(context),
+                ),
+              ),
+              centerTitle: true,
+            ),
+            bottomNavigationBar: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(24.r),
+                child: ElevatedButton(
+                  onPressed: (isLoading || (_currentRate <= 0 && _fromCurrency != _toCurrency)) ? null : _handleSwap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryBrandColor,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 18.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: isLoading
+                      ? SizedBox(
+                          height: 24.r,
+                          width: 24.r,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          'Swap Now',
+                          style: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            body: SingleChildScrollView(
               padding: EdgeInsets.all(24.r),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // TOP CARD (FROM)
-                    _buildSwapCard(
-                      isFrom: true,
-                      currency: _fromCurrency,
-                      balance: fromBalance,
-                      controller: _amountController,
-                      onCurrencyTap: () => _showCurrencyPicker(true),
-                      onMaxTap: () {
-                        _amountController.text = fromBalance.toString();
-                        setState(() {});
-                      },
-                    ),
-
-                    SizedBox(height: 12.h),
-
-                    // SWAP BUTTON IN THE MIDDLE
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            final temp = _fromCurrency;
-                            _fromCurrency = _toCurrency;
-                            _toCurrency = temp;
-                          });
-                          // Fetch the exchange rate for the swapped currency pair
-                          _fetchExchangeRate();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(8.r),
-                          decoration: BoxDecoration(
-                            color: primaryBrandColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              width: 4.r,
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            // TOP CARD (FROM)
+                            _buildSwapCard(
+                              isFrom: true,
+                              currency: _fromCurrency,
+                              balance: fromBalance,
+                              controller: _amountController,
+                              onCurrencyTap: () => _showCurrencyPicker(true),
+                              cardColor: swapCardColor,
                             ),
-                          ),
-                          child: Icon(Icons.swap_vert, color: Colors.white, size: 24.r),
+                            SizedBox(height: 8.h),
+                            // BOTTOM CARD (TO)
+                            _buildSwapCard(
+                              isFrom: false,
+                              currency: _toCurrency,
+                              balance: 0, // Not needed for "To" card usually
+                              controller: TextEditingController(
+                                text: _calculateEstimatedAmount().toStringAsFixed(2),
+                              ),
+                              onCurrencyTap: () => _showCurrencyPicker(false),
+                              cardColor: swapCardColor,
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-
-                    SizedBox(height: 12.h),
-
-                    // BOTTOM CARD (TO)
-                    _buildSwapCard(
-                      isFrom: false,
-                      currency: _toCurrency,
-                      balance: 0, // Not needed for "To" card usually
-                      controller: TextEditingController(
-                        text: _calculateEstimatedAmount().toStringAsFixed(2),
-                      ),
-                      onCurrencyTap: () => _showCurrencyPicker(false),
+                        // SWAP BUTTON IN THE MIDDLE OVERLAPPING
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              final temp = _fromCurrency;
+                              _fromCurrency = _toCurrency;
+                              _toCurrency = temp;
+                            });
+                            // Fetch the exchange rate for the swapped currency pair
+                            _fetchExchangeRate();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(6.r),
+                            decoration: BoxDecoration(
+                              color: swapCardColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Theme.of(context).scaffoldBackgroundColor,
+                                width: 5.r,
+                              ),
+                            ),
+                            child: Icon(Icons.swap_vert, color: getTextColor(context), size: 20.r),
+                          ),
+                        ),
+                      ],
                     ),
 
                     SizedBox(height: 32.h),
@@ -496,9 +532,9 @@ class _SwapScreenState extends State<SwapScreen> {
                     Container(
                       padding: EdgeInsets.all(16.r),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
+                        color: swapCardColor,
                         borderRadius: BorderRadius.circular(16.r),
-                        border: Border.all(color: getBorderColor(context)),
+                        border: Border.all(color: Colors.transparent),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -554,43 +590,12 @@ class _SwapScreenState extends State<SwapScreen> {
                     ),
 
                     SizedBox(height: 48.h),
-
-                    // SWAP BUTTON
-                    ElevatedButton(
-                      onPressed: (isLoading || (_currentRate <= 0 && _fromCurrency != _toCurrency)) ? null : _handleSwap,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryBrandColor,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 18.h),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.r),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: isLoading
-                          ? SizedBox(
-                              height: 24.r,
-                              width: 24.r,
-                              child: const CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              'Swap Now',
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
                   ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -601,45 +606,31 @@ class _SwapScreenState extends State<SwapScreen> {
     required double balance,
     required TextEditingController controller,
     required VoidCallback onCurrencyTap,
-    VoidCallback? onMaxTap,
+    required Color cardColor,
   }) {
+    // A placeholder conversion just for visuals matching the snapshot loosely
+    final amountVal = double.tryParse(controller.text) ?? 0.0;
+    final estimatedUsd = amountVal * _lookupRate(currency, 'USD'); 
+
     return Container(
-      padding: EdgeInsets.all(20.r),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(color: getBorderColor(context)),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: Colors.transparent),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                isFrom ? 'You pay' : 'You receive',
-                style: TextStyle(
-                  fontFamily: 'Outfit',
-                  fontSize: 14.sp,
-                  color: getSecondaryTextColor(context),
-                ),
-              ),
-              if (isFrom)
-                GestureDetector(
-                  onTap: onMaxTap,
-                  child: Text(
-                    'Balance: ${balance.toStringAsFixed(2)} $currency',
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      fontSize: 12.sp,
-                      color: primaryBrandColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-            ],
+          Text(
+            isFrom ? 'You sell' : 'You receive',
+            style: TextStyle(
+              fontFamily: 'Outfit',
+              fontSize: 14.sp,
+              color: getSecondaryTextColor(context),
+            ),
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 8.h),
           Row(
             children: [
               Expanded(
@@ -649,8 +640,8 @@ class _SwapScreenState extends State<SwapScreen> {
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         style: TextStyle(
                           fontFamily: 'Outfit',
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 32.sp,
+                          fontWeight: FontWeight.w600,
                           color: getTextColor(context),
                         ),
                         decoration: InputDecoration(
@@ -658,6 +649,7 @@ class _SwapScreenState extends State<SwapScreen> {
                           hintStyle: TextStyle(color: getTertiaryTextColor(context)),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
+                          isDense: true,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) return 'Required';
@@ -667,35 +659,36 @@ class _SwapScreenState extends State<SwapScreen> {
                           
                           // Minimum swap amount checks
                           if (_toCurrency == 'USDA') {
-                            final rate = _lookupRate(_fromCurrency, 'USDA');
-                            final estimatedUSDA = double.parse(value) * rate;
-                            if (estimatedUSDA < 1.0) {
-                              return 'Min swap: 1 $_toCurrency (Cardano)';
-                            }
+                             final rate = _lookupRate(_fromCurrency, 'USDA');
+                             final estimatedUSDA = double.parse(value) * rate;
+                             if (estimatedUSDA < 1.0) {
+                               return 'Min swap: 1 USDA';
+                             }
                           }
                           if (_fromCurrency == 'USDA') {
-                            if (double.parse(value) < 1.0) {
-                              return 'Min swap: 1 $_fromCurrency (Cardano)';
-                            }
+                             if (double.parse(value) < 1.0) {
+                               return 'Min swap: 1 USDA';
+                             }
                           }
-                          
                           return null;
                         },
                       )
                     : Text(
-                        controller.text,
+                        controller.text.isEmpty || controller.text == '0.00' ? '0' : controller.text,
                         style: TextStyle(
                           fontFamily: 'Outfit',
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 32.sp,
+                          fontWeight: FontWeight.w600,
                           color: getTextColor(context),
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
               ),
               GestureDetector(
                 onTap: onCurrencyTap,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(100.r),
@@ -703,48 +696,47 @@ class _SwapScreenState extends State<SwapScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _buildCurrencyIcon(currency, size: 24.r),
+                      _buildCurrencyIcon(currency, size: 20.r),
                       SizedBox(width: 8.w),
                       Text(
-                        currency == 'USDA' ? 'USDA (Cardano)' : currency,
+                        currency == 'USDA' ? 'USDA' : currency,
                         style: TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                           color: getTextColor(context),
                         ),
                       ),
                       SizedBox(width: 4.w),
-                      Icon(Icons.keyboard_arrow_down, color: getSecondaryTextColor(context), size: 18.r),
+                      Icon(Icons.keyboard_arrow_down, color: getSecondaryTextColor(context), size: 16.r),
                     ],
                   ),
                 ),
               ),
             ],
           ),
-          if (isFrom && onMaxTap != null) ...[
-            SizedBox(height: 8.h),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: onMaxTap,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  'MAX',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.bold,
-                    color: primaryBrandColor,
-                  ),
+          SizedBox(height: 12.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                amountVal > 0 ? '\$${amountVal.toStringAsFixed(2)}' : '\$0.00',
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 14.sp,
+                  color: getSecondaryTextColor(context),
                 ),
               ),
-            ),
-          ],
+              Text(
+                'Bal: ${balance.toStringAsFixed(2)} $currency',
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 14.sp,
+                  color: getSecondaryTextColor(context),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

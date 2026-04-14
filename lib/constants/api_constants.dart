@@ -35,7 +35,7 @@ class ApiConstants {
 
   // Forex endpoints
   static String get forexRatesEndpoint => '$baseUrl/forex/rates';
-  static const String currenciesEndpoint = 'https://api.yeshara.network/api/v1/forex/currencies';
+  static String get currenciesEndpoint => '$baseUrl/forex/currencies';
 
   // Forgot password endpoints
   static String get resetTokenEndpoint => '$baseUrl/users/reset-token';

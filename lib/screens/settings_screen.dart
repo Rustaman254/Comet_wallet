@@ -11,6 +11,7 @@ import '../services/logger_service.dart';
 import '../utils/component_styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'kyc/kyc_intro_screen.dart';
+import '../services/sumsub_kyc_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -42,11 +43,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _biometricsEnabled = biometricEnabled;
       _kycVerified = kycVerified;
     });
+
+    if (!kycVerified) {
+      _fetchKycStatus();
+    }
   }
+
+  Future<void> _fetchKycStatus() async {
+    try {
+      final statusResponse = await SumsubKycService.getKycStatus();
+      final status = (statusResponse['status'] as String?)?.toLowerCase();
+      
+      if (mounted) {
+        setState(() {
+          _kycStatus = status;
+          if (status == 'completed' || status == 'approved') {
+             _kycVerified = true;
+             TokenService.saveKycVerified(true);
+          }
+        });
+      }
+    } catch (e) {
+      // Ignored: probably no applicant exists yet
+    }
+  }
+
+  String? _kycStatus;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    String bannerTitle = 'KYC Not Verified';
+    String bannerSubtitle = 'Verify your identity to unlock full features.';
+    Color bannerColor = Colors.amber;
+    IconData bannerIcon = Icons.warning_amber_rounded;
+    String actionText = 'Verify KYC';
+
+    if (_kycStatus == 'pending' || _kycStatus == 'init' || _kycStatus == 'queued') {
+      bannerTitle = 'KYC Pending';
+      bannerSubtitle = 'Your documents are being reviewed.';
+      bannerIcon = Icons.hourglass_top_rounded;
+      actionText = 'Check Status';
+    } else if (_kycStatus == 'rejected') {
+      bannerTitle = 'KYC Rejected';
+      bannerSubtitle = 'Verification failed. Please try again.';
+      bannerColor = errorRed;
+      bannerIcon = Icons.cancel_outlined;
+      actionText = 'Retry KYC';
+    }
     
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -110,10 +155,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.amber.withValues(alpha: 0.12),
+                      color: bannerColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.amber.withValues(alpha: 0.3),
+                        color: bannerColor.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
@@ -123,13 +168,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: Colors.amber.withValues(alpha: 0.2),
+                            color: bannerColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Center(
+                          child: Center(
                             child: Icon(
-                              Icons.warning_amber_rounded,
-                              color: Colors.amber,
+                              bannerIcon,
+                              color: bannerColor,
                               size: 24,
                             ),
                           ),
@@ -140,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'KYC Not Verified',
+                                bannerTitle,
                                 style: TextStyle(
                                   fontFamily: 'Outfit',
                                   color: isDark ? Colors.white : lightTextPrimary,
@@ -150,7 +195,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Verify your identity to unlock full features.',
+                                bannerSubtitle,
                                 style: TextStyle(
                                   fontFamily: 'Outfit',
                                   color: isDark ? Colors.white70 : lightSecondaryText,
@@ -168,17 +213,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            foregroundColor: Colors.black87,
+                            backgroundColor: bannerColor,
+                            foregroundColor: bannerTitle == 'KYC Rejected' ? Colors.white : Colors.black87,
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                             elevation: 0,
                           ),
-                          child: const Text(
-                            'Verify KYC',
-                            style: TextStyle(
+                          child: Text(
+                            actionText,
+                            style: const TextStyle(
                               fontFamily: 'Outfit',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,

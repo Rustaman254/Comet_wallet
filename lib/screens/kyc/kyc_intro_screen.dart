@@ -5,7 +5,12 @@ import 'sumsub_kyc_screen.dart';
 import '../home_screen.dart';
 
 class KYCIntroScreen extends StatelessWidget {
-  const KYCIntroScreen({super.key});
+  final Widget? nextScreen;
+
+  const KYCIntroScreen({
+    super.key,
+    this.nextScreen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +26,16 @@ class KYCIntroScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-                (route) => false,
-              );
+              if (nextScreen != null) {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => nextScreen!),
+                );
+              } else {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  (route) => false,
+                );
+              }
             },
             child: Text(
               'Skip',
@@ -86,7 +97,7 @@ class KYCIntroScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const SumsubKycScreen()),
+                    MaterialPageRoute(builder: (_) => SumsubKycScreen(nextScreen: nextScreen)),
                   );
                 },
                 style: ElevatedButton.styleFrom(
