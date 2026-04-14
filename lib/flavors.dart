@@ -29,4 +29,16 @@ class F {
         return 'https://api.fusionfi.io/api/v1';
     }
   }
+
+  /// Base URL without the /api/v1 suffix, for endpoints outside that prefix.
+  static String get baseUrlRoot {
+    switch (appFlavor) {
+      case Flavor.sandbox:
+        return 'https://sandbox.fusionfi.io';
+      case Flavor.production:
+        return 'https://api.fusionfi.io';
+      default:
+        return 'https://api.fusionfi.io';
+    }
+  }
 }
