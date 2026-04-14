@@ -1,4 +1,4 @@
 #include "Generated.xcconfig"
 
-AS_APP_NAME = Fusionfy Sandbox
+AS_APP_NAME = Fusionfi_Sandbox
 AS_APP_BUNDLE_ID = com.asteropay.kenya.sandbox

@@ -11,11 +11,11 @@ class F {
   static String get title {
     switch (appFlavor) {
       case Flavor.sandbox:
-        return 'Fusionfy Sandbox';
+        return 'Fusionfi_Sandbox';
       case Flavor.production:
-        return 'Fusionfy';
+        return 'Fusionfi';
       default:
-        return 'Fusionfy';
+        return 'Fusionfi';
     }
   }
 
