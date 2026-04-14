@@ -38,7 +38,16 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
   // Core flow
   // ─────────────────────────────────────────────
 
+  DateTime? _lastLaunchTime;
+
   Future<void> _launchSumsubKyc() async {
+    // Spam guard: prevent calls within 2 seconds of each other
+    if (_lastLaunchTime != null &&
+        DateTime.now().difference(_lastLaunchTime!).inSeconds < 2) {
+      return;
+    }
+    _lastLaunchTime = DateTime.now();
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -99,17 +108,36 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
       // 3. After SDK closes, fetch status from backend
       await _fetchKycStatus();
     } catch (e) {
+      final String errorStr = e.toString();
       AppLogger.error(
         LogTags.kyc,
         'Sumsub KYC launch error',
-        data: {'error': e.toString()},
+        data: {'error': errorStr},
       );
+
+      // 409 Conflict check: if applicant exists, suggest checking status
+      bool isConflict = errorStr.contains('409') ||
+          errorStr.toLowerCase().contains('conflict') ||
+          errorStr.toLowerCase().contains('already exists');
+
       if (mounted) {
         setState(() {
           _isLoading = false;
           _isSdkRunning = false;
-          _errorMessage = e.toString();
+          
+          if (isConflict) {
+            // Instead of a scary error, we tell them it's already in progress
+            _errorMessage = null;
+            _kycStatus = 'pending'; // Fallback to pending view
+          } else {
+            _errorMessage = errorStr;
+          }
         });
+        
+        // If it was a conflict, automatically try to fetch the actual status
+        if (isConflict) {
+          _fetchKycStatus();
+        }
       }
     }
   }

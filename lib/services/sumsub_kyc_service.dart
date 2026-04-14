@@ -1,6 +1,7 @@
 import 'dart:convert';
 import '../constants/api_constants.dart';
 import 'authenticated_http_client.dart';
+import 'token_service.dart';
 import 'logger_service.dart';
 
 /// Service for Sumsub KYC backend interactions.
@@ -26,6 +27,7 @@ class SumsubKycService {
 
       final response = await AuthenticatedHttpClient.post(
         Uri.parse(endpoint),
+        body: jsonEncode({}),
       );
 
       final duration = DateTime.now().difference(startTime);
@@ -77,16 +79,23 @@ class SumsubKycService {
   /// ```
   static Future<Map<String, dynamic>> getKycStatus() async {
     final startTime = DateTime.now();
-    final endpoint = ApiConstants.sumsubKycStatusEndpoint;
+    
+    // Get userId from TokenService
+    final userId = await TokenService.getUserId() ?? '';
+    if (userId.isEmpty) {
+      throw Exception('User ID not found in TokenService');
+    }
+    
+    final endpoint = ApiConstants.getSumsubKycStatusEndpoint(userId);
 
     try {
       AppLogger.logAPIRequest(
         endpoint: endpoint,
-        method: 'POST',
-        body: {},
+        method: 'GET',
+        body: null,
       );
 
-      final response = await AuthenticatedHttpClient.post(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse(endpoint),
       );
 

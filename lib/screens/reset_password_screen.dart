@@ -8,9 +8,10 @@ import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final String token;
+  final String email;
+  final String otp;
 
-  const ResetPasswordScreen({super.key, required this.token});
+  const ResetPasswordScreen({super.key, required this.email, required this.otp});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -38,13 +39,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     try {
       // POST {{BASE_URL}}/users/reset-password
-      // Payload: {"token": "fc04...", "new_password": "NewPass123!"}
+      // Payload: {"email": "...", "otp": "...", "new_password": "..."}
       final response = await http.post(
         Uri.parse(ApiConstants.resetPasswordEndpoint),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'token': widget.token,
+          'email': widget.email,
+          'otp': widget.otp,
           'new_password': _passwordController.text,
+          'confirm_password': _confirmController.text, // Backend asks for this if they enforce confirming
         }),
       );
 
@@ -131,33 +134,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     SizedBox(height: 48.h),
 
-                    // Token (read-only display)
-                    Text(
-                      'Token',
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        color: textColor,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    TextFormField(
-                      initialValue: widget.token,
-                      readOnly: true,
-                      style: TextStyle(
-                        fontFamily: 'Outfit',
-                        color: subTextColor,
-                        fontSize: 12,
-                      ),
-                      maxLines: 2,
-                      decoration: buildUnderlineInputDecoration(
-                        context: context,
-                        label: '',
-                        prefixIcon: Icon(Icons.vpn_key_outlined, color: primaryBrandColor),
-                      ),
-                    ),
-                    SizedBox(height: 28.h),
+                    // Removed Token read-only field
+
 
                     // New Password
                     Text(

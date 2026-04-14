@@ -156,10 +156,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 2),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/images/user_avatar.png'),
-                          fit: BoxFit.cover,
-                        ),
                         color: Colors.grey[800],
                       ),
                       child: const Icon(Icons.person, size: 50, color: Colors.white),

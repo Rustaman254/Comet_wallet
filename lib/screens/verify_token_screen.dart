@@ -8,9 +8,9 @@ import '../utils/input_decoration.dart';
 import 'reset_password_screen.dart';
 
 class VerifyTokenScreen extends StatefulWidget {
-  final String prefillToken;
+  final String email;
 
-  const VerifyTokenScreen({super.key, required this.prefillToken});
+  const VerifyTokenScreen({super.key, required this.email});
 
   @override
   State<VerifyTokenScreen> createState() => _VerifyTokenScreenState();
@@ -24,7 +24,7 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
   @override
   void initState() {
     super.initState();
-    // Token field left empty — user pastes it from their email
+    // OTP field left empty
   }
 
   @override
@@ -40,11 +40,14 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
 
     try {
       // POST {{BASE_URL}}/users/verify-token
-      // Payload: {"token": "fc04..."}
+      // Payload: {"email": "...", "otp": "..."}
       final response = await http.post(
         Uri.parse(ApiConstants.verifyTokenEndpoint),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'token': _tokenController.text.trim()}),
+        body: jsonEncode({
+          'email': widget.email,
+          'otp': _tokenController.text.trim(),
+        }),
       );
 
       // Success: {"message": "Token is valid", "user_id": 122}
@@ -64,7 +67,8 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ResetPasswordScreen(
-              token: _tokenController.text.trim(),
+              email: widget.email,
+              otp: _tokenController.text.trim(),
             ),
           ),
         );
@@ -132,7 +136,7 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
                     ),
                     SizedBox(height: 48.h),
                     Text(
-                      'Reset Token',
+                      'OPT Code',
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         color: textColor,
@@ -143,20 +147,20 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
                     SizedBox(height: 8.h),
                     TextFormField(
                       controller: _tokenController,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.number,
                       style: TextStyle(
                         fontFamily: 'Outfit',
                         color: textColor,
                         fontSize: 14,
                         letterSpacing: 0.5,
                       ),
-                      maxLines: 3,
+                      maxLines: 1,
                       minLines: 1,
                       decoration: buildUnderlineInputDecoration(
                         context: context,
                         label: '',
-                        hintText: 'Paste the token here',
-                        prefixIcon: Icon(Icons.vpn_key_outlined, color: primaryBrandColor),
+                        hintText: 'Enter 6-digit OTP',
+                        prefixIcon: Icon(Icons.password_outlined, color: primaryBrandColor),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {

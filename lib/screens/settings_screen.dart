@@ -12,6 +12,7 @@ import '../utils/component_styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'kyc/kyc_intro_screen.dart';
 import '../services/sumsub_kyc_service.dart';
+import 'forgot_password_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -281,7 +282,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Change Password',
                 HeroIcons.lockClosed,
                 isDark: isDark,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                  );
+                },
               ),
               _buildDivider(isDark),
               _buildModernListTile(
