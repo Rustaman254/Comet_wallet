@@ -41,4 +41,8 @@ class ApiConstants {
   static String get resetTokenEndpoint => '$baseUrl/users/reset-token';
   static String get verifyTokenEndpoint => '$baseUrl/users/verify-token';
   static String get resetPasswordEndpoint => '$baseUrl/users/reset-password';
+
+  // Sumsub KYC endpoints
+  static String get sumsubInitKycEndpoint => '$baseUrl/kyc/sumsub/init-kyc';
+  static String get sumsubKycStatusEndpoint => '$baseUrl/kyc/sumsub/kyc-status';
 }

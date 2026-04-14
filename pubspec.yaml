@@ -55,6 +55,7 @@ dependencies:
   path_provider: ^2.1.5
   csv: ^6.0.0
   webview_flutter: ^4.13.1
+  flutter_idensic_mobile_sdk_plugin: ^1.42.0
 
 dev_dependencies:
   flutter_test:

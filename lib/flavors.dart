@@ -11,11 +11,11 @@ class F {
   static String get title {
     switch (appFlavor) {
       case Flavor.sandbox:
-        return 'Fusionfy Sandbox';
+        return 'Fusionfi_Sandbox';
       case Flavor.production:
-        return 'Fusionfy';
+        return 'Fusionfi';
       default:
-        return 'Fusionfy';
+        return 'Fusionfi';
     }
   }
 
@@ -27,6 +27,18 @@ class F {
         return 'https://api.fusionfi.io/api/v1';
       default:
         return 'https://api.fusionfi.io/api/v1';
+    }
+  }
+
+  /// Base URL without the /api/v1 suffix, for endpoints outside that prefix.
+  static String get baseUrlRoot {
+    switch (appFlavor) {
+      case Flavor.sandbox:
+        return 'https://sandbox.fusionfi.io';
+      case Flavor.production:
+        return 'https://api.fusionfi.io';
+      default:
+        return 'https://api.fusionfi.io';
     }
   }
 }

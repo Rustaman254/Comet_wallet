@@ -52,3 +52,8 @@
 -dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
 -dontwarn com.google.android.play.core.splitinstall.**
 -dontwarn com.google.android.play.core.tasks.**
+
+# Sumsub SDK rules
+-keep class com.sumsub.** { *; }
+-dontwarn com.sumsub.**
+
