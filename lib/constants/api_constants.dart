@@ -44,5 +44,6 @@ class ApiConstants {
 
   // Sumsub KYC endpoints
   static String get sumsubInitKycEndpoint => '$baseUrl/kyc/sumsub/init-kyc';
+  static String get sumsubKycStatusEndpoint => '$baseUrl/kyc/sumsub/kyc-status';
   static String getSumsubKycStatusEndpoint(String userId) => '$baseUrl/kyc/read/User/$userId';
 }

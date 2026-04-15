@@ -86,17 +86,22 @@ class SumsubKycService {
       throw Exception('User ID not found in TokenService');
     }
     
-    final endpoint = ApiConstants.getSumsubKycStatusEndpoint(userId);
+    final endpoint = ApiConstants.sumsubKycStatusEndpoint;
 
     try {
+      final requestBody = {
+        "userId": userId,
+      };
+
       AppLogger.logAPIRequest(
         endpoint: endpoint,
-        method: 'GET',
-        body: null,
+        method: 'POST',
+        body: requestBody,
       );
 
-      final response = await AuthenticatedHttpClient.get(
+      final response = await AuthenticatedHttpClient.post(
         Uri.parse(endpoint),
+        body: jsonEncode(requestBody),
       );
 
       final duration = DateTime.now().difference(startTime);

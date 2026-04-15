@@ -167,6 +167,15 @@ class AuthService {
               balanceUsda: balanceUsda,
               balanceUsdaRaw: balanceUsdaRaw,
             );
+          } else {
+            // Auto-login to get the token, required for KYC initialization
+            AppLogger.info(LogTags.auth, 'No token in registration response, attempting auto-login');
+            try {
+              await login(email: email, password: password);
+            } catch (e) {
+              AppLogger.error(LogTags.auth, 'Auto-login failed after registration', data: {'error': e.toString()});
+              // We don't re-throw here so the registration itself is still considered successful in the UI
+            }
           }
         }
 
@@ -246,9 +255,9 @@ class AuthService {
 
         // Save authentication token and user data
         // Token is at root level in response: response['token']
-        // User data is in response['user']
+        // User data is in response['user'] or response['User']
         final token = jsonResponse['token'] ?? jsonResponse['access_token'] ?? '';
-        final userObj = jsonResponse['user'];
+        final userObj = jsonResponse['user'] ?? jsonResponse['User'];
         
         // Handle various ID fields if present
         final userId = userObj?['id']?.toString() ?? jsonResponse['id']?.toString() ?? '';
@@ -274,6 +283,8 @@ class AuthService {
           final balanceUsda = (userObj?['balance_usda'] ?? 0.0).toDouble();
           final balanceUsdaRaw = userObj?['balance_usda_raw'];
           final kycVerified = userObj?['kyc_verified'] ?? false;
+          final isAccountActivated = userObj?['is_account_activated'] ?? false;
+          final activationFeePaid = userObj?['activation_fee_paid'] ?? false;
 
           await TokenService.saveExtendedUserData(
             token: token,
@@ -286,6 +297,8 @@ class AuthService {
             balanceUsda: balanceUsda,
             balanceUsdaRaw: balanceUsdaRaw,
             kycVerified: kycVerified is bool ? kycVerified : false,
+            isAccountActivated: isAccountActivated is bool ? isAccountActivated : false,
+            activationFeePaid: activationFeePaid is bool ? activationFeePaid : false,
           );
 
           AppLogger.debug(
