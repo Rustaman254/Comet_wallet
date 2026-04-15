@@ -127,8 +127,8 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
           
           if (isConflict) {
             // Instead of a scary error, we tell them it's already in progress
-            _errorMessage = null;
-            _kycStatus = 'pending'; // Fallback to pending view
+            _errorMessage = 'Applicant already exists. Try checking your status or resuming.';
+            _kycStatus = 'initial'; // Map to a state that allows retry/status check
           } else {
             _errorMessage = errorStr;
           }
@@ -145,7 +145,7 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
   Future<void> _fetchKycStatus() async {
     try {
       final statusResponse = await SumsubKycService.getKycStatus();
-      final status = (statusResponse['status'] as String?)?.toLowerCase();
+      final status = (statusResponse['kycStatus'] as String?)?.toLowerCase() ?? '';
 
       if (mounted) {
         setState(() {
@@ -234,14 +234,17 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
 
     // Error state
     if (_errorMessage != null) {
+      final isConflictError = _errorMessage!.contains('409') || 
+                            _errorMessage!.toLowerCase().contains('already exists');
+      
       return _buildStatusView(
         isDark: isDark,
-        icon: Icons.error_outline,
-        iconColor: errorRed,
-        title: 'Something went wrong',
+        icon: isConflictError ? Icons.info_outline : Icons.error_outline,
+        iconColor: isConflictError ? primaryBrandColor : errorRed,
+        title: isConflictError ? 'Already in Progress' : 'Something went wrong',
         subtitle: _errorMessage!,
-        actionLabel: 'Retry',
-        onAction: _launchSumsubKyc,
+        actionLabel: isConflictError ? 'Check Status' : 'Retry',
+        onAction: isConflictError ? _fetchKycStatus : _launchSumsubKyc,
       );
     }
 
@@ -280,19 +283,19 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
           title: 'KYC Pending',
           subtitle:
               'Your documents are being reviewed. This usually takes a few minutes.',
-          actionLabel: 'Continue',
-          onAction: () {
-            if (widget.nextScreen != null) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => widget.nextScreen!),
-              );
-            } else {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-                (route) => false,
-              );
-            }
-          },
+          actionLabel: 'Check Status Again',
+          onAction: _fetchKycStatus,
+        );
+      case 'not_started':
+      case 'initial':
+        return _buildStatusView(
+          isDark: isDark,
+          icon: Icons.assignment_outlined,
+          iconColor: primaryBrandColor,
+          title: 'Ready for Verification',
+          subtitle: 'Please complete your identity verification to unlock all features.',
+          actionLabel: 'Start Verification',
+          onAction: _launchSumsubKyc,
         );
       case 'rejected':
         return _buildStatusView(

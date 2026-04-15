@@ -18,16 +18,23 @@ class SumsubKycService {
     final startTime = DateTime.now();
     final endpoint = ApiConstants.sumsubInitKycEndpoint;
 
+    // Get userId for the request body
+    final userId = await TokenService.getUserId() ?? '';
+
     try {
+      final requestBody = {
+        "userId": userId,
+      };
+
       AppLogger.logAPIRequest(
         endpoint: endpoint,
         method: 'POST',
-        body: {},
+        body: requestBody,
       );
 
       final response = await AuthenticatedHttpClient.post(
         Uri.parse(endpoint),
-        body: jsonEncode({}),
+        body: jsonEncode(requestBody),
       );
 
       final duration = DateTime.now().difference(startTime);
@@ -89,19 +96,14 @@ class SumsubKycService {
     final endpoint = ApiConstants.sumsubKycStatusEndpoint;
 
     try {
-      final requestBody = {
-        "userId": userId,
-      };
-
       AppLogger.logAPIRequest(
         endpoint: endpoint,
-        method: 'POST',
-        body: requestBody,
+        method: 'GET',
+        body: null,
       );
 
-      final response = await AuthenticatedHttpClient.post(
+      final response = await AuthenticatedHttpClient.get(
         Uri.parse(endpoint),
-        body: jsonEncode(requestBody),
       );
 
       final duration = DateTime.now().difference(startTime);
@@ -111,7 +113,7 @@ class SumsubKycService {
 
         AppLogger.logAPIResponse(
           endpoint: endpoint,
-          method: 'POST',
+          method: 'GET',
           statusCode: response.statusCode,
           duration: duration,
           response: jsonResponse,

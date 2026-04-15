@@ -56,10 +56,10 @@ class _VerifyTokenScreenState extends State<VerifyTokenScreen> {
       if (!mounted) return;
 
       if ((response.statusCode == 200 || response.statusCode == 201) &&
-          data['message'] == 'Token is valid') {
+          data['message'] == 'OTP is valid') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Token verified!'),
+            content: const Text('OTP verified!'),
             backgroundColor: Colors.green[700],
           ),
         );

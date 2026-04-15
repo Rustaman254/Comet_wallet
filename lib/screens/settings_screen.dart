@@ -13,6 +13,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'kyc/kyc_intro_screen.dart';
 import '../services/sumsub_kyc_service.dart';
 import 'forgot_password_screen.dart';
+import 'language_screen.dart';
+import 'contact_us_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -253,7 +256,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 isDark: isDark,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const LanguageScreen()),
+                  );
+                },
               ),
               _buildDivider(isDark),
               _buildModernListTile(
@@ -271,7 +278,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Contact Us',
                 HeroIcons.envelope,
                 isDark: isDark,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ContactUsScreen()),
+                  );
+                },
               ),
 
               const SizedBox(height: 32),
@@ -293,7 +304,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Privacy Policy',
                 HeroIcons.shieldCheck,
                 isDark: isDark,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+                  );
+                },
               ),
 
               const SizedBox(height: 32),
