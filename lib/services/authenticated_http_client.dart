@@ -34,6 +34,10 @@ class AuthenticatedHttpClient {
   }) async {
     final token = await TokenService.getToken();
     
+    if (token == null || token.isEmpty) {
+      AppLogger.warning(LogTags.auth, 'Making request without token (token is null or empty)', data: {'url': url.toString()});
+    }
+
     final requestHeaders = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

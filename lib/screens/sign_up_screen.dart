@@ -8,6 +8,7 @@ import '../utils/input_decoration.dart';
 import 'sign_in_screen.dart';
 import '../services/auth_service.dart';
 import '../widgets/usda_logo.dart';
+import 'kyc/kyc_intro_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -110,10 +111,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           setState(() {
             _isLoading = false;
           });
-          ToastService().showSuccess(context, "Account created successfully! Please sign in.");
+          ToastService().showSuccess(context, "Account created successfully! Please verify your identity or skip to sign in.");
           
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const SignInScreen()),
+            MaterialPageRoute(builder: (_) => const KYCIntroScreen(nextScreen: SignInScreen())),
           );
         }
       } catch (e) {

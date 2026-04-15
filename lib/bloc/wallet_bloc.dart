@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/transaction.dart';
 import '../services/wallet_service.dart';
 import '../services/logger_service.dart';
+import '../services/token_service.dart';
 import 'wallet_event.dart';
 import 'wallet_state.dart';
 
@@ -69,8 +70,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // Immediately fetch fresh data on resume (don't wait for timer)
-      add(const FetchWalletDataFromServer());
-      add(const StartAutoRefresh());
+      // We check for token inside the handlers or before adding events if possible
+      TokenService.isAuthenticated().then((hasToken) {
+        if (hasToken) {
+          add(const FetchWalletDataFromServer());
+          add(const StartAutoRefresh());
+        }
+      });
     } else if (state == AppLifecycleState.paused) {
       add(const StopAutoRefresh());
     }
@@ -530,12 +536,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     _refreshTimer?.cancel();
     _refreshTimer = Timer.periodic(
       const Duration(seconds: 30),
-      (_) {
-        AppLogger.debug(
-          LogTags.payment,
-          'Auto-refresh triggered',
-        );
-        add(const FetchWalletDataFromServer());
+      (_) async {
+        final hasToken = await TokenService.isAuthenticated();
+        if (hasToken) {
+          AppLogger.debug(
+            LogTags.payment,
+            'Auto-refresh triggered',
+          );
+          add(const FetchWalletDataFromServer());
+        } else {
+          add(const StopAutoRefresh());
+        }
       },
     );
   }

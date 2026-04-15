@@ -15,6 +15,7 @@ class UserProfile {
   final double balanceUsda;
   final int balanceUsdaRaw;
   final String status;
+  final String publicKey;
   final UserRole? role;
 
   UserProfile({
@@ -32,6 +33,7 @@ class UserProfile {
     required this.balanceUsda,
     required this.balanceUsdaRaw,
     required this.status,
+    required this.publicKey,
     this.role,
   });
 
@@ -53,6 +55,7 @@ class UserProfile {
       balanceUsda: (json['balance_usda'] ?? 0.0).toDouble(),
       balanceUsdaRaw: json['balance_usda_raw'] ?? 0,
       status: json['status'] ?? '',
+      publicKey: json['public_key'] ?? '',
       role: json['role'] != null ? UserRole.fromJson(json['role']) : null,
     );
   }

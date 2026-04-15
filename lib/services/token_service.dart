@@ -11,6 +11,8 @@ class TokenService {
   static const String _balanceAdaKey = 'balance_ada';
   static const String _balanceUsdaKey = 'balance_usda';
   static const String _balanceUsdaRawKey = 'balance_usda_raw';
+  static const String _activationFeePaidKey = 'activation_fee_paid';
+  static const String _isAccountActivatedKey = 'is_account_activated';
   static const String _kycVerifiedKey = 'kyc_verified';
 
   /// Save authentication token
@@ -126,6 +128,8 @@ class TokenService {
     await prefs.remove(_balanceAdaKey);
     await prefs.remove(_balanceUsdaKey);
     await prefs.remove(_balanceUsdaRawKey);
+    await prefs.remove(_activationFeePaidKey);
+    await prefs.remove(_isAccountActivatedKey);
     await prefs.remove(_kycVerifiedKey);
   }
 
@@ -166,6 +170,8 @@ class TokenService {
     double? balanceUsda,
     int? balanceUsdaRaw,
     bool? kycVerified,
+    bool? isAccountActivated,
+    bool? activationFeePaid,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     List<Future<bool>> futures = [
@@ -191,6 +197,12 @@ class TokenService {
     }
     if (kycVerified != null) {
       futures.add(prefs.setBool(_kycVerifiedKey, kycVerified));
+    }
+    if (isAccountActivated != null) {
+      futures.add(prefs.setBool(_isAccountActivatedKey, isAccountActivated));
+    }
+    if (activationFeePaid != null) {
+      futures.add(prefs.setBool(_activationFeePaidKey, activationFeePaid));
     }
     await Future.wait(futures);
   }
@@ -232,5 +244,29 @@ class TokenService {
   static Future<bool> getKycVerified() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_kycVerifiedKey) ?? false;
+  }
+
+  /// Save account activated status
+  static Future<void> saveIsAccountActivated(bool activated) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isAccountActivatedKey, activated);
+  }
+
+  /// Get account activated status
+  static Future<bool> getIsAccountActivated() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_isAccountActivatedKey) ?? false;
+  }
+
+  /// Save activation fee paid status
+  static Future<void> saveActivationFeePaid(bool paid) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_activationFeePaidKey, paid);
+  }
+
+  /// Get activation fee paid status
+  static Future<bool> getActivationFeePaid() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_activationFeePaidKey) ?? false;
   }
 }

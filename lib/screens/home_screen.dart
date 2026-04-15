@@ -100,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
           balanceUsda: 0.0,
           balanceUsdaRaw: 0,
           status: '',
+          publicKey: '',
         );
       });
     }

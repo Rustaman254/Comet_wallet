@@ -35,7 +35,7 @@ class ApiConstants {
 
   // Forex endpoints
   static String get forexRatesEndpoint => '$baseUrl/forex/rates';
-  static const String currenciesEndpoint = 'https://api.yeshara.network/api/v1/forex/currencies';
+  static String get currenciesEndpoint => '$baseUrl/forex/currencies';
 
   // Forgot password endpoints
   static String get resetTokenEndpoint => '$baseUrl/users/reset-token';
@@ -45,4 +45,5 @@ class ApiConstants {
   // Sumsub KYC endpoints
   static String get sumsubInitKycEndpoint => '$baseUrl/kyc/sumsub/init-kyc';
   static String get sumsubKycStatusEndpoint => '$baseUrl/kyc/sumsub/kyc-status';
+  static String getSumsubKycStatusEndpoint(String userId) => '$baseUrl/kyc/read/User/$userId';
 }

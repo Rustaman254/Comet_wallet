@@ -10,7 +10,12 @@ import '../home_screen.dart';
 /// Screen that initialises and launches the Sumsub KYC SDK, then displays
 /// the verification result and allows re-launch if needed.
 class SumsubKycScreen extends StatefulWidget {
-  const SumsubKycScreen({super.key});
+  final Widget? nextScreen;
+
+  const SumsubKycScreen({
+    super.key,
+    this.nextScreen,
+  });
 
   @override
   State<SumsubKycScreen> createState() => _SumsubKycScreenState();
@@ -33,7 +38,16 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
   // Core flow
   // ─────────────────────────────────────────────
 
+  DateTime? _lastLaunchTime;
+
   Future<void> _launchSumsubKyc() async {
+    // Spam guard: prevent calls within 2 seconds of each other
+    if (_lastLaunchTime != null &&
+        DateTime.now().difference(_lastLaunchTime!).inSeconds < 2) {
+      return;
+    }
+    _lastLaunchTime = DateTime.now();
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -94,17 +108,36 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
       // 3. After SDK closes, fetch status from backend
       await _fetchKycStatus();
     } catch (e) {
+      final String errorStr = e.toString();
       AppLogger.error(
         LogTags.kyc,
         'Sumsub KYC launch error',
-        data: {'error': e.toString()},
+        data: {'error': errorStr},
       );
+
+      // 409 Conflict check: if applicant exists, suggest checking status
+      bool isConflict = errorStr.contains('409') ||
+          errorStr.toLowerCase().contains('conflict') ||
+          errorStr.toLowerCase().contains('already exists');
+
       if (mounted) {
         setState(() {
           _isLoading = false;
           _isSdkRunning = false;
-          _errorMessage = e.toString();
+          
+          if (isConflict) {
+            // Instead of a scary error, we tell them it's already in progress
+            _errorMessage = 'Applicant already exists. Try checking your status or resuming.';
+            _kycStatus = 'initial'; // Map to a state that allows retry/status check
+          } else {
+            _errorMessage = errorStr;
+          }
         });
+        
+        // If it was a conflict, automatically try to fetch the actual status
+        if (isConflict) {
+          _fetchKycStatus();
+        }
       }
     }
   }
@@ -112,7 +145,7 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
   Future<void> _fetchKycStatus() async {
     try {
       final statusResponse = await SumsubKycService.getKycStatus();
-      final status = (statusResponse['status'] as String?)?.toLowerCase();
+      final status = (statusResponse['kycStatus'] as String?)?.toLowerCase() ?? '';
 
       if (mounted) {
         setState(() {
@@ -201,14 +234,17 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
 
     // Error state
     if (_errorMessage != null) {
+      final isConflictError = _errorMessage!.contains('409') || 
+                            _errorMessage!.toLowerCase().contains('already exists');
+      
       return _buildStatusView(
         isDark: isDark,
-        icon: Icons.error_outline,
-        iconColor: errorRed,
-        title: 'Something went wrong',
+        icon: isConflictError ? Icons.info_outline : Icons.error_outline,
+        iconColor: isConflictError ? primaryBrandColor : errorRed,
+        title: isConflictError ? 'Already in Progress' : 'Something went wrong',
         subtitle: _errorMessage!,
-        actionLabel: 'Retry',
-        onAction: _launchSumsubKyc,
+        actionLabel: isConflictError ? 'Check Status' : 'Retry',
+        onAction: isConflictError ? _fetchKycStatus : _launchSumsubKyc,
       );
     }
 
@@ -225,10 +261,16 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
               'Your identity has been verified. You now have full access to all features.',
           actionLabel: 'Continue',
           onAction: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
-            );
+            if (widget.nextScreen != null) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => widget.nextScreen!),
+              );
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                (route) => false,
+              );
+            }
           },
         );
       case 'pending':
@@ -241,13 +283,19 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
           title: 'KYC Pending',
           subtitle:
               'Your documents are being reviewed. This usually takes a few minutes.',
-          actionLabel: 'Go Home',
-          onAction: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
-            );
-          },
+          actionLabel: 'Check Status Again',
+          onAction: _fetchKycStatus,
+        );
+      case 'not_started':
+      case 'initial':
+        return _buildStatusView(
+          isDark: isDark,
+          icon: Icons.assignment_outlined,
+          iconColor: primaryBrandColor,
+          title: 'Ready for Verification',
+          subtitle: 'Please complete your identity verification to unlock all features.',
+          actionLabel: 'Start Verification',
+          onAction: _launchSumsubKyc,
         );
       case 'rejected':
         return _buildStatusView(

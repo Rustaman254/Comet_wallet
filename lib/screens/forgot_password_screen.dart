@@ -59,7 +59,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         // Navigate to verify token screen, passing the token
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => VerifyTokenScreen(prefillToken: token),
+            builder: (_) => VerifyTokenScreen(email: _emailController.text.trim()),
           ),
         );
       } else {
