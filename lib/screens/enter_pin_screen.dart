@@ -11,6 +11,10 @@ import '../services/token_service.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
 import '../utils/responsive_utils.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_event.dart';
+import '../bloc/wallet_state.dart';
 import 'sign_in_screen.dart';
 
 class EnterPinScreen extends StatefulWidget {
@@ -39,6 +43,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
   bool _isVerifying = false; // for loader dialog state
+  String? _processingTransactionId;
+  String _loaderText = 'Verifying PIN...';
   
   // Biometric state
   bool _biometricsAvailable = false;
@@ -154,8 +160,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 children: [
                   const CircularProgressIndicator(color: primaryBrandColor),
                   SizedBox(height: 16.h),
-                  Text(
-                    'Verifying PIN...',
+                    Text(
+                    _loaderText,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Outfit',
@@ -229,11 +235,21 @@ class _EnterPinScreenState extends State<EnterPinScreen>
 
       if (mounted) {
         VibrationService.lightImpact();
-        _showSuccessDialog(
-          response['transaction_id'] ??
-              response['gateway_transaction_id'] ??
-              'N/A',
-        );
+        
+        final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
+        
+        if (transactionId != null) {
+          setState(() {
+            _processingTransactionId = transactionId;
+            _loaderText = 'Processing Transaction...';
+          });
+          
+          context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: transactionId));
+          // We don't hide the loader yet, the BlocListener will handle it
+        } else {
+           await _hideLoaderDialog();
+           _showSuccessDialog('N/A');
+        }
       }
     } on TokenExpiredException catch (_) {
       await _hideLoaderDialog();
@@ -328,11 +344,19 @@ class _EnterPinScreenState extends State<EnterPinScreen>
 
           if (mounted) {
             VibrationService.lightImpact();
-            _showSuccessDialog(
-              response['transaction_id'] ??
-                  response['gateway_transaction_id'] ??
-                  'N/A',
-            );
+            final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
+            
+            if (transactionId != null) {
+              setState(() {
+                _processingTransactionId = transactionId;
+                _loaderText = 'Processing Transaction...';
+              });
+              
+              context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: transactionId));
+            } else {
+               await _hideLoaderDialog();
+               _showSuccessDialog('N/A');
+            }
           }
         } on TokenExpiredException catch (_) {
           await _hideLoaderDialog();
@@ -743,7 +767,18 @@ class _EnterPinScreenState extends State<EnterPinScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<WalletBloc, WalletState>(
+      listener: (context, state) {
+        if (state is TransactionStatusUpdate && state.transactionId == _processingTransactionId) {
+          _hideLoaderDialog();
+          if (state.status.toLowerCase() == 'completed' || state.status.toLowerCase() == 'success') {
+            _showSuccessDialog(state.transactionId);
+          } else {
+            _showFailureDialog(state.message);
+          }
+        }
+      },
+      child: Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
@@ -820,6 +855,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             ],
           ),
         ),
+      ),
       ),
     );
   }
