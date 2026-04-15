@@ -53,11 +53,11 @@ android {
         create("sandbox") {
             dimension = "app"
             applicationIdSuffix = ".sandbox"
-            resValue("string", "app_name", "Fusionfy Sandbox")
+            resValue("string", "app_name", "FusionFi Sandbox")
         }
         create("production") {
             dimension = "app"
-            resValue("string", "app_name", "Fusionfy")
+            resValue("string", "app_name", "FusionFi")
         }
     }
 

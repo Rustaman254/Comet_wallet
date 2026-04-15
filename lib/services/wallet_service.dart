@@ -1051,4 +1051,23 @@ class WalletService {
       throw Exception('Bank transfer error: $e');
     }
   }
+
+  /// Check the status of a specific transaction by polling the transaction list.
+  /// This is used as a fallback if no dedicated status endpoint exists.
+  static Future<Transaction?> getTransactionStatus(String transactionId) async {
+    try {
+      final transactions = await fetchTransactionsList();
+      return transactions.firstWhere(
+        (t) => t.transactionId == transactionId,
+        orElse: () => throw Exception('Transaction not found'),
+      );
+    } catch (e) {
+      AppLogger.error(
+        LogTags.payment,
+        'Error checking transaction status',
+        data: {'transaction_id': transactionId, 'error': e.toString()},
+      );
+      return null;
+    }
+  }
 }
