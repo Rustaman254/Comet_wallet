@@ -145,17 +145,16 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
   Future<void> _fetchKycStatus() async {
     try {
       final statusResponse = await SumsubKycService.getKycStatus();
-      final status = (statusResponse['kycStatus'] as String?)?.toLowerCase() ?? '';
 
       if (mounted) {
         setState(() {
-          _kycStatus = status;
+          _kycStatus = statusResponse.status;
           _isSdkRunning = false;
         });
       }
 
       // Persist locally if approved
-      if (status == 'completed' || status == 'approved') {
+      if (statusResponse.isApproved) {
         await TokenService.saveKycVerified(true);
       }
     } catch (e) {
@@ -250,7 +249,6 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
 
     // Status result
     switch (_kycStatus) {
-      case 'completed':
       case 'approved':
         return _buildStatusView(
           isDark: isDark,
@@ -274,8 +272,7 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
           },
         );
       case 'pending':
-      case 'init':
-      case 'queued':
+      case 'created':
         return _buildStatusView(
           isDark: isDark,
           icon: Icons.hourglass_top_rounded,
@@ -283,6 +280,17 @@ class _SumsubKycScreenState extends State<SumsubKycScreen> {
           title: 'KYC Pending',
           subtitle:
               'Your documents are being reviewed. This usually takes a few minutes.',
+          actionLabel: 'Check Status Again',
+          onAction: _fetchKycStatus,
+        );
+      case 'on_hold':
+        return _buildStatusView(
+          isDark: isDark,
+          icon: Icons.pause_circle_outline,
+          iconColor: warningOrange,
+          title: 'KYC On Hold',
+          subtitle:
+              'Your review is on hold. Additional information may be required.',
           actionLabel: 'Check Status Again',
           onAction: _fetchKycStatus,
         );
