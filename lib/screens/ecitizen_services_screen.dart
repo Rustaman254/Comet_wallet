@@ -72,14 +72,9 @@ class _ECitizenServicesScreenState extends State<ECitizenServicesScreen> {
         setState(() {
           isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              e.toString().replaceAll('Exception: ', ''),
-              style: const TextStyle(fontFamily: 'Outfit'),
-            ),
-            backgroundColor: Colors.red,
-          ),
+        ToastService().showError(
+          context,
+          'Could not validate the reference number. Please try again.',
         );
       }
     }

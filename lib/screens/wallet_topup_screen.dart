@@ -125,7 +125,10 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ToastService().showError(context, 'Top-up failed: ${e.toString()}');
+          ToastService().showError(
+            context,
+            'Top-up could not be completed. Please check your connection and try again.',
+          );
         }
       } finally {
         if (mounted) {

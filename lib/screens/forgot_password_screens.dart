@@ -74,10 +74,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         }
       } else {
         final data = jsonDecode(response.body);
-        _showError(data['message'] ?? 'Failed to send reset token');
+        _showError(data['message'] ?? 'Unable to send password reset link. Please check your email and try again.');
       }
     } catch (e) {
-      _showError('Connection error occurred');
+      _showError('Network error. Please check your internet connection and try again.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
