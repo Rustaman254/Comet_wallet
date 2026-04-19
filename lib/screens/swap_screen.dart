@@ -65,9 +65,17 @@ class _SwapScreenState extends State<SwapScreen> {
     setState(() => _isFetchingRate = true);
     try {
       final url = '${ApiConstants.forexRatesEndpoint}/$from/$to';
-      final response = await AuthenticatedHttpClient.get(
+      var response = await AuthenticatedHttpClient.get(
         Uri.parse(url),
       ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        // Try fallback
+        final fallbackUrl = '${ApiConstants.fallbackForexRatesEndpoint}/$from/$to';
+        response = await AuthenticatedHttpClient.get(
+          Uri.parse(fallbackUrl),
+        ).timeout(const Duration(seconds: 10));
+      }
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -80,7 +88,25 @@ class _SwapScreenState extends State<SwapScreen> {
         }
       }
     } catch (_) {
-      // Keep existing rate on error
+      // Final attempt if initial call threw an exception
+      try {
+        final fallbackUrl = '${ApiConstants.fallbackForexRatesEndpoint}/$from/$to';
+        final response = await AuthenticatedHttpClient.get(
+          Uri.parse(fallbackUrl),
+        ).timeout(const Duration(seconds: 10));
+        
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          if (data is Map && data['status'] == 'success') {
+            final rate = double.tryParse(data['rate']?.toString() ?? '');
+            if (rate != null && rate > 0) {
+              _currentRate = rate;
+            }
+          }
+        }
+      } catch (fallbackError) {
+        // Keep existing rate on total failure
+      }
     } finally {
       if (mounted) {
         setState(() {

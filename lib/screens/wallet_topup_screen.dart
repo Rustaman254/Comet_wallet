@@ -12,6 +12,7 @@ import '../services/logger_service.dart';
 import '../services/toast_service.dart';
 import '../services/token_service.dart';
 import '../utils/input_decoration.dart';
+import 'enter_pin_screen.dart';
 
 class WalletTopupScreen extends StatefulWidget {
   const WalletTopupScreen({super.key});
@@ -88,53 +89,31 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
 
   Future<void> _handleTopup() async {
     if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+      final amount = double.parse(_amountController.text);
+      final rawNumber = _phoneController.text.trim();
+      final phoneNumber = '$_selectedCountryCode$rawNumber'.replaceAll(RegExp(r'\s+'), '');
 
-      try {
-        final amount = double.parse(_amountController.text);
-        final rawNumber = _phoneController.text.trim();
-        final phoneNumber = '$_selectedCountryCode$rawNumber'.replaceAll(RegExp(r'\s+'), '');
-
-        if (mounted) {
-          ToastService().showInfo(context, 'Sending STK push to your phone...');
-        }
-
-        final response = await WalletService.topupWallet(
-          phoneNumber: phoneNumber,
-          amount: amount,
-          currency: _selectedCurrency,
-        );
-
-        if (mounted) {
-          context.read<WalletBloc>().add(TopUpWallet(
-            amount: amount,
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EnterPinScreen(
+            recipientName: 'Wallet Top-up',
+            amount: amount.toString(),
             currency: _selectedCurrency,
-          ));
-
-          ToastService().showSuccess(context, 'Payment Processed successfully!');
-          await Future.delayed(const Duration(seconds: 2));
-          
-          if (mounted) {
-            _showSuccessSheet(response);
-            AppLogger.success(LogTags.payment, 'Wallet top-up completed', data: {
-              'amount': amount,
-              'currency': _selectedCurrency,
-              'response': response,
-            });
-          }
+            description: 'Top-up via $_selectedMobileProvider',
+            onVerify: (pin) => WalletService.topupWallet(
+              phoneNumber: phoneNumber,
+              amount: amount,
+              currency: _selectedCurrency,
+              pin: pin,
+            ),
+          ),
+        ),
+      ).then((result) {
+        if (result == true && mounted) {
+          // Transaction initiated successfully
+          setState(() => _amountController.clear());
         }
-      } catch (e) {
-        if (mounted) {
-          ToastService().showError(
-            context,
-            'Top-up could not be completed. Please check your connection and try again.',
-          );
-        }
-      } finally {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      });
     } else {
       ToastService().showError(context, 'Please fill in all fields correctly');
     }
