@@ -197,7 +197,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ToastService().showError(context, e.toString().replaceAll('Exception:', '').trim());
+        ToastService().showError(
+          context,
+          'Transfer failed. Please check the recipient details and balance, then try again.',
+        );
       }
     } finally {
       if (mounted) {
@@ -256,7 +259,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ToastService().showError(context, e.toString().replaceAll('Exception:', '').trim());
+        ToastService().showError(
+          context,
+          'Mobile transfer failed. Please try again later.',
+        );
       }
     } finally {
       if (mounted) {
@@ -305,7 +311,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       _showSuccessSheet(successData);
     } catch (e) {
       if (mounted) {
-        ToastService().showError(context, e.toString().replaceAll('Exception:', '').trim());
+        ToastService().showError(
+          context,
+          'USDA transfer failed. Please verify the address and try again.',
+        );
       }
     } finally {
       if (mounted) {

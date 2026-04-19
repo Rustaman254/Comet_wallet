@@ -1,5 +1,6 @@
 import 'dart:convert';
 import '../constants/api_constants.dart';
+import '../models/kyc_status_response.dart';
 import 'authenticated_http_client.dart';
 import 'token_service.dart';
 import 'logger_service.dart';
@@ -80,11 +81,10 @@ class SumsubKycService {
 
   /// Fetch the current KYC review status from the backend.
   ///
-  /// Response shape (example):
-  /// ```json
-  /// { "status": "completed" }
-  /// ```
-  static Future<Map<String, dynamic>> getKycStatus() async {
+  /// Returns a [KYCStatusResponse] which handles both response shapes:
+  /// - `{ "exists": false, "kycStatus": "NOT_STARTED" }`
+  /// - `{ "exists": true,  "kycStatus": { ...object... } }`
+  static Future<KYCStatusResponse> getKycStatus() async {
     final startTime = DateTime.now();
     
     // Get userId from TokenService
@@ -119,7 +119,7 @@ class SumsubKycService {
           response: jsonResponse,
         );
 
-        return jsonResponse;
+        return KYCStatusResponse.fromJson(jsonResponse);
       } else {
         AppLogger.error(
           LogTags.kyc,

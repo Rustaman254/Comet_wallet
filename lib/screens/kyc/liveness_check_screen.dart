@@ -84,7 +84,10 @@ class _LivenessCheckScreenState extends State<LivenessCheckScreen> {
           );
         },
         onError: (error) {
-          ToastService().showError(context, "Liveness verification failed: $error");
+          ToastService().showError(
+            context,
+            "Liveness verification could not be completed. Please ensure you are in a well-lit area and try again.",
+          );
         },
       ),
     );

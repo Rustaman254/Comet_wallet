@@ -12,6 +12,7 @@ import '../utils/component_styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'kyc/kyc_intro_screen.dart';
 import '../services/sumsub_kyc_service.dart';
+import '../models/kyc_status_response.dart';
 import 'forgot_password_screen.dart';
 import 'language_screen.dart';
 import 'contact_us_screen.dart';
@@ -27,8 +28,8 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _vibrationEnabled = true;
   bool _biometricsEnabled = false;
-  bool _kycVerified = true; // default to true so banner is hidden until loaded
-
+  bool _isLoadingKyc = true; // show loading state until status fetched
+  KYCStatusResponse? _kycStatusResponse;
 
   @override
   void initState() {
@@ -40,61 +41,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final prefs = await SharedPreferences.getInstance();
     final vibrationEnabled = await VibrationService.isEnabled();
     final biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
-    final kycVerified = await TokenService.getKycVerified();
     
     setState(() {
       _vibrationEnabled = vibrationEnabled;
       _biometricsEnabled = biometricEnabled;
-      _kycVerified = kycVerified;
     });
 
-    if (!kycVerified) {
-      _fetchKycStatus();
-    }
+    // Always fetch the live KYC status from the backend
+    await _fetchKycStatus();
   }
 
   Future<void> _fetchKycStatus() async {
     try {
       final statusResponse = await SumsubKycService.getKycStatus();
-      final status = (statusResponse['status'] as String?)?.toLowerCase();
       
       if (mounted) {
         setState(() {
-          _kycStatus = status;
-          if (status == 'completed' || status == 'approved') {
-             _kycVerified = true;
-             TokenService.saveKycVerified(true);
+          _kycStatusResponse = statusResponse;
+          _isLoadingKyc = false;
+          if (statusResponse.isApproved) {
+            TokenService.saveKycVerified(true);
           }
         });
       }
     } catch (e) {
-      // Ignored: probably no applicant exists yet
+      // If the fetch fails, fall back to NOT_STARTED
+      if (mounted) {
+        setState(() {
+          _kycStatusResponse = KYCStatusResponse.notStarted();
+          _isLoadingKyc = false;
+        });
+      }
     }
   }
-
-  String? _kycStatus;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    String bannerTitle = 'KYC Not Verified';
-    String bannerSubtitle = 'Verify your identity to unlock full features.';
-    Color bannerColor = Colors.amber;
-    IconData bannerIcon = Icons.warning_amber_rounded;
-    String actionText = 'Verify KYC';
+    // Derive banner state from the fetched KYC status
+    String bannerTitle = 'Loading KYC Status…';
+    String bannerSubtitle = '';
+    Color bannerColor = Colors.grey;
+    IconData bannerIcon = Icons.hourglass_empty;
+    String actionText = '';
 
-    if (_kycStatus == 'pending' || _kycStatus == 'init' || _kycStatus == 'queued') {
-      bannerTitle = 'KYC Pending';
-      bannerSubtitle = 'Your documents are being reviewed.';
-      bannerIcon = Icons.hourglass_top_rounded;
-      actionText = 'Check Status';
-    } else if (_kycStatus == 'rejected') {
-      bannerTitle = 'KYC Rejected';
-      bannerSubtitle = 'Verification failed. Please try again.';
-      bannerColor = errorRed;
-      bannerIcon = Icons.cancel_outlined;
-      actionText = 'Retry KYC';
+    if (!_isLoadingKyc && _kycStatusResponse != null) {
+      final status = _kycStatusResponse!.status;
+      switch (status) {
+        case 'approved':
+          bannerTitle = 'KYC Verified';
+          bannerSubtitle = 'Your identity has been verified.';
+          bannerColor = Colors.green;
+          bannerIcon = Icons.verified;
+          actionText = 'Completed';
+          break;
+        case 'pending':
+        case 'created':
+          bannerTitle = 'KYC In Progress';
+          bannerSubtitle = 'Your documents are being reviewed.';
+          bannerColor = Colors.amber;
+          bannerIcon = Icons.hourglass_top_rounded;
+          actionText = 'View Status';
+          break;
+        case 'on_hold':
+          bannerTitle = 'KYC On Hold';
+          bannerSubtitle = 'Additional information may be required.';
+          bannerColor = Colors.amber;
+          bannerIcon = Icons.pause_circle_outline;
+          actionText = 'View Status';
+          break;
+        case 'rejected':
+          bannerTitle = 'KYC Rejected';
+          bannerSubtitle = _kycStatusResponse!.detail?.rejectLabels.isNotEmpty == true
+              ? 'Reason: ${_kycStatusResponse!.detail!.rejectLabels}'
+              : 'Verification failed. Please try again.';
+          bannerColor = errorRed;
+          bannerIcon = Icons.cancel_outlined;
+          actionText = 'Retry KYC';
+          break;
+        case 'not_started':
+        default:
+          bannerTitle = 'KYC Not Verified';
+          bannerSubtitle = 'Verify your identity to unlock full features.';
+          bannerColor = Colors.amber;
+          bannerIcon = Icons.warning_amber_rounded;
+          actionText = 'Verify KYC';
+          break;
+      }
     }
     
     return Scaffold(
@@ -151,95 +185,102 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 32),
 
-              // KYC Banner (shown only when kyc_verified is false)
-              if (!_kycVerified)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: bannerColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: bannerColor.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: bannerColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              bannerIcon,
-                              color: bannerColor,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                bannerTitle,
-                                style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  color: isDark ? Colors.white : lightTextPrimary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                bannerSubtitle,
-                                style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  color: isDark ? Colors.white70 : lightSecondaryText,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (_) => const KYCIntroScreen()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: bannerColor,
-                            foregroundColor: bannerTitle == 'KYC Rejected' ? Colors.white : Colors.black87,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            actionText,
-                            style: const TextStyle(
-                              fontFamily: 'Outfit',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
+              // KYC Banner always displayed now to show current status
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: bannerColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: bannerColor.withValues(alpha: 0.3),
+                      width: 1,
                     ),
                   ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: bannerColor.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            bannerIcon,
+                            color: bannerColor,
+                            size: 24,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              bannerTitle,
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                color: isDark ? Colors.white : lightTextPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              bannerSubtitle,
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                color: isDark ? Colors.white70 : lightSecondaryText,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: _isLoadingKyc
+                            ? null
+                            : () {
+                                final status = _kycStatusResponse?.status ?? 'not_started';
+                                if (status == 'approved') {
+                                  // Already verified — no action needed
+                                  return;
+                                }
+                                // For not_started, rejected, pending, on_hold, created — open KYC screen
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const KYCIntroScreen()),
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: bannerColor,
+                          foregroundColor: bannerTitle == 'KYC Rejected' ? Colors.white : Colors.black87,
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          actionText,
+                          style: const TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              ),
 
-              if (!_kycVerified) const SizedBox(height: 24),
+              const SizedBox(height: 24),
               
               // General Section
               _buildSectionHeader('General', isDark),

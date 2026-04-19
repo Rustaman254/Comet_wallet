@@ -65,7 +65,10 @@ class _KRAVerificationScreenState extends State<KRAVerificationScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ToastService().showError(context, "KRA Verification failed: $e");
+        ToastService().showError(
+          context,
+          "KRA Information could not be verified. Please check your details and try again.",
+        );
       }
     } finally {
       if (mounted) {

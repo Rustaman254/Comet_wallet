@@ -39,7 +39,7 @@ class _PropertyListScreenState extends State<PropertyListScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading properties: $e'),
+            content: Text('Failed to load properties. Please try again later.'),
             backgroundColor: Colors.red,
           ),
         );
