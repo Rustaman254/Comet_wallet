@@ -18,6 +18,8 @@ class ApiConstants {
   static String get walletBankTransferEndpoint => '$baseUrl/wallet/bank-transfer';
   static String get verifyPinEndpoint => '$baseUrl/users/verify-pin';
   static String get resetPinEndpoint => '$baseUrl/users/reset-pin';
+  static String get forexRatesEndpoint => '$baseUrl/forex/rates';
+  static String get fallbackForexRatesEndpoint => 'https://api.fusionfi.io/api/v1/forex/rates';
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
   
   // Wallet endpoints
@@ -34,7 +36,6 @@ class ApiConstants {
   static String get realEstateTransactionsEndpoint => '$baseUrl/real-estate/transactions';
 
   // Forex endpoints
-  static String get forexRatesEndpoint => '$baseUrl/forex/rates';
   static String get currenciesEndpoint => '$baseUrl/forex/currencies';
 
   // Forgot password endpoints

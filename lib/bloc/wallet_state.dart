@@ -156,3 +156,18 @@ class BankTransferSuccess extends WalletState {
   @override
   List<Object?> get props => [message, transactionId];
 }
+
+class TransactionStatusUpdate extends WalletState {
+  final String transactionId;
+  final String status;
+  final String message;
+
+  const TransactionStatusUpdate({
+    required this.transactionId,
+    required this.status,
+    required this.message,
+  });
+
+  @override
+  List<Object?> get props => [transactionId, status, message];
+}

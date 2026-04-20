@@ -18,6 +18,9 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
+  // Flow control
+  int _currentStep = 1; // 1: PIN entry, 2: Password confirmation
+
   // PIN state
   String _newPin = '';
   String _confirmPin = '';
@@ -30,6 +33,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
   }
 
   void _onNumberPressed(String number) {
+    if (_isLoading) return;
     SessionService.recordActivity();
     setState(() {
       if (!_isConfirmingPin) {
@@ -46,9 +50,20 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
         if (_confirmPin.length < 4) {
           _confirmPin += number;
           if (_confirmPin.length == 4) {
-            // Auto-submit after confirm PIN is complete
+            // Check if PINs match
             Future.delayed(const Duration(milliseconds: 300), () {
-              _handleSubmit();
+              if (mounted) {
+                if (_newPin == _confirmPin) {
+                  setState(() => _currentStep = 2);
+                } else {
+                  ToastService().showError(context, 'PINs do not match');
+                  setState(() {
+                    _confirmPin = '';
+                    _isConfirmingPin = false;
+                    _newPin = '';
+                  });
+                }
+              }
             });
           }
         }
@@ -57,6 +72,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
   }
 
   void _onBackspace() {
+    if (_isLoading) return;
     SessionService.recordActivity();
     setState(() {
       if (!_isConfirmingPin) {
@@ -81,21 +97,6 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
       return;
     }
 
-    if (_newPin.length < 4) {
-      ToastService().showError(context, 'PIN must be 4 digits');
-      return;
-    }
-
-    if (_newPin != _confirmPin) {
-      ToastService().showError(context, 'PINs do not match');
-      setState(() {
-        _confirmPin = '';
-        _isConfirmingPin = false;
-        _newPin = '';
-      });
-      return;
-    }
-
     setState(() => _isLoading = true);
 
     try {
@@ -112,9 +113,13 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
       } else {
         ToastService().showError(context, result['message'] ?? 'Failed to reset PIN');
         setState(() {
+          // Reset to beginning on failure? Or just password?
+          // Let's reset to beginning for security/clarity
           _confirmPin = '';
           _newPin = '';
           _isConfirmingPin = false;
+          _currentStep = 1;
+          _passwordController.clear();
         });
       }
     } catch (e) {
@@ -124,6 +129,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
           _confirmPin = '';
           _newPin = '';
           _isConfirmingPin = false;
+          _currentStep = 1;
         });
       }
     } finally {
@@ -134,7 +140,6 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final currentPin = _isConfirmingPin ? _confirmPin : _newPin;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -143,7 +148,18 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: getTextColor(context)),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (_currentStep == 2) {
+              setState(() {
+                _currentStep = 1;
+                _confirmPin = '';
+                _isConfirmingPin = false;
+                _newPin = '';
+              });
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
         ),
         title: Text(
           'Reset PIN',
@@ -164,130 +180,183 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: Form(
                   key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: 24.h),
-
-                      // Password field
-                      Text(
-                        'Current Password',
-                        style: TextStyle(
-                          fontFamily: 'Outfit',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: getSecondaryTextColor(context),
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        style: TextStyle(
-                          fontFamily: 'Outfit',
-                          fontSize: 16.sp,
-                          color: getTextColor(context),
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Enter your password',
-                          hintStyle: TextStyle(
-                            fontFamily: 'Outfit',
-                            color: getTertiaryTextColor(context),
-                          ),
-                          filled: true,
-                          fillColor: Theme.of(context).cardColor,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                            borderSide: BorderSide(color: getBorderColor(context)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                            borderSide: BorderSide(color: getBorderColor(context)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.r),
-                            borderSide: BorderSide(color: primaryBrandColor, width: 1.5),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                              color: getSecondaryTextColor(context),
-                            ),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(height: 40.h),
-
-                      // PIN instruction
-                      Text(
-                        _isConfirmingPin ? 'Confirm New PIN' : 'Enter New PIN',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Outfit',
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.bold,
-                          color: getTextColor(context),
-                        ),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        _isConfirmingPin
-                            ? 'Re-enter your new 4-digit PIN'
-                            : 'Choose a 4-digit PIN',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Outfit',
-                          fontSize: 14.sp,
-                          color: getSecondaryTextColor(context),
-                        ),
-                      ),
-
-                      SizedBox(height: 32.h),
-
-                      // PIN dots
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(4, (index) {
-                          final isFilled = index < currentPin.length;
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 12.w),
-                            width: 20.r,
-                            height: 20.r,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: isFilled ? primaryBrandColor : Colors.transparent,
-                              border: Border.all(
-                                color: isFilled
-                                    ? primaryBrandColor
-                                    : (isDark ? Colors.white30 : Colors.grey.shade400),
-                                width: 2,
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ],
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _currentStep == 1 
+                      ? _buildPinStep(isDark)
+                      : _buildPasswordStep(isDark),
                   ),
                 ),
               ),
             ),
 
-            // Keypad
-            if (_isLoading)
-              Padding(
+            if (_currentStep == 1)
+              _buildKeypad(isDark)
+            else if (_isLoading)
+               Padding(
                 padding: EdgeInsets.all(48.r),
                 child: CircularProgressIndicator(color: primaryBrandColor),
-              )
-            else
-              _buildKeypad(isDark),
+              ),
 
             SizedBox(height: 24.h),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPinStep(bool isDark) {
+    final currentPin = _isConfirmingPin ? _confirmPin : _newPin;
+    return Column(
+      key: const ValueKey('pinStep'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 40.h),
+        Text(
+          _isConfirmingPin ? 'Confirm New PIN' : 'Enter New PIN',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            color: getTextColor(context),
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          _isConfirmingPin
+              ? 'Re-enter your new 4-digit PIN'
+              : 'Choose a 4-digit PIN',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 14.sp,
+            color: getSecondaryTextColor(context),
+          ),
+        ),
+        SizedBox(height: 32.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(4, (index) {
+            final isFilled = index < currentPin.length;
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 12.w),
+              width: 20.r,
+              height: 20.r,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isFilled ? primaryBrandColor : Colors.transparent,
+                border: Border.all(
+                  color: isFilled
+                      ? primaryBrandColor
+                      : (isDark ? Colors.white30 : Colors.grey.shade400),
+                  width: 2,
+                ),
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordStep(bool isDark) {
+    return Column(
+      key: const ValueKey('passwordStep'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 40.h),
+        Text(
+          'Confirm Password',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            color: getTextColor(context),
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          'Enter your account password to authorize PIN reset',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 14.sp,
+            color: getSecondaryTextColor(context),
+          ),
+        ),
+        SizedBox(height: 32.h),
+        Text(
+          'Current Password',
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: getSecondaryTextColor(context),
+          ),
+        ),
+        SizedBox(height: 8.h),
+        TextFormField(
+          controller: _passwordController,
+          obscureText: _obscurePassword,
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 16.sp,
+            color: getTextColor(context),
+          ),
+          decoration: InputDecoration(
+            hintText: 'Enter your password',
+            hintStyle: TextStyle(
+              fontFamily: 'Outfit',
+              color: getTertiaryTextColor(context),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).cardColor,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.r),
+              borderSide: BorderSide(color: getBorderColor(context)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.r),
+              borderSide: BorderSide(color: getBorderColor(context)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.r),
+              borderSide: BorderSide(color: primaryBrandColor, width: 1.5),
+            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                color: getSecondaryTextColor(context),
+              ),
+              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+            ),
+          ),
+        ),
+        SizedBox(height: 40.h),
+        ElevatedButton(
+          onPressed: _isLoading ? null : _handleSubmit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: primaryBrandColor,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(vertical: 16.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            elevation: 0,
+          ),
+          child: Text(
+            'Reset PIN',
+            style: TextStyle(
+              fontFamily: 'Outfit',
+              fontSize: 16.sp,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
