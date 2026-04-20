@@ -1,10 +1,35 @@
 import 'package:flutter/material.dart';
+import '../flavors.dart';
+
 
 // Primary color - Vibrant blue for actions
-const Color primaryBrandColor = Color(0xFF0077E5); // Fusionfi Blue
-const Color secondaryBrandColor = Color(0xFF13B5C0); // Fusionfi Cyan
+const Color primaryBrandColor = Color(0xFF0077E5); // FusionFi Blue
+const Color secondaryBrandColor = Color(0xFF13B5C0); // FusionFi Cyan
+
+Color getPrimaryBrandColor() {
+  switch (F.appFlavor) {
+    case Flavor.cometWallet:
+      return cometPrimaryColor;
+    default:
+      return primaryBrandColor;
+  }
+}
+
+Color getSecondaryBrandColor() {
+  switch (F.appFlavor) {
+    case Flavor.cometWallet:
+      return cometSecondaryColor;
+    default:
+      return secondaryBrandColor;
+  }
+}
 const Color equityMaroon = Color(0xFFA32A29);
 const Color equityGold = Color(0xFFE8B931);
+
+// Comet Wallet Colors
+const Color cometPrimaryColor = Color(0xFF2D1B69); // Cosmic Purple
+const Color cometSecondaryColor = Color(0xFFFBBC05); // Comet Gold/Orange
+const Color cometAccentColor = Color(0xFF8B5CF6); // Vibrant Purple
 
 // Gradient & Accent colors
 const Color primaryBlue = Color(0xFF3B82F6); // Modern blue

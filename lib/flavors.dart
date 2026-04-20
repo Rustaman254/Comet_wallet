@@ -1,6 +1,7 @@
 enum Flavor {
   sandbox,
   production,
+  cometWallet,
 }
 
 class F {
@@ -11,11 +12,13 @@ class F {
   static String get title {
     switch (appFlavor) {
       case Flavor.sandbox:
-        return 'Fusionfi_Sandbox';
+        return 'FusionFi Sandbox';
+      case Flavor.cometWallet:
+        return 'Comet Wallet';
       case Flavor.production:
-        return 'Fusionfi';
+        return 'FusionFi';
       default:
-        return 'Fusionfi';
+        return 'FusionFi';
     }
   }
 
@@ -24,6 +27,7 @@ class F {
       case Flavor.sandbox:
         return 'https://sandbox.fusionfi.io/api/v1';
       case Flavor.production:
+      case Flavor.cometWallet:
         return 'https://api.fusionfi.io/api/v1';
       default:
         return 'https://api.fusionfi.io/api/v1';
@@ -36,9 +40,11 @@ class F {
       case Flavor.sandbox:
         return 'https://sandbox.fusionfi.io';
       case Flavor.production:
+      case Flavor.cometWallet:
         return 'https://api.fusionfi.io';
       default:
         return 'https://api.fusionfi.io';
     }
   }
 }
+

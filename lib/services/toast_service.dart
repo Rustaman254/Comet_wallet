@@ -15,7 +15,37 @@ class ToastService {
   }
 
   void showError(BuildContext context, String message) {
-    _show(context, message, ToastType.error);
+    _show(context, _getFriendlyErrorMessage(message), ToastType.error);
+  }
+
+  String _getFriendlyErrorMessage(String rawMessage) {
+    final lowerMsg = rawMessage.toLowerCase();
+    
+    if (lowerMsg.contains('insufficient funds') || lowerMsg.contains('insufficient balance')) {
+      return 'Insufficient balance to complete this transaction.';
+    }
+    if (lowerMsg.contains('connection') || lowerMsg.contains('network') || lowerMsg.contains('timeout')) {
+      return 'Network error. Please check your connection and try again.';
+    }
+    if (lowerMsg.contains('invalid') && lowerMsg.contains('credentials')) {
+      return 'Invalid credentials. Please check your email and password.';
+    }
+    if (lowerMsg.contains('unauthorized') || lowerMsg.contains('token')) {
+      return 'Session expired. Please log in again.';
+    }
+    if (lowerMsg.contains('not found')) {
+      return 'The requested resource could not be found.';
+    }
+    if (lowerMsg.contains('server') || lowerMsg.contains('500')) {
+      return 'Server error occurred. Our team has been notified.';
+    }
+    if (rawMessage.contains('Exception:') || rawMessage.contains('{') || rawMessage.contains('}')) {
+      // General fallback for raw developer traces or JSON strings
+      return 'An unexpected error occurred. Please try again later.';
+    }
+    
+    // Return original if no harsh technical keywords are detected, or cleaned up a bit.
+    return rawMessage.replaceAll('Exception:', '').trim();
   }
 
   void showInfo(BuildContext context, String message) {

@@ -162,7 +162,10 @@ class _QRScanScreenState extends State<QRScanScreen> with WidgetsBindingObserver
     } catch (e) {
       if (mounted) {
         Navigator.of(context).pop(); // Close loading indicator
-        ToastService().showError(context, 'Failed to resolve payment link: $e');
+        ToastService().showError(
+          context,
+          'Could not scan QR code. Please hold the camera steadily and try again.',
+        );
         setState(() => _isScanning = true);
       }
     }

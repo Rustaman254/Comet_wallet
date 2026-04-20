@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../flavors.dart';
 
 import '../constants/colors.dart';
 
@@ -51,7 +52,7 @@ class OnboardingScreen1 extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    'Welcome to Fusionfi',
+                    'Welcome to ${F.title}',
                     style: TextStyle(
                       fontFamily: 'Outfit',
                       color: Colors.white,
@@ -82,7 +83,7 @@ class OnboardingScreen1 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBrandColor,
+                    backgroundColor: getPrimaryBrandColor(),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -132,13 +133,13 @@ class OnboardingScreen1 extends StatelessWidget {
               value: progress,
               strokeWidth: 4.w,
               backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(primaryBrandColor),
+              valueColor: AlwaysStoppedAnimation<Color>(getPrimaryBrandColor()),
             ),
           ),
           Text(
             text,
             style: TextStyle(
-              color: primaryBrandColor,
+              color: getPrimaryBrandColor(),
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
@@ -156,7 +157,7 @@ class OnboardingScreen1 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? primaryBrandColor : Colors.grey[600],
+        color: isActive ? getPrimaryBrandColor() : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -261,7 +262,7 @@ class OnboardingScreen2 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBrandColor,
+                    backgroundColor: getPrimaryBrandColor(),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -320,7 +321,7 @@ class OnboardingScreen2 extends StatelessWidget {
       width: 40.w,
       height: 50.h,
       decoration: BoxDecoration(
-        color: primaryBrandColor,
+        color: getPrimaryBrandColor(),
         borderRadius: BorderRadius.circular(4.r),
         border: Border.all(color: Colors.white, width: 1.w),
       ),
@@ -345,7 +346,7 @@ class OnboardingScreen2 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? primaryBrandColor : Colors.grey[600],
+        color: isActive ? getPrimaryBrandColor() : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -429,7 +430,7 @@ class OnboardingScreen3 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBrandColor,
+                    backgroundColor: getPrimaryBrandColor(),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -462,7 +463,7 @@ class OnboardingScreen3 extends StatelessWidget {
         color: Colors.white,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: primaryBrandColor, size: 24.r),
+      child: Icon(icon, color: getPrimaryBrandColor(), size: 24.r),
     );
   }
 
@@ -471,7 +472,7 @@ class OnboardingScreen3 extends StatelessWidget {
       width: 30.w,
       height: 40.h,
       decoration: BoxDecoration(
-        color: primaryBrandColor,
+        color: getPrimaryBrandColor(),
         borderRadius: BorderRadius.circular(4.r),
       ),
       child: Center(
@@ -524,7 +525,7 @@ class OnboardingScreen3 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? primaryBrandColor : Colors.grey[600],
+        color: isActive ? getPrimaryBrandColor() : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );
@@ -535,7 +536,7 @@ class PieChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = primaryBrandColor
+      ..color = getPrimaryBrandColor()
       ..style = PaintingStyle.fill;
 
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
@@ -629,7 +630,7 @@ class OnboardingScreen4 extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBrandColor,
+                    backgroundColor: getPrimaryBrandColor(),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 16.h),
                     shape: RoundedRectangleBorder(
@@ -662,7 +663,7 @@ class OnboardingScreen4 extends StatelessWidget {
       width: isActive ? 24.w : 8.w,
       height: 8.h,
       decoration: BoxDecoration(
-        color: isActive ? primaryBrandColor : Colors.grey[600],
+        color: isActive ? getPrimaryBrandColor() : Colors.grey[600],
         borderRadius: BorderRadius.circular(4.r),
       ),
     );

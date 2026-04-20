@@ -35,7 +35,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading listings: $e'),
+            content: Text('Failed to load marketplace listings. Please check your connection.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -148,7 +148,7 @@ class _PropertyMarketplaceScreenState extends State<PropertyMarketplaceScreen> {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Purchase failed: $e'),
+            content: Text('Token purchase failed. Please check your wallet balance and try again.'),
             backgroundColor: Colors.red,
           ),
         );

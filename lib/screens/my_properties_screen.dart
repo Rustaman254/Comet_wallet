@@ -35,7 +35,7 @@ class _MyPropertiesScreenState extends State<MyPropertiesScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading investments: $e'),
+            content: Text('Failed to load your investments. Please try again later.'),
             backgroundColor: Colors.red,
           ),
         );

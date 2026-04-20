@@ -77,7 +77,10 @@ class _IDUploadScreenState extends State<IDUploadScreen> {
           );
         },
         onError: (error) {
-          ToastService().showError(context, "Document verification failed: $error");
+          ToastService().showError(
+            context,
+            "Document scanning failed. Please ensure the document is clearly visible and try again.",
+          );
         },
       ),
     );

@@ -1,4 +1,4 @@
-# Fusionfi - Complete Documentation
+# FusionFi - Complete Documentation
 
 A comprehensive Flutter wallet application with user authentication, KYC verification, and wallet top-up functionality.
 
@@ -19,7 +19,7 @@ A comprehensive Flutter wallet application with user authentication, KYC verific
 
 ## Project Overview
 
-The Fusionfi is a mobile wallet application that allows users to:
+The FusionFi is a mobile wallet application that allows users to:
 - ✅ Register and create accounts
 - ✅ Complete KYC (Know Your Customer) verification
 - ✅ Top-up wallet balance
