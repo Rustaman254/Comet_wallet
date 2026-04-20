@@ -1,7 +1,7 @@
-# Comet Wallet - User Flow & Journey Documentation
+# FusionFi - User Flow & Journey Documentation
 
 ## Overview
-Comet Wallet (Fusionfi) is a Flutter-based mobile wallet application with features for money management, transactions, orders, and various financial services.
+FusionFi is a Flutter-based mobile wallet application with features for money management, transactions, orders, and various financial services.
 
 ---
 
@@ -20,7 +20,7 @@ Comet Wallet (Fusionfi) is a Flutter-based mobile wallet application with featur
 
 ### 1.2 Onboarding Flow (First-time Users)
 ```
-[OnboardingScreen1] - Welcome to Fusionfi
+[OnboardingScreen1] - Welcome to FusionFi
     ↓ (Next button)
 [OnboardingScreen2] - Features overview
     ↓ (Next button)
@@ -479,4 +479,4 @@ App Start
 
 ---
 
-*Document generated for Comet Wallet (Fusionfi) - Flutter Application*
+*Document generated for FusionFi - Flutter Application*
