@@ -575,7 +575,57 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 20.h),
+                      SizedBox(height: 10.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: _isVerifying
+                                ? null
+                                : () async {
+                                    VibrationService.lightImpact();
+                                    final confirmed = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Logout', style: TextStyle(fontFamily: 'Outfit')),
+                                        content: const Text('Are you sure you want to log out?', style: TextStyle(fontFamily: 'Outfit')),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, false),
+                                            child: const Text('Cancel', style: TextStyle(fontFamily: 'Outfit')),
+                                          ),
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context, true),
+                                            child: const Text('Logout', style: TextStyle(fontFamily: 'Outfit', color: Colors.red)),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (confirmed == true && mounted) {
+                                      await TokenService.logout();
+                                      if (mounted) {
+                                        Navigator.of(context).pushAndRemoveUntil(
+                                          MaterialPageRoute(builder: (_) => const SignInScreen()),
+                                          (route) => false,
+                                        );
+                                      }
+                                    }
+                                  },
+                            icon: const Icon(Icons.logout, color: Colors.red, size: 20),
+                            label: Text(
+                              'Logout',
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                color: Colors.red,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10.h),
                       Center(
                         child: Container(
                           width: 80.r,
