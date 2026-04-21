@@ -19,7 +19,13 @@ class ApiConstants {
   static String get verifyPinEndpoint => '$baseUrl/users/verify-pin';
   static String get resetPinEndpoint => '$baseUrl/users/reset-pin';
   static String get forexRatesEndpoint => '$baseUrl/forex/rates';
-  static String get fallbackForexRatesEndpoint => 'https://api.fusionfi.io/api/v1/forex/rates';
+  static String get fallbackForexRatesEndpoint {
+    if (F.appFlavor == Flavor.sandbox) {
+      return 'https://api.fusionfi.io/api/v1/forex/rates';
+    } else {
+      return 'https://sandbox.fusionfi.io/api/v1/forex/rates';
+    }
+  }
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
   
   // Wallet endpoints
@@ -47,4 +53,11 @@ class ApiConstants {
   static String get sumsubInitKycEndpoint => '$baseUrl/kyc/sumsub/init-kyc';
   static String get sumsubKycStatusEndpoint => '$baseUrl/kyc/sumsub/kyc-status';
   static String getSumsubKycStatusEndpoint(String userId) => '$baseUrl/kyc/read/User/$userId';
+
+  // eSIM endpoints
+  static String get esimProductsEndpoint => '$baseUrl/esim/products';
+  static String getEsimProductDetailsEndpoint(int id) => '$baseUrl/esim/products/$id';
+  static String get esimOrderRequestEndpoint => '$baseUrl/esim/orders/request';
+  static String get esimOrderCompleteEndpoint => '$baseUrl/esim/orders/complete';
+  static String getOwnershipDeleteEndpoint(int id) => '$baseUrl/ownership/delete/$id';
 }

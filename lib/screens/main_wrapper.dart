@@ -7,6 +7,7 @@ import 'more_options_screen.dart';
 import 'verify_pin_screen.dart';
 import '../services/session_service.dart';
 import '../services/logger_service.dart';
+import '../services/token_service.dart';
 
 class MainWrapper extends StatefulWidget {
   final int initialIndex;
@@ -110,12 +111,14 @@ class MainWrapperState extends State<MainWrapper> with WidgetsBindingObserver {
     SessionService.recordActivity();
   }
 
-  void _showMoreOptions() {
+  void _showMoreOptions() async {
+    final isKycVerified = await TokenService.getKycVerified();
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const MoreOptionsScreen(),
+      builder: (context) => MoreOptionsScreen(isKycVerified: isKycVerified),
     );
   }
 

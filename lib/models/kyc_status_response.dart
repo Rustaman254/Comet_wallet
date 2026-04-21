@@ -25,9 +25,9 @@ class KYCStatusResponse {
     final rawKycStatus = json['kycStatus'];
 
     if (!exists || rawKycStatus is String) {
-      // Shape: { "exists": false, "kycStatus": "NOT_STARTED" }
+      // Shape: { "exists": bool, "kycStatus": "STATUS_STRING" }
       final statusStr = (rawKycStatus as String?)?.toLowerCase() ?? 'not_started';
-      return KYCStatusResponse(exists: false, status: statusStr);
+      return KYCStatusResponse(exists: exists, status: statusStr);
     }
 
     // Shape: { "exists": true, "kycStatus": { ... } }

@@ -503,9 +503,8 @@ class _EnterPinScreenState extends State<EnterPinScreen>
       return 'Network connection error. Please check your internet connection and try again.';
     }
     
-    if (cleaned.toLowerCase().contains('insufficient') && 
-        cleaned.toLowerCase().contains('fund')) {
-      return 'Insufficient funds in your wallet. Please top up and try again.';
+    if (cleaned.toLowerCase().contains('insufficient')) {
+      return cleaned;
     }
     
     if (cleaned.toLowerCase().contains('timeout')) {
