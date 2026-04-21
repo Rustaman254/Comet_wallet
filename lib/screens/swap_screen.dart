@@ -13,6 +13,7 @@ import '../services/toast_service.dart';
 import '../services/session_service.dart';
 import '../widgets/usda_logo.dart';
 import '../widgets/currency_selection_sheet.dart';
+import 'package:http/http.dart' as http;
 
 class SwapScreen extends StatefulWidget {
   const SwapScreen({super.key});
@@ -62,17 +63,30 @@ class _SwapScreenState extends State<SwapScreen> {
       return;
     }
 
+    final String apiFrom = from == 'USDA' ? 'USD' : from;
+    final String apiTo = to == 'USDA' ? 'USD' : to;
+
+    if (apiFrom == apiTo) {
+      if (mounted) {
+        setState(() {
+          _currentRate = 1.0;
+          _isFetchingRate = false;
+        });
+      }
+      return;
+    }
+
     setState(() => _isFetchingRate = true);
     try {
-      final url = '${ApiConstants.forexRatesEndpoint}/$from/$to';
+      final url = '${ApiConstants.forexRatesEndpoint}/$apiFrom/$apiTo';
       var response = await AuthenticatedHttpClient.get(
         Uri.parse(url),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
         // Try fallback
-        final fallbackUrl = '${ApiConstants.fallbackForexRatesEndpoint}/$from/$to';
-        response = await AuthenticatedHttpClient.get(
+        final fallbackUrl = '${ApiConstants.fallbackForexRatesEndpoint}/$apiFrom/$apiTo';
+        response = await http.get(
           Uri.parse(fallbackUrl),
         ).timeout(const Duration(seconds: 10));
       }
@@ -90,8 +104,8 @@ class _SwapScreenState extends State<SwapScreen> {
     } catch (_) {
       // Final attempt if initial call threw an exception
       try {
-        final fallbackUrl = '${ApiConstants.fallbackForexRatesEndpoint}/$from/$to';
-        final response = await AuthenticatedHttpClient.get(
+        final fallbackUrl = '${ApiConstants.fallbackForexRatesEndpoint}/$apiFrom/$apiTo';
+        final response = await http.get(
           Uri.parse(fallbackUrl),
         ).timeout(const Duration(seconds: 10));
         
