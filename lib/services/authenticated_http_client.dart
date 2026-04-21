@@ -4,6 +4,19 @@ import 'logger_service.dart';
 
 /// HTTP client wrapper that handles token expiration
 class AuthenticatedHttpClient {
+  static http.Client? _innerClient;
+
+  /// Set a custom client for testing
+  static void setClient(http.Client client) {
+    _innerClient = client;
+  }
+
+  /// Reset to default client
+  static void resetClient() {
+    _innerClient = null;
+  }
+
+  static http.Client get _client => _innerClient ?? http.Client();
 
   /// Make an authenticated GET request
   static Future<http.Response> get(
@@ -19,7 +32,7 @@ class AuthenticatedHttpClient {
       ...?headers,
     };
     
-    final response = await http.get(url, headers: requestHeaders);
+    final response = await _client.get(url, headers: requestHeaders);
     
     _checkTokenExpiration(response);
     
@@ -45,7 +58,7 @@ class AuthenticatedHttpClient {
       ...?headers,
     };
     
-    final response = await http.post(
+    final response = await _client.post(
       url,
       headers: requestHeaders,
       body: body,
@@ -71,7 +84,7 @@ class AuthenticatedHttpClient {
       ...?headers,
     };
     
-    final response = await http.put(
+    final response = await _client.put(
       url,
       headers: requestHeaders,
       body: body,
@@ -96,7 +109,7 @@ class AuthenticatedHttpClient {
       ...?headers,
     };
     
-    final response = await http.delete(url, headers: requestHeaders);
+    final response = await _client.delete(url, headers: requestHeaders);
     
     _checkTokenExpiration(response);
     
