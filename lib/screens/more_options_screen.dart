@@ -6,11 +6,23 @@ import 'withdraw_money_screen.dart';
 import 'receive_money_screen.dart';
 import 'till_payment_screen.dart';
 import '../services/toast_service.dart';
+import '../services/logger_service.dart';
 import 'esim_products_screen.dart';
 
 class MoreOptionsScreen extends StatelessWidget {
   final bool isKycVerified;
   const MoreOptionsScreen({super.key, this.isKycVerified = false});
+
+  void _logOptionTap(String optionName) {
+    AppLogger.info(
+      LogTags.navigation,
+      'More option tapped: $optionName',
+      data: {
+        'option': optionName,
+        'kyc_status': isKycVerified ? 'verified' : 'not_verified',
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +32,7 @@ class MoreOptionsScreen extends StatelessWidget {
         'icon': Icons.monetization_on_outlined,
         'label': 'Receive',
         'onTap': () {
+          _logOptionTap('Receive');
           Navigator.pop(context);
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -34,6 +47,7 @@ class MoreOptionsScreen extends StatelessWidget {
         'icon': Icons.shopping_bag_outlined,
         'label': 'Buy Goods',
         'onTap': () {
+          _logOptionTap('Buy Goods');
           Navigator.pop(context);
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -48,6 +62,7 @@ class MoreOptionsScreen extends StatelessWidget {
         'icon': Icons.sim_card_outlined,
         'label': 'eSIM',
         'onTap': () {
+          _logOptionTap('eSIM');
           Navigator.pop(context);
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -184,7 +199,14 @@ class MoreOptionsScreen extends StatelessWidget {
     const double itemWidth = 80;
 
     return GestureDetector(
-      onTap: isEnabled ? onTap : null,
+      onTap: () {
+        _logOptionTap(label);
+        if (isEnabled) {
+          onTap();
+        } else {
+          ToastService().showInfo(context, 'Please complete KYC verification to access $label.');
+        }
+      },
       child: SizedBox(
         width: itemWidth,
         child: Column(

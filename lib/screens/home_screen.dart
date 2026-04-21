@@ -28,6 +28,8 @@ import 'transaction_details_screen.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../services/sumsub_kyc_service.dart';
+import '../models/kyc_status_response.dart';
+import 'kyc/kyc_intro_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -84,43 +86,63 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _loadCachedUserData() async {
     final name = await TokenService.getUserName();
-    if (mounted && name != null && name.isNotEmpty) {
+    final kycVerified = await TokenService.getKycVerified();
+    
+    if (mounted) {
       setState(() {
-        // Create a partial profile with just the name for immediate display
-        _userProfile = UserProfile(
-          id: 0,
-          name: name,
-          email: '',
-          phone: '',
-          location: '',
-          kycVerified: false,
-          isAccountActivated: false,
-          activationFeePaid: false,
-          walletBalances: [],
-          cardanoAddress: '',
-          balanceAda: 0.0,
-          balanceUsda: 0.0,
-          balanceUsdaRaw: 0,
-          status: '',
-          publicKey: '',
-        );
+        _isKycApproved = kycVerified;
+        if (name != null && name.isNotEmpty) {
+          // Create a partial profile with just the name for immediate display
+          _userProfile = UserProfile(
+            id: 0,
+            name: name,
+            email: '',
+            phone: '',
+            location: '',
+            kycVerified: kycVerified,
+            isAccountActivated: false,
+            activationFeePaid: false,
+            walletBalances: [],
+            cardanoAddress: '',
+            balanceAda: 0.0,
+            balanceUsda: 0.0,
+            balanceUsdaRaw: 0,
+            status: '',
+            publicKey: '',
+          );
+        }
       });
     }
   }
   
   UserProfile? _userProfile;
   bool _isKycApproved = false;
+  bool _isLoadingKycStatus = true;
+  KYCStatusResponse? _kycStatusResponse;
+
+  bool get _isEffectivelyVerified => _isKycApproved || (_userProfile?.kycVerified ?? false);
 
   Future<void> _fetchKycStatus() async {
     try {
       final status = await SumsubKycService.getKycStatus();
       if (mounted) {
         setState(() {
+          _kycStatusResponse = status;
           _isKycApproved = status.isApproved;
+          _isLoadingKycStatus = false;
         });
+        // Persist verified status for other screens
+        if (status.isApproved) {
+          TokenService.saveKycVerified(true);
+        }
       }
     } catch (e) {
       debugPrint('HomeScreen: Error fetching KYC status: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingKycStatus = false;
+        });
+      }
     }
   }
 
@@ -416,7 +438,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 MaterialPageRoute(
                                   builder: (_) => const ProfileScreen(),
                                 ),
-                              );
+                              ).then((_) {
+                                if (mounted) {
+                                  _fetchKycStatus();
+                                  _fetchUserProfile();
+                                }
+                              });
                             },
                             child: Stack(
                               children: [
@@ -558,6 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionSendColor,
+                                isEnabled: _isEffectivelyVerified,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -571,7 +599,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionReceiveColor,
-                                isEnabled: _isKycApproved,
+                                isEnabled: _isEffectivelyVerified,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -585,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionTopupColor,
-                                isEnabled: _isKycApproved,
+                                isEnabled: _isEffectivelyVerified,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -599,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionSwapColor,
-                                isEnabled: _isKycApproved,
+                                isEnabled: _isEffectivelyVerified,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -613,7 +641,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 16.h),
+                    _buildKycBanner(),
                   ],
                 ),
                 Expanded(
@@ -899,7 +928,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                      ),
                                                                      // Swap Button
                                                                      GestureDetector(
-                                                                       onTap: _isKycApproved ? () {
+                                                                       onTap: _isEffectivelyVerified ? () {
                                                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const SwapScreen()));
                                                                        } : null,
                                                                        child: Container(
@@ -1158,7 +1187,140 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => MoreOptionsScreen(isKycVerified: _isKycApproved),
+      builder: (context) => MoreOptionsScreen(isKycVerified: _isEffectivelyVerified),
+    ).then((_) {
+      if (mounted) {
+        _fetchKycStatus();
+        _fetchUserProfile();
+      }
+    });
+  }
+
+  Widget _buildKycBanner() {
+    if (_isLoadingKycStatus || _isEffectivelyVerified) {
+      return const SizedBox.shrink();
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final status = _kycStatusResponse?.status ?? 'not_started';
+
+    String bannerTitle = 'KYC Not Verified';
+    String bannerSubtitle = 'Verify your identity to unlock full features.';
+    Color bannerColor = Colors.amber;
+    IconData bannerIcon = Icons.warning_amber_rounded;
+    String actionText = 'Verify KYC';
+
+    switch (status) {
+      case 'pending':
+      case 'created':
+        bannerTitle = 'KYC In Progress';
+        bannerSubtitle = 'Your documents are being reviewed.';
+        bannerColor = Colors.amber;
+        bannerIcon = Icons.hourglass_top_rounded;
+        actionText = 'View Status';
+        break;
+      case 'on_hold':
+        bannerTitle = 'KYC On Hold';
+        bannerSubtitle = 'Additional information may be required.';
+        bannerColor = Colors.amber;
+        bannerIcon = Icons.pause_circle_outline;
+        actionText = 'View Status';
+        break;
+      case 'rejected':
+        bannerTitle = 'KYC Rejected';
+        bannerSubtitle = (_kycStatusResponse?.detail?.rejectLabels.isNotEmpty == true)
+            ? 'Reason: ${_kycStatusResponse!.detail!.rejectLabels}'
+            : 'Verification failed. Please try again.';
+        bannerColor = errorRed;
+        bannerIcon = Icons.cancel_outlined;
+        actionText = 'Retry KYC';
+        break;
+    }
+
+    return Padding(
+      padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 24.h),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: bannerColor.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: bannerColor.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: bannerColor.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Icon(
+                  bannerIcon,
+                  color: bannerColor,
+                  size: 24,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    bannerTitle,
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: isDark ? Colors.white : lightTextPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    bannerSubtitle,
+                    style: TextStyle(
+                      fontFamily: 'Outfit',
+                      color: isDark ? Colors.white70 : lightSecondaryText,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const KYCIntroScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: bannerColor,
+                foregroundColor: bannerTitle == 'KYC Rejected' ? Colors.white : Colors.black87,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 0,
+              ),
+              child: Text(
+                actionText,
+                style: const TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

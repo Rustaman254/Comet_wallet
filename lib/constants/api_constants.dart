@@ -19,7 +19,13 @@ class ApiConstants {
   static String get verifyPinEndpoint => '$baseUrl/users/verify-pin';
   static String get resetPinEndpoint => '$baseUrl/users/reset-pin';
   static String get forexRatesEndpoint => '$baseUrl/forex/rates';
-  static String get fallbackForexRatesEndpoint => 'https://api.fusionfi.io/api/v1/forex/rates';
+  static String get fallbackForexRatesEndpoint {
+    if (F.appFlavor == Flavor.sandbox) {
+      return 'https://api.fusionfi.io/api/v1/forex/rates';
+    } else {
+      return 'https://sandbox.fusionfi.io/api/v1/forex/rates';
+    }
+  }
   static const String imageUploadUrl = 'https://images.cradlevoices.com/';
   
   // Wallet endpoints
