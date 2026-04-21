@@ -255,7 +255,7 @@ class _SwapScreenState extends State<SwapScreen> {
                         ],
                       ),
                       Text(
-                        _formatBalance(entry.value),
+                        '${_formatBalance(entry.value)} ${entry.key}',
                         style: TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 14.sp,
@@ -565,12 +565,14 @@ class _SwapScreenState extends State<SwapScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Exchange Rate',
-                            style: TextStyle(
-                              fontFamily: 'Outfit',
-                              fontSize: 14.sp,
-                              color: getSecondaryTextColor(context),
+                          Expanded(
+                            child: Text(
+                              'Exchange Rate',
+                              style: TextStyle(
+                                fontFamily: 'Outfit',
+                                fontSize: 14.sp,
+                                color: getSecondaryTextColor(context),
+                              ),
                             ),
                           ),
                           _isFetchingRate
@@ -583,13 +585,17 @@ class _SwapScreenState extends State<SwapScreen> {
                                   ),
                                 )
                               : _currentRate > 0 || _fromCurrency == _toCurrency
-                                ? Text(
-                                    '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
-                                    style: TextStyle(
-                                      fontFamily: 'Outfit',
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: getTextColor(context),
+                                ? Flexible(
+                                    child: Text(
+                                      '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
+                                      style: TextStyle(
+                                        fontFamily: 'Outfit',
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: getTextColor(context),
+                                      ),
+                                      textAlign: TextAlign.end,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   )
                                 : GestureDetector(
@@ -636,7 +642,6 @@ class _SwapScreenState extends State<SwapScreen> {
   }) {
     // A placeholder conversion just for visuals matching the snapshot loosely
     final amountVal = double.tryParse(controller.text) ?? 0.0;
-    final estimatedUsd = amountVal * _lookupRate(currency, 'USD'); 
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
@@ -676,6 +681,13 @@ class _SwapScreenState extends State<SwapScreen> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                           isDense: true,
+                          suffixText: currency,
+                          suffixStyle: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w500,
+                            color: getSecondaryTextColor(context),
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) return 'Required';
@@ -699,8 +711,8 @@ class _SwapScreenState extends State<SwapScreen> {
                           return null;
                         },
                       )
-                    : Text(
-                        controller.text.isEmpty || controller.text == '0.00' ? '0' : controller.text,
+                      : Text(
+                        '${controller.text.isEmpty || controller.text == '0.00' ? '0' : controller.text} $currency',
                         style: TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 32.sp,
@@ -746,19 +758,22 @@ class _SwapScreenState extends State<SwapScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                amountVal > 0 ? '\$${amountVal.toStringAsFixed(2)}' : '\$0.00',
+                '${amountVal.toStringAsFixed(2)} $currency',
                 style: TextStyle(
                   fontFamily: 'Outfit',
                   fontSize: 14.sp,
                   color: getSecondaryTextColor(context),
                 ),
               ),
-              Text(
-                'Bal: ${balance.toStringAsFixed(2)} $currency',
-                style: TextStyle(
-                  fontFamily: 'Outfit',
-                  fontSize: 14.sp,
-                  color: getSecondaryTextColor(context),
+              Flexible(
+                child: Text(
+                  'Bal: ${balance.toStringAsFixed(2)} $currency',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    fontSize: 14.sp,
+                    color: getSecondaryTextColor(context),
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

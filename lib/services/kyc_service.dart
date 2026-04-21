@@ -11,7 +11,8 @@ class KYCService {
 
   /// Upload image file to Cradle Voices image server
   /// Returns the URL of the uploaded image
-  static Future<String> uploadImage(File imageFile) async {
+  static Future<String> uploadImage(File imageFile, {http.Client? client}) async {
+    final httpClient = client ?? http.Client();
     final startTime = DateTime.now();
     
     try {
@@ -37,8 +38,8 @@ class KYCService {
         ),
       );
 
-      // Send the request
-      var streamedResponse = await request.send();
+      // Send the request using the provided httpClient
+      var streamedResponse = await httpClient.send(request);
       var response = await http.Response.fromStream(streamedResponse);
 
       final duration = DateTime.now().difference(startTime);

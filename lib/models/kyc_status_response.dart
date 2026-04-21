@@ -71,15 +71,17 @@ class KYCStatusDetail {
   });
 
   factory KYCStatusDetail.fromJson(Map<String, dynamic> json) {
+    // The API returns PascalCase keys (Status, ReviewAnswer, etc.)
+    // but we also handle camelCase for backwards compatibility.
     return KYCStatusDetail(
       id: json['ID'] as int? ?? 0,
-      externalUserId: json['externalUserId'] as String? ?? '',
-      applicantId: json['applicantId'] as String? ?? '',
-      status: (json['status'] as String? ?? '').toLowerCase(),
-      reviewAnswer: json['reviewAnswer'] as String? ?? '',
-      rejectLabels: json['rejectLabels'] as String? ?? '',
-      levelName: json['levelName'] as String? ?? '',
-      lastWebhookType: json['lastWebhookType'] as String? ?? '',
+      externalUserId: (json['ExternalUserId'] ?? json['externalUserId']) as String? ?? '',
+      applicantId: (json['ApplicantId'] ?? json['applicantId']) as String? ?? '',
+      status: ((json['Status'] ?? json['status']) as String? ?? '').toLowerCase(),
+      reviewAnswer: (json['ReviewAnswer'] ?? json['reviewAnswer']) as String? ?? '',
+      rejectLabels: (json['RejectLabels'] ?? json['rejectLabels']) as String? ?? '',
+      levelName: (json['LevelName'] ?? json['levelName']) as String? ?? '',
+      lastWebhookType: (json['LastWebhookType'] ?? json['lastWebhookType']) as String? ?? '',
       createdAt: json['CreatedAt'] != null ? DateTime.tryParse(json['CreatedAt']) : null,
       updatedAt: json['UpdatedAt'] != null ? DateTime.tryParse(json['UpdatedAt']) : null,
     );

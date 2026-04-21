@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
               backgroundColor: lightCardBackground,
             ),
             colorScheme: ColorScheme.fromSeed(
-              seedColor: primaryBrandColor,
+              seedColor: getPrimaryBrandColor(),
               brightness: Brightness.light,
               surface: lightCardBackground,
               outline: lightBorder,
@@ -115,7 +115,7 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: darkBackground,
             cardColor: cardBackground,
             colorScheme: ColorScheme.fromSeed(
-              seedColor: primaryBrandColor,
+              seedColor: getPrimaryBrandColor(),
               brightness: Brightness.dark,
               surface: cardBackground,
               outline: cardBorder,
@@ -250,7 +250,9 @@ class _OnboardingWrapperState extends State<OnboardingWrapper> with SingleTicker
                     child: Opacity(
                       opacity: _fadeAnimation.value,
                       child: Image.asset(
-                        'assets/images/Logo.png',
+                        F.appFlavor == Flavor.cometWallet 
+                          ? 'assets/images/comet_logo.png' 
+                          : 'assets/images/Logo.png',
                         width: MediaQuery.of(context).size.width * 0.4,
                         fit: BoxFit.contain,
                       ),

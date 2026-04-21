@@ -7,7 +7,7 @@ class ModernButton {
   /// Primary action button style
   static ButtonStyle primary({bool isEnabled = true}) {
     return ElevatedButton.styleFrom(
-      backgroundColor: isEnabled ? primaryBrandColor : lightTertiaryText,
+      backgroundColor: isEnabled ? getPrimaryBrandColor() : lightTertiaryText,
       foregroundColor: Colors.white,
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -21,11 +21,11 @@ class ModernButton {
   static ButtonStyle secondary({bool isEnabled = true}) {
     return ElevatedButton.styleFrom(
       backgroundColor: Colors.transparent,
-      foregroundColor: primaryBrandColor,
+      foregroundColor: getPrimaryBrandColor(),
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       side: BorderSide(
-        color: isEnabled ? primaryBrandColor : lightBorder,
+        color: isEnabled ? getPrimaryBrandColor() : lightBorder,
         width: 2,
       ),
       shape: RoundedRectangleBorder(
@@ -37,7 +37,7 @@ class ModernButton {
   /// Rounded pill button (for onboarding/splash)
   static ButtonStyle rounded({bool isEnabled = true}) {
     return ElevatedButton.styleFrom(
-      backgroundColor: isEnabled ? primaryBrandColor : lightTertiaryText,
+      backgroundColor: isEnabled ? getPrimaryBrandColor() : lightTertiaryText,
       foregroundColor: Colors.white,
       elevation: 0,
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -50,7 +50,7 @@ class ModernButton {
   /// Icon button style
   static ButtonStyle icon({Color? color, double size = 24}) {
     return IconButton.styleFrom(
-      foregroundColor: color ?? primaryBrandColor,
+      foregroundColor: color ?? getPrimaryBrandColor(),
     );
   }
 }
@@ -154,8 +154,8 @@ class ModernInput {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(
-          color: primaryBrandColor,
+        borderSide: BorderSide(
+          color: getPrimaryBrandColor(),
           width: 2,
         ),
       ),
@@ -191,9 +191,9 @@ class ModernInput {
           color: isDark ? darkBorder : lightBorder,
         ),
       ),
-      focusedBorder: const UnderlineInputBorder(
+      focusedBorder: UnderlineInputBorder(
         borderSide: BorderSide(
-          color: primaryBrandColor,
+          color: getPrimaryBrandColor(),
           width: 2,
         ),
       ),
@@ -214,8 +214,8 @@ class ModernTheme {
   static OutlinedButtonThemeData lightOutlinedButton() {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: primaryBrandColor,
-        side: const BorderSide(color: primaryBrandColor, width: 2),
+        foregroundColor: getPrimaryBrandColor(),
+        side: BorderSide(color: getPrimaryBrandColor(), width: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
@@ -226,8 +226,8 @@ class ModernTheme {
   static OutlinedButtonThemeData darkOutlinedButton() {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: primaryBrandColor,
-        side: const BorderSide(color: primaryBrandColor, width: 2),
+        foregroundColor: getPrimaryBrandColor(),
+        side: BorderSide(color: getPrimaryBrandColor(), width: 2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
