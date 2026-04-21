@@ -29,6 +29,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     on<FetchSupportedCurrencies>(_onFetchSupportedCurrencies);
     on<TillPayment>(_onTillPayment);
     on<BankTransfer>(_onBankTransfer);
+    on<TrackTransactionStatus>(_onTrackTransactionStatus);
     
     // Initial fetch
     add(const FetchSupportedCurrencies());
@@ -335,7 +336,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         userID: 0,
         amount: event.amount,
         transactionType: 'wallet_topup',
-        status: 'complete',
+        status: 'pending',
         phoneNumber: '',
         createdAt: timestamp,
         currency: event.currency,
@@ -392,7 +393,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         userID: 0,
         amount: event.amount,
         transactionType: event.transactionType,
-        status: 'complete',
+        status: 'pending',
         phoneNumber: event.recipientPhone,
         createdAt: timestamp,
         currency: event.currency,
@@ -932,6 +933,43 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       // Re-fetch data to restore balance if optimistic update failed
       add(const FetchWalletDataFromServer());
     }
+  }
+
+
+  Future<void> _onTrackTransactionStatus(
+    TrackTransactionStatus event,
+    Emitter<WalletState> emit,
+  ) async {
+    const int maxRetries = 15; // 15 retries * 5 seconds = 75 seconds total
+    int retryCount = 0;
+
+    while (retryCount < maxRetries) {
+      final transaction = await WalletService.getTransactionStatus(event.transactionId);
+      
+      if (transaction != null) {
+        final status = transaction.status.toLowerCase();
+        if (status == 'completed' || status == 'success' || status == 'failed') {
+          emit(TransactionStatusUpdate(
+            transactionId: event.transactionId,
+            status: transaction.status,
+            message: 'Transaction $status',
+          ));
+          
+          // Refresh data to get final balances
+          add(const FetchWalletDataFromServer());
+          return;
+        }
+      }
+      
+      retryCount++;
+      await Future.delayed(const Duration(seconds: 5));
+    }
+
+    emit(TransactionStatusUpdate(
+      transactionId: event.transactionId,
+      status: 'timeout',
+      message: 'Transaction is taking longer than expected. Please check your history later.',
+    ));
   }
 
   @override

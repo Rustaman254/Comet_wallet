@@ -75,19 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.person_add_outlined,
-                        color: Theme.of(context).textTheme.bodyMedium?.color,
-                        size: 20,
-                      ),
-                    ),
+                    const SizedBox(width: 40), 
                   ],
                 ),
               ),

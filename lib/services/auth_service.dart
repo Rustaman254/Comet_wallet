@@ -76,7 +76,9 @@ class AuthService {
     required String phoneNumber,
     required String location,
     required String pin,
+    http.Client? client,
   }) async {
+    final httpClient = client ?? http.Client();
     final startTime = DateTime.now();
 
     // DEBUG: Test connectivity
@@ -109,7 +111,7 @@ class AuthService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await httpClient.post(
         Uri.parse(ApiConstants.registerEndpoint),
         headers: {
           'Content-Type': 'application/json',
@@ -214,7 +216,9 @@ class AuthService {
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
+    http.Client? client,
   }) async {
+    final httpClient = client ?? http.Client();
     final startTime = DateTime.now();
 
     try {
@@ -231,7 +235,7 @@ class AuthService {
         body: requestBody,
       );
 
-      final response = await http.post(
+      final response = await httpClient.post(
         Uri.parse(ApiConstants.loginEndpoint),
         headers: {
           'Content-Type': 'application/json',
@@ -271,6 +275,7 @@ class AuthService {
           data: {
             'token_exists': token.isNotEmpty,
             'token_length': token.length,
+            'token_preview': token.length > 20 ? token.substring(0, 20) : token,
             'user_id': userId,
             'email': userEmail,
             'phone': phone,
@@ -454,7 +459,8 @@ class AuthService {
   /// Verify user PIN
   /// Uses direct http.post instead of AuthenticatedHttpClient to avoid
   /// auto-logout on 401 responses (which may be "wrong PIN" not "token expired").
-  static Future<bool> verifyPin(String pin) async {
+  static Future<bool> verifyPin(String pin, {http.Client? client}) async {
+    final httpClient = client ?? http.Client();
     final startTime = DateTime.now();
 
     try {
@@ -480,7 +486,7 @@ class AuthService {
       // Use direct http.post — NOT AuthenticatedHttpClient — so we can
       // distinguish "wrong PIN" 401 from "token expired" 401 without the
       // client auto-logging the user out.
-      final response = await http.post(
+      final response = await httpClient.post(
         Uri.parse(ApiConstants.verifyPinEndpoint),
         headers: headers,
         body: jsonEncode(requestBody),

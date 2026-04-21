@@ -680,22 +680,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         
                                                         // CONTENT
                                                         Padding(
-                                                          padding: EdgeInsets.all(24.r),
+                                                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
                                                           child: Column(
                                                             crossAxisAlignment: CrossAxisAlignment.start,
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                            mainAxisAlignment: MainAxisAlignment.start,
                                                             children: [
                                                               // TOP ROW: "Total Balance" and Level/Currency Pill
                                                               Row(
                                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                 children: [
-                                                                  Text(
-                                                                    'Total Balance',
-                                                                    style: TextStyle(
-                                                                      fontFamily: 'Outfit',
-                                                                      color: Colors.white.withValues(alpha: 0.9),
-                                                                      fontSize: 16.sp,
-                                                                      fontWeight: FontWeight.bold,
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      'Total Balance',
+                                                                      style: TextStyle(
+                                                                        fontFamily: 'Outfit',
+                                                                        color: Colors.white.withValues(alpha: 0.9),
+                                                                        fontSize: 16.sp,
+                                                                        fontWeight: FontWeight.bold,
+                                                                      ),
+                                                                      overflow: TextOverflow.ellipsis,
                                                                     ),
                                                                   ),
                                                                   Container(
@@ -740,9 +743,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               const Spacer(),
 
                                                               // MIDDLE ROW: Currency Symbol + Balance + Eye
-                                                              Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                children: [
+                                                              Expanded(
+                                                                child: Row(
+                                                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                                                  children: [
                                                                   Text(
                                                                     balance['symbol'] ?? (isUSDA ? '\$' : currency),
                                                                     style: TextStyle(
@@ -764,29 +768,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     ),
                                                                   ),
                                                                    SizedBox(width: 12.w),
-                                                                    GestureDetector(
-                                                                      onTap: () {
-                                                                        setState(() {
-                                                                          _isBalanceVisible = !_isBalanceVisible;
-                                                                        });
-                                                                        VibrationService.lightImpact();
-                                                                      },
-                                                                      child: Container(
-                                                                        padding: EdgeInsets.all(4.r),
-                                                                        decoration: BoxDecoration(
-                                                                          color: Colors.white.withValues(alpha: 0.1),
-                                                                          shape: BoxShape.circle,
-                                                                        ),
-                                                                        child: Icon(
-                                                                          _isBalanceVisible
-                                                                              ? Icons.visibility_outlined
-                                                                              : Icons.visibility_off_outlined,
-                                                                          color: Colors.white,
-                                                                          size: 16.sp,
+                                                                    Flexible(
+                                                                      child: GestureDetector(
+                                                                        onTap: () {
+                                                                          setState(() {
+                                                                            _isBalanceVisible = !_isBalanceVisible;
+                                                                          });
+                                                                          VibrationService.lightImpact();
+                                                                        },
+                                                                        child: Container(
+                                                                          padding: EdgeInsets.all(4.r),
+                                                                          decoration: BoxDecoration(
+                                                                            color: Colors.white.withValues(alpha: 0.1),
+                                                                            shape: BoxShape.circle,
+                                                                          ),
+                                                                          child: Icon(
+                                                                            _isBalanceVisible
+                                                                                ? Icons.visibility_outlined
+                                                                                : Icons.visibility_off_outlined,
+                                                                            color: Colors.white,
+                                                                            size: 16.sp,
+                                                                          ),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                ],
+                                                                  ],
+                                                                ),
                                                               ),
 
                                                               const Spacer(),

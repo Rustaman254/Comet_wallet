@@ -149,3 +149,14 @@ class BankTransfer extends WalletEvent {
   @override
   List<Object?> get props => [amount, bankCode, creditAccount, narration, pin];
 }
+
+class TrackTransactionStatus extends WalletEvent {
+  final String transactionId;
+
+  const TrackTransactionStatus({
+    required this.transactionId,
+  });
+
+  @override
+  List<Object?> get props => [transactionId];
+}
