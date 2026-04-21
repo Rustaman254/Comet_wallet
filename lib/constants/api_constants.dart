@@ -47,4 +47,11 @@ class ApiConstants {
   static String get sumsubInitKycEndpoint => '$baseUrl/kyc/sumsub/init-kyc';
   static String get sumsubKycStatusEndpoint => '$baseUrl/kyc/sumsub/kyc-status';
   static String getSumsubKycStatusEndpoint(String userId) => '$baseUrl/kyc/read/User/$userId';
+
+  // eSIM endpoints
+  static String get esimProductsEndpoint => '$baseUrl/esim/products';
+  static String getEsimProductDetailsEndpoint(int id) => '$baseUrl/esim/products/$id';
+  static String get esimOrderRequestEndpoint => '$baseUrl/esim/orders/request';
+  static String get esimOrderCompleteEndpoint => '$baseUrl/esim/orders/complete';
+  static String getOwnershipDeleteEndpoint(int id) => '$baseUrl/ownership/delete/$id';
 }

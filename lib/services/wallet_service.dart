@@ -594,6 +594,8 @@ class WalletService {
           final requiredAmount = errorResponse['required_amount'] ?? amount;
           final currency = errorResponse['currency'] ?? 'KES';
           errorMessage = 'Insufficient balance. You have $currentBalance $currency but need $requiredAmount $currency.';
+        } else if (errorResponse['message'] != null && errorResponse['message'].contains('Insufficient balance')) {
+          errorMessage = errorResponse['message'];
         } else {
           errorMessage = errorResponse['details'] ?? 
                         errorResponse['message'] ?? 

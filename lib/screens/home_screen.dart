@@ -27,6 +27,7 @@ import '../utils/format_utils.dart';
 import 'transaction_details_screen.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../services/sumsub_kyc_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadAddedCurrencies();
     _loadCachedUserData();
     _fetchUserProfile();
+    _fetchKycStatus();
     
     // Fetch wallet data when home screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -107,6 +109,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   
   UserProfile? _userProfile;
+  bool _isKycApproved = false;
+
+  Future<void> _fetchKycStatus() async {
+    try {
+      final status = await SumsubKycService.getKycStatus();
+      if (mounted) {
+        setState(() {
+          _isKycApproved = status.isApproved;
+        });
+      }
+    } catch (e) {
+      debugPrint('HomeScreen: Error fetching KYC status: $e');
+    }
+  }
 
   Future<void> _fetchUserProfile() async {
     if (!mounted) return;
@@ -555,6 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionReceiveColor,
+                                isEnabled: _isKycApproved,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -568,6 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionTopupColor,
+                                isEnabled: _isKycApproved,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -581,6 +599,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 },
                                 backgroundColor: transactionSwapColor,
+                                isEnabled: _isKycApproved,
                               ),
                               SizedBox(width: 16.w),
                               _buildActionButton(
@@ -602,6 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onRefresh: () async {
                       await Future.wait([
                         _fetchUserProfile(),
+                        _fetchKycStatus(),
                       ]);
                       // Dispatch refresh event to BLoC
                       if (context.mounted) {
@@ -872,9 +892,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                      ),
                                                                      // Swap Button
                                                                      GestureDetector(
-                                                                       onTap: () {
+                                                                       onTap: _isKycApproved ? () {
                                                                          Navigator.push(context, MaterialPageRoute(builder: (_) => const SwapScreen()));
-                                                                       },
+                                                                       } : null,
                                                                        child: Container(
                                                                          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                                                                          decoration: BoxDecoration(
@@ -1131,7 +1151,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => const MoreOptionsScreen(),
+      builder: (context) => MoreOptionsScreen(isKycVerified: _isKycApproved),
     );
   }
 
@@ -1147,24 +1167,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildActionButton(
-      IconData icon, String label, VoidCallback onTap, {Color? backgroundColor}) {
+      IconData icon, String label, VoidCallback onTap, {Color? backgroundColor, bool isEnabled = true}) {
     return GestureDetector(
-      onTap: () {
+      onTap: isEnabled ? () {
         VibrationService.selectionClick();
         onTap();
-      },
+      } : null,
       child: Column(
         children: [
           Container(
             width: 60.r,
             height: 60.r,
             decoration: BoxDecoration(
-              color: backgroundColor ?? Colors.white.withValues(alpha: 0.1),
+              color: isEnabled 
+                  ? (backgroundColor ?? Colors.white.withValues(alpha: 0.1))
+                  : Colors.grey.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
-              color: Colors.white,
+              color: isEnabled ? Colors.white : Colors.white38,
               size: 28.r,
             ),
           ),
@@ -1173,7 +1195,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label,
             style: TextStyle(
               fontFamily: 'Outfit',
-              color: getTextColor(context),
+              color: isEnabled ? getTextColor(context) : getTextColor(context).withOpacity(0.38),
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
             ),
