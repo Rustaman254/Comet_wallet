@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../flavors.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
@@ -115,7 +116,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                         width: 200, // Adjusted size for better visibility
                         height: 200,
                         child: Image.asset(
-                          'assets/images/Logo.png',
+                          F.appFlavor == Flavor.cometWallet 
+                            ? 'assets/images/comet_logo.png' 
+                            : 'assets/images/Logo.png',
                           fit: BoxFit.contain,
                         ),
                       ),

@@ -55,8 +55,15 @@ android {
             applicationIdSuffix = ".sandbox"
             resValue("string", "app_name", "FusionFi Sandbox")
         }
+        create("cometWallet") {
+            dimension = "app"
+            applicationIdSuffix = ".cometWallet"
+            resValue("string", "app_name", "Comet Wallet")
+            resValue("string", "app_name", "FusionFi Sandbox")
+        }
         create("production") {
             dimension = "app"
+            resValue("string", "app_name", "FusionFi")
             resValue("string", "app_name", "FusionFi")
         }
     }
