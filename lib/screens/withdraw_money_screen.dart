@@ -12,6 +12,10 @@ import 'mobile_withdraw_screen.dart';
 import 'send_money_screen.dart';
 import 'send_mobile_number_screen.dart';
 import 'bank_withdraw_screen.dart';
+import '../services/vibration_service.dart';
+import '../utils/currency_utils.dart';
+import '../services/token_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WithdrawMoneyScreen extends StatefulWidget {
   const WithdrawMoneyScreen({super.key});
@@ -25,6 +29,9 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
   String selectedCurrency = 'KES';
   late PageController _balancePageController;
   int _currentBalancePage = 0;
+  bool _isBalanceVisible = true;
+  String? _userLocation;
+  final Set<String> _addedCurrencies = {};
 
   final List<Map<String, dynamic>> _withdrawMethods = [
     {
@@ -64,6 +71,20 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
     super.initState();
     _balancePageController = PageController();
     _balancePageController.addListener(_onBalancePageChanged);
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final location = await TokenService.getLocation();
+    final prefs = await SharedPreferences.getInstance();
+    final added = prefs.getStringList('added_currencies') ?? [];
+    
+    if (mounted) {
+      setState(() {
+        _userLocation = location;
+        _addedCurrencies.addAll(added);
+      });
+    }
   }
 
   @override
@@ -92,9 +113,21 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
         bool isLoading = state is WalletLoading;
 
         if (state is WalletLoaded) {
-          balances = List<Map<String, dynamic>>.from(state.balances);
+          final rawBalances = List<Map<String, dynamic>>.from(state.balances);
+          final localCurrency = CurrencyUtils.getDefaultCurrency(_userLocation);
+          balances = CurrencyUtils.filterAndSortBalances(
+            rawBalances: rawBalances,
+            localCurrency: localCurrency,
+            manuallyAddedCurrencies: _addedCurrencies,
+          );
         } else if (state is WalletBalanceUpdated) {
-          balances = List<Map<String, dynamic>>.from(state.balances);
+          final rawBalances = List<Map<String, dynamic>>.from(state.balances);
+          final localCurrency = CurrencyUtils.getDefaultCurrency(_userLocation);
+          balances = CurrencyUtils.filterAndSortBalances(
+            rawBalances: rawBalances,
+            localCurrency: localCurrency,
+            manuallyAddedCurrencies: _addedCurrencies,
+          );
         }
 
         // Get current balance info for method navigation
@@ -285,6 +318,7 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                           SizedBox(height: 16.h),
                                           Row(
                                             crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.start,
                                             children: [
                                               Text(
                                                 balance['symbol'] ?? (isUSDA ? '\$' : currency),
@@ -297,11 +331,36 @@ class _WithdrawMoneyScreenState extends State<WithdrawMoneyScreen> {
                                               ),
                                               SizedBox(width: 8.w),
                                               Text(
-                                                FormatUtils.formatAmount(amount),
+                                                _isBalanceVisible 
+                                                    ? FormatUtils.formatAmount(amount)
+                                                    : '••••••',
                                                 style: TextStyle(fontFamily: 'Outfit',
                                                   color: Colors.white,
                                                   fontSize: 32.sp,
                                                   fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(width: 12.w),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _isBalanceVisible = !_isBalanceVisible;
+                                                  });
+                                                  VibrationService.lightImpact();
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.all(4.r),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white.withValues(alpha: 0.1),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(
+                                                    _isBalanceVisible
+                                                        ? Icons.visibility_outlined
+                                                        : Icons.visibility_off_outlined,
+                                                    color: Colors.white,
+                                                    size: 16.sp,
+                                                  ),
                                                 ),
                                               ),
                                             ],

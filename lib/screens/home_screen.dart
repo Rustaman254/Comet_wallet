@@ -24,6 +24,7 @@ import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
 import '../widgets/usda_logo.dart';
 import '../utils/format_utils.dart';
+import '../utils/currency_utils.dart';
 import 'transaction_details_screen.dart';
 import 'package:heroicons/heroicons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -87,18 +88,19 @@ class _HomeScreenState extends State<HomeScreen> {
   void _loadCachedUserData() async {
     final name = await TokenService.getUserName();
     final kycVerified = await TokenService.getKycVerified();
+    final location = await TokenService.getLocation();
     
     if (mounted) {
       setState(() {
         _isKycApproved = kycVerified;
-        if (name != null && name.isNotEmpty) {
-          // Create a partial profile with just the name for immediate display
+        if (name != null || location != null) {
+          // Create a partial profile with just the name and location for immediate display
           _userProfile = UserProfile(
             id: 0,
-            name: name,
+            name: name ?? 'User',
             email: '',
             phone: '',
-            location: '',
+            location: location ?? '',
             kycVerified: kycVerified,
             isAccountActivated: false,
             activationFeePaid: false,
@@ -380,27 +382,13 @@ class _HomeScreenState extends State<HomeScreen> {
             var rawBalances = state is WalletLoaded ? List<Map<String, dynamic>>.from(state.balances) : 
                            (state is WalletBalanceUpdated ? List<Map<String, dynamic>>.from(state.balances) : <Map<String, dynamic>>[]);
             
-            // Filter balances: Only show Local, USDA, and manually added ones
-            final localCurrency = _userProfile?.location.toUpperCase() == 'KENYA' ? 'KES' : 
-                                 (_userProfile?.location.toUpperCase() == 'UGANDA' ? 'UGX' : 
-                                 (_userProfile?.location.toUpperCase() == 'TANZANIA' ? 'TZS' : 
-                                 (_userProfile?.location.toUpperCase() == 'RWANDA' ? 'RWF' : 'KES')));
-            
-            final balances = rawBalances.where((b) {
-              final curr = b['currency']?.toString().toUpperCase() ?? '';
-              return curr == localCurrency || curr == 'USDA' || _addedCurrencies.contains(curr);
-            }).toList();
-            
-            balances.sort((a, b) {
-              final currencyA = a['currency']?.toString() ?? '';
-              final currencyB = b['currency']?.toString() ?? '';
-              
-              if (currencyA == localCurrency) return -1;
-              if (currencyB == localCurrency) return 1;
-              if (currencyA == 'USDA') return -1;
-              if (currencyB == 'USDA') return 1;
-              return currencyA.compareTo(currencyB);
-            });
+            // Filter and Sort balances using centralized CurrencyUtils
+            final localCurrency = CurrencyUtils.getDefaultCurrency(_userProfile?.location);
+            final balances = CurrencyUtils.filterAndSortBalances(
+              rawBalances: rawBalances,
+              localCurrency: localCurrency,
+              manuallyAddedCurrencies: _addedCurrencies,
+            );
 
             final transactions = state is WalletLoaded ? state.transactions : 
                                (state is WalletBalanceUpdated ? state.transactions : <Transaction>[]);
@@ -789,12 +777,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 ],
                                                               ),
 
-                                                              const Spacer(),
+                                                              SizedBox(height: 24.h),
 
                                                               // MIDDLE ROW: Currency Symbol + Balance + Eye
-                                                              Expanded(
-                                                                child: Row(
+                                                                Row(
                                                                   crossAxisAlignment: CrossAxisAlignment.center,
+                                                                   mainAxisAlignment: MainAxisAlignment.start,
                                                                   children: [
                                                                   Text(
                                                                     balance['symbol'] ?? (isUSDA ? '\$' : currency),
@@ -817,8 +805,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     ),
                                                                   ),
                                                                    SizedBox(width: 12.w),
-                                                                    Flexible(
-                                                                      child: GestureDetector(
+                                                                      GestureDetector(
                                                                         onTap: () {
                                                                           setState(() {
                                                                             _isBalanceVisible = !_isBalanceVisible;
@@ -840,10 +827,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           ),
                                                                         ),
                                                                       ),
-                                                                    ),
-                                                                  ],
+                                                                  ]
                                                                 ),
-                                                              ),
 
                                                               const Spacer(),
 

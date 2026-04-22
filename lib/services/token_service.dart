@@ -13,7 +13,9 @@ class TokenService {
   static const String _balanceUsdaRawKey = 'balance_usda_raw';
   static const String _activationFeePaidKey = 'activation_fee_paid';
   static const String _isAccountActivatedKey = 'is_account_activated';
+  static const String _userLocationKey = 'user_location';
   static const String _kycVerifiedKey = 'kyc_verified';
+
 
   /// Save authentication token
   static Future<void> saveToken(String token) async {
@@ -130,6 +132,7 @@ class TokenService {
     await prefs.remove(_balanceUsdaRawKey);
     await prefs.remove(_activationFeePaidKey);
     await prefs.remove(_isAccountActivatedKey);
+    await prefs.remove(_userLocationKey);
     await prefs.remove(_kycVerifiedKey);
   }
 
@@ -165,6 +168,7 @@ class TokenService {
     required String email,
     required String phoneNumber,
     String? name,
+    String? location,
     String? cardanoAddress,
     double? balanceAda,
     double? balanceUsda,
@@ -182,6 +186,9 @@ class TokenService {
     ];
     if (name != null) {
       futures.add(prefs.setString(_userNameKey, name));
+    }
+    if (location != null) {
+      futures.add(prefs.setString(_userLocationKey, location));
     }
     if (cardanoAddress != null) {
       futures.add(prefs.setString(_cardanoAddressKey, cardanoAddress));
@@ -268,5 +275,17 @@ class TokenService {
   static Future<bool> getActivationFeePaid() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_activationFeePaidKey) ?? false;
+  }
+
+  /// Save user location
+  static Future<void> saveLocation(String location) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userLocationKey, location);
+  }
+
+  /// Get user location
+  static Future<String?> getLocation() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userLocationKey);
   }
 }

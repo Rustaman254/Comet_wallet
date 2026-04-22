@@ -5,6 +5,7 @@ import '../models/transaction.dart';
 import '../services/wallet_service.dart';
 import '../services/logger_service.dart';
 import '../services/token_service.dart';
+import '../utils/currency_utils.dart';
 import 'wallet_event.dart';
 import 'wallet_state.dart';
 
@@ -162,14 +163,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       final walletsList = balanceData['wallets'] as List<dynamic>? ?? [];
       final balancesMap = balanceData['balances'] as Map<String, dynamic>? ?? {};
       
+      final location = await TokenService.getLocation();
+      final localCurrency = CurrencyUtils.getDefaultCurrency(location);
+      
       // Use a Set to keep track of added currencies to avoid duplicates
       final addedCurrencies = <String>{};
       final balances = <Map<String, dynamic>>[];
 
       // 1. First, process the balances map (this is our primary source of truth as per requirements)
+      // 1. First, process the balances map
       if (balancesMap.isNotEmpty) {
         balancesMap.forEach((currency, balance) {
-          if (!addedCurrencies.contains(currency)) {
+          final amount = double.tryParse(balance?.toString() ?? '0') ?? 0.0;
+          
+          // Add if amount > 0 OR if it's one of the mandatory visible ones
+          if ((amount > 0 || currency == localCurrency || currency == 'USDA') && !addedCurrencies.contains(currency)) {
             balances.add({
               'currency': currency,
               'symbol': _getCurrencySymbol(currency),
@@ -183,13 +191,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       }
 
       // 2. Then, add any additional info from wallets list if not already present
-      // (Though balances map should cover all, wallets list might have more metadata if needed later)
       if (walletsList.isNotEmpty) {
         for (var wallet in walletsList) {
           final currency = wallet['currency'] as String? ?? 'USD';
           final balance = wallet['balance']?.toString() ?? '0.00';
-          
-          if (!addedCurrencies.contains(currency)) {
+          final amount = double.tryParse(balance) ?? 0.0;
+          final status = wallet['status']?.toString().toLowerCase();
+
+          // Add if amount > 0 OR if it's one of the mandatory visible ones
+          if ((amount > 0 || currency == localCurrency || currency == 'USDA') && status != 'inactive' && !addedCurrencies.contains(currency)) {
             balances.add({
               'currency': currency,
               'symbol': _getCurrencySymbol(currency),
@@ -198,13 +208,37 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
               'change': '+0.00',
             });
             addedCurrencies.add(currency);
-          } else {
-            // If already present, we trust the balances map more, 
-            // but we could update if wallets list is more specific.
-            // For now, as per user request, we stick to the balances map.
           }
         }
       }
+
+      // 3. Ensure mandatory visibility even if NOT in server response
+      final mandatoryCurrencies = {localCurrency, 'USDA'};
+      for (var currency in mandatoryCurrencies) {
+        if (!addedCurrencies.contains(currency)) {
+          balances.add({
+            'currency': currency,
+            'symbol': _getCurrencySymbol(currency),
+            'amount': '0.00',
+            'date': 'Today',
+            'change': '+0.00',
+          });
+          addedCurrencies.add(currency);
+        }
+      }
+
+      // 4. Sort: Local currency first, then USDA, then others alphabetical
+      balances.sort((a, b) {
+        final currencyA = a['currency'] as String;
+        final currencyB = b['currency'] as String;
+        
+        if (currencyA == localCurrency) return -1;
+        if (currencyB == localCurrency) return 1;
+        if (currencyA == 'USDA') return -1;
+        if (currencyB == 'USDA') return 1;
+        
+        return currencyA.compareTo(currencyB);
+      });
 
       // Fallback if absolutely nothing
       if (balances.isEmpty) {
