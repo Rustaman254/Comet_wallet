@@ -16,13 +16,24 @@ class AuthService {
   static String _extractErrorMessage(http.Response response) {
     try {
       final dynamic body = jsonDecode(response.body);
-      return _findErrorInObject(body) ?? 'Something went wrong, please try again.';
+      final extracted = _findErrorInObject(body);
+      if (extracted != null && extracted.isNotEmpty) return extracted;
     } catch (_) {
       // Body is not valid JSON
       if (response.body.isNotEmpty && response.body.length < 200) {
         return response.body;
       }
     }
+
+    // Fallback based on status code
+    if (response.statusCode == 401) {
+      return 'Invalid email or password. Please try again.';
+    } else if (response.statusCode == 404) {
+      return 'User account not found. Please check your email.';
+    } else if (response.statusCode == 422) {
+      return 'Invalid data provided. Please check your inputs.';
+    }
+    
     return 'Something went wrong, please try again.';
   }
 
@@ -155,6 +166,7 @@ class AuthService {
           final balanceAda = (userObj['balance_ada'] ?? 0.0).toDouble();
           final balanceUsda = (userObj['balance_usda'] ?? 0.0).toDouble();
           final balanceUsdaRaw = userObj['balance_usda_raw'];
+          final userLocation = userObj['location'] ?? location;
 
           // Save what we have, even if token is empty (waiting for login)
           if (token.isNotEmpty) {
@@ -164,6 +176,7 @@ class AuthService {
               email: userEmail,
               phoneNumber: phone,
               name: userName,
+              location: userLocation,
               cardanoAddress: cardanoAddress,
               balanceAda: balanceAda,
               balanceUsda: balanceUsda,
@@ -290,6 +303,7 @@ class AuthService {
           final kycVerified = userObj?['kyc_verified'] ?? false;
           final isAccountActivated = userObj?['is_account_activated'] ?? false;
           final activationFeePaid = userObj?['activation_fee_paid'] ?? false;
+          final userLocation = userObj?['location'];
 
           await TokenService.saveExtendedUserData(
             token: token,
@@ -297,6 +311,7 @@ class AuthService {
             email: userEmail,
             phoneNumber: phone,
             name: name,
+            location: userLocation,
             cardanoAddress: cardanoAddress,
             balanceAda: balanceAda,
             balanceUsda: balanceUsda,
@@ -428,7 +443,10 @@ class AuthService {
         );
 
         if (jsonResponse['user'] != null) {
-          return UserProfile.fromJson(jsonResponse['user']);
+          final profile = UserProfile.fromJson(jsonResponse['user']);
+          // Save location to TokenService
+          await TokenService.saveLocation(profile.location);
+          return profile;
         }
         return null;
       } else {

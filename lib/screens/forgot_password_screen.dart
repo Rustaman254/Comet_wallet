@@ -63,7 +63,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
         );
       } else {
-        _showError(data['message'] ?? 'Something went wrong. Please try again.');
+        String errorMessage = data['message'] ?? 'Something went wrong. Please try again.';
+        if (response.statusCode == 404) {
+          errorMessage = 'The email address provided is not registered.';
+        }
+        _showError(errorMessage);
       }
     } catch (_) {
       if (mounted) _showError('Connection error. Please check your internet connection.');

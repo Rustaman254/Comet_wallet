@@ -5,6 +5,7 @@ import '../models/esim_model.dart';
 import '../services/esim_service.dart';
 import '../services/toast_service.dart';
 import '../widgets/usda_logo.dart';
+import '../services/forex_service.dart';
 import 'esim_product_details_screen.dart';
 
 class ESimProductsScreen extends StatefulWidget {
@@ -20,25 +21,55 @@ class _ESimProductsScreenState extends State<ESimProductsScreen> {
   bool _isLoading = true;
   String _selectedRegion = 'All';
   final TextEditingController _searchController = TextEditingController();
+  double _usdToUsdaRate = 1.0;
+  bool _isRateLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchProducts();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() => _isLoading = true);
+    await Future.wait([
+      _fetchProducts(),
+      _fetchRate(),
+    ]);
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _fetchRate() async {
+    try {
+      final rate = await ForexService.getExchangeRate('USD', 'USDA');
+      if (mounted) {
+        setState(() {
+          _usdToUsdaRate = rate;
+          _isRateLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching rate: $e');
+      if (mounted) {
+        setState(() => _isRateLoading = false);
+      }
+    }
   }
 
   Future<void> _fetchProducts() async {
     try {
       final products = await ESimService.getProducts();
-      setState(() {
-        _allProducts = products;
-        _filteredProducts = products;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _allProducts = products;
+          _filteredProducts = products;
+        });
+      }
     } catch (e) {
       if (mounted) {
         ToastService().showError(context, 'Failed to load eSIM plans: $e');
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -235,13 +266,28 @@ class _ESimProductsScreenState extends State<ESimProductsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${((double.tryParse(product.price) ?? 0) * _usdToUsdaRate).toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontFamily: 'Outfit',
+                        color: primaryBrandColor,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    const USDALogo(size: 16),
+                  ],
+                ),
                 Text(
-                  '\$${product.price}',
+                  'USDA',
                   style: TextStyle(
                     fontFamily: 'Outfit',
-                    color: primaryBrandColor,
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white54 : Colors.black54,
+                    fontSize: 12.sp,
                   ),
                 ),
                 Icon(Icons.arrow_forward_ios, size: 14.sp, color: isDark ? Colors.white.withOpacity(0.24) : Colors.black.withOpacity(0.24)),

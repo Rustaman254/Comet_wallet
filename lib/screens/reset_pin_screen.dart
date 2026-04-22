@@ -4,6 +4,7 @@ import '../constants/colors.dart';
 import '../services/auth_service.dart';
 import '../services/toast_service.dart';
 import '../services/session_service.dart';
+import '../services/vibration_service.dart';
 
 class ResetPinScreen extends StatefulWidget {
   const ResetPinScreen({super.key});
@@ -56,7 +57,8 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                 if (_newPin == _confirmPin) {
                   setState(() => _currentStep = 2);
                 } else {
-                  ToastService().showError(context, 'PINs do not match');
+                  VibrationService.errorVibrate();
+                  ToastService().showError(context, 'PINs do not match. Please try again.');
                   setState(() {
                     _confirmPin = '';
                     _isConfirmingPin = false;
