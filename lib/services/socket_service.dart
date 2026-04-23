@@ -17,6 +17,9 @@ class SocketService {
   Timer? _pingTimer;
   
   bool _isConnected = false;
+  int _reconnectAttempts = 0;
+  final int _maxReconnectDelay = 30; // Max 30 seconds
+  
   final _eventController = StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get eventStream => _eventController.stream;
@@ -49,19 +52,21 @@ class SocketService {
         },
         onError: (error) {
           AppLogger.error(LogTags.payment, 'WebSocket error: $error');
+          _isConnected = false;
           _handleDisconnect();
         },
         onDone: () {
           AppLogger.debug(LogTags.payment, 'WebSocket connection closed');
+          _isConnected = false;
           _handleDisconnect();
         },
       );
 
-      _isConnected = true;
-      // Start a ping timer if the server requires explicit payload-based pings
-      // but usually web_socket_channel handles protocol pings if pingInterval is set.
+      // We don't set _isConnected = true yet. 
+      // We wait for the 'ws.connected' handshake or at least for the stream to open.
     } catch (e) {
       AppLogger.error(LogTags.payment, 'WebSocket connection error: $e');
+      _isConnected = false;
       _handleDisconnect();
     }
   }
@@ -73,6 +78,8 @@ class SocketService {
       
       if (message['type'] == 'ws.connected') {
         AppLogger.success(LogTags.payment, 'WebSocket handshake successful');
+        _isConnected = true;
+        _reconnectAttempts = 0; // Reset attempts on successful handshake
       }
       
       _eventController.add(message);
@@ -82,15 +89,26 @@ class SocketService {
   }
 
   void _handleDisconnect() {
-    _isConnected = false;
     _subscription?.cancel();
+    _subscription = null;
     _channel = null;
     
-    // Attempt reconnection after 5 seconds
     _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(const Duration(seconds: 5), () {
-      AppLogger.debug(LogTags.payment, 'Attempting to reconnect WebSocket...');
-      connect();
+    
+    // Exponential backoff
+    final delay = (_reconnectAttempts < 6) 
+        ? (1 << _reconnectAttempts) // 1, 2, 4, 8, 16, 32...
+        : _maxReconnectDelay;
+    
+    _reconnectAttempts++;
+    
+    AppLogger.debug(LogTags.payment, 'WebSocket scheduled reconnection in $delay seconds (attempt $_reconnectAttempts)');
+    
+    _reconnectTimer = Timer(Duration(seconds: delay), () {
+      if (!_isConnected) {
+        AppLogger.debug(LogTags.payment, 'Attempting to reconnect WebSocket...');
+        connect();
+      }
     });
   }
 
@@ -98,8 +116,11 @@ class SocketService {
     _reconnectTimer?.cancel();
     _pingTimer?.cancel();
     _subscription?.cancel();
+    _subscription = null;
     _channel?.sink.close();
+    _channel = null;
     _isConnected = false;
+    _reconnectAttempts = 0;
     AppLogger.debug(LogTags.payment, 'WebSocket disconnected manually');
   }
 

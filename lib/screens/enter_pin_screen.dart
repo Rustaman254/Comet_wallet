@@ -566,7 +566,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
                 if (mounted) Navigator.of(context).pop();
               },
             );
-          } else {
+          } else if (status == 'failed') {
             _overlayController?.showFailure(
               message: state.message.isNotEmpty ? state.message : 'Transaction failed. Please try again.',
               onRetry: () {
@@ -577,6 +577,7 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               },
             );
           }
+          // Ignore other intermediate statuses like 'pending', 'initiated', etc.
         }
       },
       child: Scaffold(

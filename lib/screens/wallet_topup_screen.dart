@@ -263,6 +263,8 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               'amount': 'credited', // We might not have the amount in the socket payload easily available here
               'currency': '',
             });
+          } else if (status == 'failed') {
+            ToastService().showError(context, state.message.isNotEmpty ? state.message : 'Transaction failed. Please try again.');
           }
         }
       },
