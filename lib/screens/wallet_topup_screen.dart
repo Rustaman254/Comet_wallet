@@ -13,6 +13,8 @@ import '../services/toast_service.dart';
 import '../services/token_service.dart';
 import '../utils/input_decoration.dart';
 import 'enter_pin_screen.dart';
+import 'transaction_details_screen.dart';
+import '../models/transaction.dart';
 
 class WalletTopupScreen extends StatefulWidget {
   const WalletTopupScreen({super.key});
@@ -162,14 +164,50 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  if (response['status'] == 'success' || response['status'] == 'completed') {
+                  final transactionId = response['transaction_id'];
+                  if (transactionId != null) {
+                    Navigator.pop(context); // Close sheet
+                    WalletService.getTransactionStatus(transactionId).then((transaction) {
+                      if (mounted) {
+                        if (transaction != null) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TransactionDetailsScreen(transaction: transaction),
+                            ),
+                          );
+                        } else {
+                          Navigator.pop(context, true); // Fallback to home
+                        }
+                      }
+                    });
+                  } else {
+                    Navigator.pop(context);
                     Navigator.pop(context, true);
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryBrandColor,
                   foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('View Transaction Details', style: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  if (response['status'] == 'success' || response['status'] == 'completed' || response['status'] == 'complete') {
+                    Navigator.pop(context, true);
+                  }
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: primaryBrandColor,
+                  side: const BorderSide(color: primaryBrandColor),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -211,9 +249,26 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    return BlocListener<WalletBloc, WalletState>(
+      listener: (context, state) {
+        if (state is TransactionStatusUpdate) {
+          final status = state.status.toLowerCase();
+          if (status == 'completed' || status == 'success' || status == 'complete') {
+            // Find the transaction in the list to get full details if possible
+            // or just use the info from the state
+            _showSuccessSheet({
+              'message': state.message,
+              'transaction_id': state.transactionId,
+              'status': state.status,
+              'amount': 'credited', // We might not have the amount in the socket payload easily available here
+              'currency': '',
+            });
+          }
+        }
+      },
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -248,7 +303,8 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           ],
         ),
       ),
-    );
+    ),
+   );
   }
 
   Widget _buildMobileTopupTab() {
@@ -268,7 +324,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 value: _selectedMobileProvider,
                 isExpanded: true,
                 dropdownColor: Theme.of(context).cardColor,
-                items: ['M-Pesa', 'T-Kash'].map((String value) {
+                items: ['M-Pesa', 'T-Kash', 'Bank'].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value, style: const TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.bold)),
@@ -350,7 +406,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 ],
               ),
             )
-          else
+          else if (_selectedMobileProvider == 'T-Kash')
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -381,6 +437,44 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                 const SizedBox(height: 24),
                 Text(
                   'Note: The account should be the user\'s mobile phone number.',
+                  style: TextStyle(
+                    fontFamily: 'Outfit',
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                  ),
+                ),
+              ],
+            )
+          else if (_selectedMobileProvider == 'Bank')
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildInfoCard('Deposit via Credit Bank', 'Follow these steps to deposit funds from your bank via Paybill.'),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildStepItem('1', 'Dial *334#'),
+                      _buildStepItem('2', 'Select Lipa na M-PESA'),
+                      _buildStepItem('3', 'Select Paybill'),
+                      _buildStepItem('4', 'Enter Business Number: 972700'),
+                      _buildStepItem('5', 'Enter Account Number: 0161007000237'),
+                      _buildStepItem('6', 'Enter Amount'),
+                      _buildStepItem('7', 'Enter your Pin and confirm the transaction'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Note: Ensure you use the correct business and account numbers as provided above.',
                   style: TextStyle(
                     fontFamily: 'Outfit',
                     fontSize: 14,

@@ -3,7 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 import '../constants/colors.dart';
+import '../services/session_service.dart';
+import 'enter_pin_screen.dart';
 import 'add_contact_screen.dart';
+import 'transaction_details_screen.dart';
+import '../models/transaction.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
@@ -17,6 +21,7 @@ import '../services/session_service.dart';
 import '../utils/input_decoration.dart';
 import '../widgets/usda_logo.dart';
 import '../widgets/currency_selection_sheet.dart';
+import '../widgets/transaction_result_overlay.dart';
 
 class SendMoneyScreen extends StatefulWidget {
   final String? initialEmail;
@@ -47,6 +52,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   int _currentBalancePage = 1;
   bool _isAmountFocused = false;
   bool _isLoading = false;
+  TransactionOverlayController? _overlayController;
 
   final List<String> _favorites = [];
   
@@ -148,7 +154,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     }
   }
 
-  Future<void> _handleTransfer() async {
+  void _handleTransfer() {
     SessionService.recordActivity();
     
     final email = _emailController.text.trim();
@@ -165,48 +171,22 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
-
-    try {
-      final response = await WalletService.transferWallet(
-        toEmail: email,
-        amount: amount,
-        currency: selectedCurrency,
-      );
-
-      if (mounted) {
-        context.read<WalletBloc>().add(SendMoney(
-          amount: amount,
-          recipientPhone: email,
-          transactionType: 'transfer',
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EnterPinScreen(
+          recipientName: email,
+          amount: amountText,
           currency: selectedCurrency,
-        ));
-
-        final successData = {
-          'message': 'Transfer Successful',
-          'status': 'SUCCESS',
-          'transfer': {
-            'to_user_name': response['user']?['name'] ?? email,
-            'to_user_email': response['user']?['email'] ?? email,
-            'amount': amount.toString(),
-            'currency': selectedCurrency,
-            'from_user_email': 'Me',
-          }
-        };
-        _showSuccessSheet(successData);
-      }
-    } catch (e) {
-      if (mounted) {
-        ToastService().showError(
-          context,
-          'Transfer failed. Please check the recipient details and balance, then try again.',
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+          description: 'Wallet Transfer',
+          onVerify: (pin) => WalletService.transferWallet(
+            toEmail: email,
+            amount: amount,
+            currency: selectedCurrency,
+            pin: pin,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _handleMobileTransfer() async {
@@ -227,6 +207,10 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     }
 
     setState(() => _isLoading = true);
+    _overlayController = TransactionOverlayController.show(
+      context,
+      initialMessage: 'Initiating mobile transfer…',
+    );
 
     try {
       final response = await WalletService.sendMoney(
@@ -244,24 +228,46 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           currency: _mobileCurrency,
         ));
 
-        final successData = {
-          'message': 'Mobile Transfer Successful',
-          'status': 'SUCCESS',
-          'transfer': {
-            'to_user_name': 'Mobile User',
-            'to_user_email': phone,
-            'amount': amount.toString(),
-            'currency': _mobileCurrency,
-            'from_user_email': 'Me',
-          }
-        };
-        _showSuccessSheet(successData);
+        final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
+
+        if (transactionId != null) {
+          _overlayController?.showLoading(message: 'Finalizing…');
+          WalletService.getTransactionStatus(transactionId.toString()).then((transaction) {
+            if (!mounted) return;
+            _overlayController?.showSuccess(
+              title: 'Mobile Transfer Successful!',
+              subtitle: 'Sent $_mobileCurrency ${FormatUtils.formatAmount(amount)} to $phone',
+              onAutoDismiss: () {
+                if (transaction != null) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (_) => TransactionDetailsScreen(
+                        transaction: transaction,
+                        fromTransaction: true,
+                      ),
+                    ),
+                    (route) => route.isFirst,
+                  );
+                } else {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
+              },
+            );
+          });
+        } else {
+          _overlayController?.showSuccess(
+            title: 'Mobile Transfer Successful!',
+            subtitle: 'Sent $_mobileCurrency ${FormatUtils.formatAmount(amount)} to $phone',
+            onAutoDismiss: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
-        ToastService().showError(
-          context,
-          'Mobile transfer failed. Please try again later.',
+        _overlayController?.showFailure(
+          message: 'Mobile transfer failed. Please try again later.',
+          onRetry: null,
+          onCancel: () => _overlayController?.dismiss(),
         );
       }
     } finally {
@@ -271,7 +277,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
     }
   }
 
-  Future<void> _handleUSDATransfer() async {
+  void _handleUSDATransfer() {
     SessionService.recordActivity();
     
     final address = _addressController.text.trim();
@@ -288,102 +294,17 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
-
-    try {
-      context.read<WalletBloc>().add(TransferUSDA(
-        recipientAddress: address,
-        amount: amount,
-      ));
-
-      final successData = {
-        'message': 'USDA Transfer Successful',
-        'status': 'SUCCESS',
-        'transfer': {
-          'to_user_name': 'Cardano Address',
-          'to_user_email': address,
-          'amount': amount.toString(),
-          'currency': 'USDA',
-          'from_user_email': 'Me',
-        }
-      };
-      
-      _showSuccessSheet(successData);
-    } catch (e) {
-      if (mounted) {
-        ToastService().showError(
-          context,
-          'USDA transfer failed. Please verify the address and try again.',
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  void _showSuccessSheet(Map<String, dynamic> response) {
-    final transfer = response['transfer'] ?? {};
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(24.r),
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark ? darkBackground : lightCardBackground,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.r),
-            topRight: Radius.circular(30.r),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EnterPinScreen(
+          recipientName: address,
+          amount: amountText,
+          currency: 'USDA',
+          description: 'USDA Transfer (Cardano)',
+          onVerify: (pin) => WalletService.transferUSDA(
+            recipientAddress: address,
+            amount: amount,
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80.r,
-              height: 80.r,
-              decoration: BoxDecoration(
-                color: primaryBrandColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.check_circle_outline, color: primaryBrandColor, size: 50.r),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              response['message'] ?? 'Transfer Successful',
-              style: TextStyle(fontFamily: 'Outfit',
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            _buildDetailRow('To', transfer['to_user_name'] ?? transfer['to_user_email'] ?? 'N/A'),
-            _buildDetailRow('Amount', '${transfer['amount']} ${transfer['currency']}'),
-            _buildDetailRow('Email', transfer['to_user_email'] ?? 'N/A'),
-            _buildDetailRow('Status', response['status']?.toUpperCase() ?? 'SUCCESS'),
-            SizedBox(height: 32.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryBrandColor,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                ),
-                child: Text('Done', style: TextStyle(fontFamily: 'Outfit',fontWeight: FontWeight.bold, fontSize: 16.sp)),
-              ),
-            ),
-            SizedBox(height: 16.h),
-          ],
         ),
       ),
     );

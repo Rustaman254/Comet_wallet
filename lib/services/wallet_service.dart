@@ -1059,16 +1059,29 @@ class WalletService {
   static Future<Transaction?> getTransactionStatus(String transactionId) async {
     try {
       final transactions = await fetchTransactionsList();
+      AppLogger.debug(
+        LogTags.payment,
+        'Searching for transaction status',
+        data: {
+          'target_id': transactionId,
+          'available_ids': transactions.map((t) => t.transactionId).toList(),
+        },
+      );
+      
+      // Try to find by transactionId (string) or internal id (int)
       return transactions.firstWhere(
-        (t) => t.transactionId == transactionId,
+        (t) => t.transactionId == transactionId || t.id.toString() == transactionId,
         orElse: () => throw Exception('Transaction not found'),
       );
     } catch (e) {
-      AppLogger.error(
-        LogTags.payment,
-        'Error checking transaction status',
-        data: {'transaction_id': transactionId, 'error': e.toString()},
-      );
+      // Don't log full error for "not found" as it's expected during polling
+      if (!e.toString().contains('Transaction not found')) {
+        AppLogger.error(
+          LogTags.payment,
+          'Error checking transaction status',
+          data: {'transaction_id': transactionId, 'error': e.toString()},
+        );
+      }
       return null;
     }
   }

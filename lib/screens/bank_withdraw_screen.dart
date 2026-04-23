@@ -9,7 +9,13 @@ import '../constants/api_constants.dart';
 import '../constants/colors.dart';
 import '../services/authenticated_http_client.dart';
 import '../services/toast_service.dart';
+import '../services/wallet_service.dart';
+import '../services/vibration_service.dart';
+import 'enter_pin_screen.dart';
+import 'transaction_details_screen.dart';
+import '../models/transaction.dart';
 import '../utils/input_decoration.dart';
+import '../widgets/transaction_result_overlay.dart';
 
 // ─────────────────────────────────────────────
 // Model
@@ -95,7 +101,6 @@ class _BankWithdrawScreenState extends State<BankWithdrawScreen> {
   List<Bank> _filteredBanks = [];
   Bank? _selectedBank;
   bool _loadingBanks = true;
-  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -323,14 +328,23 @@ class _BankWithdrawScreenState extends State<BankWithdrawScreen> {
       final account = _accountController.text.trim();
       final narration = _narrationController.text.trim();
 
-      context.read<WalletBloc>().add(
-            BankTransfer(
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EnterPinScreen(
+            recipientName: _selectedBank!.bankName,
+            amount: _amountController.text,
+            currency: 'KES',
+            description: narration.isEmpty ? 'Bank Withdrawal' : narration,
+            onVerify: (pin) => WalletService.bankTransfer(
               amount: amount,
               bankCode: _selectedBank!.bankCode,
               creditAccount: account,
-              narration: narration.isEmpty ? 'pesalink to John Doe' : narration,
+              narration: narration.isEmpty ? 'Bank Withdrawal' : narration,
+              pin: pin,
             ),
-          );
+          ),
+        ),
+      );
     }
   }
 
@@ -340,274 +354,244 @@ class _BankWithdrawScreenState extends State<BankWithdrawScreen> {
     final textColor = isDark ? Colors.white : Colors.black87;
     final subTextColor = isDark ? Colors.white54 : Colors.black45;
 
-    return BlocListener<WalletBloc, WalletState>(
-      listener: (context, state) {
-        if (state is BankTransferLoading) {
-          setState(() => _isSubmitting = true);
-        } else if (state is BankTransferSuccess) {
-          setState(() => _isSubmitting = false);
-          ToastService().showSuccess(context, state.message);
-          // Navigate back after small delay to let toast be seen
-          Future.delayed(const Duration(seconds: 1), () {
-            if (mounted) Navigator.of(context).pop();
-          });
-        } else if (state is WalletError) {
-          setState(() => _isSubmitting = false);
-          ToastService().showError(context, state.message);
-        }
-      },
-      child: Stack(
-        children: [
-          Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              centerTitle: true,
-              leading: IconButton(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.black.withValues(alpha: 0.3)
-                        : Colors.grey[200],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.arrow_back,
-                      color: textColor, size: 20),
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              title: Text(
-                'Withdraw to Bank Account',
-                style: TextStyle(
-                  fontFamily: 'Outfit',
-                  color: textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.sp,
-                ),
-              ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : Colors.grey[200],
+              shape: BoxShape.circle,
             ),
-            body: SafeArea(
-              child: _loadingBanks && _banks.isEmpty
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                          color: primaryBrandColor))
-                  : SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.all(24.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // ── Amount ──────────────
-                            Text(
-                              'Amount (KES)',
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                color: textColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _amountController,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                      decimal: true),
-                              style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  color: textColor,
-                                  fontSize: 16),
-                              decoration: buildUnderlineInputDecoration(
-                                context: context,
-                                label: '',
-                                hintText: '0.00',
-                                prefixIcon: Text(
-                                  '  KES',
-                                  style: TextStyle(
-                                    fontFamily: 'Outfit',
-                                    color: primaryBrandColor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              validator: (v) {
-                                if (v == null || v.isEmpty) {
-                                  return 'Please enter an amount';
-                                }
-                                final d = double.tryParse(v);
-                                if (d == null || d <= 0) {
-                                  return 'Please enter a valid amount';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 28),
-
-                            // ── Bank Picker ──────────
-                            Text(
-                              'Select Bank',
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                color: textColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: _showBankPicker,
-                              child: Container(
-                                padding: EdgeInsets.only(bottom: 12.h),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      color: isDark
-                                          ? Colors.white24
-                                          : Colors.grey[400]!,
-                                      width: 1,
-                                    ),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.account_balance_outlined,
-                                        color: primaryBrandColor, size: 22),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        _selectedBank?.bankName ??
-                                            'Tap to select a bank',
-                                        style: TextStyle(
-                                          fontFamily: 'Outfit',
-                                          color: _selectedBank != null
-                                              ? textColor
-                                              : subTextColor,
-                                          fontSize: 15.sp,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(Icons.keyboard_arrow_down,
-                                        color: subTextColor),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 28),
-
-                            // ── Account Number ───────
-                            Text(
-                              'Account Number',
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                color: textColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _accountController,
-                              keyboardType: TextInputType.number,
-                              style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  color: textColor,
-                                  fontSize: 16),
-                              decoration: buildUnderlineInputDecoration(
-                                context: context,
-                                label: '',
-                                hintText: 'e.g. 00106534176150',
-                                prefixIcon: Icon(
-                                    Icons.credit_card_outlined,
-                                    color: primaryBrandColor),
-                              ),
-                              validator: (v) {
-                                if (v == null || v.trim().isEmpty) {
-                                  return 'Please enter the account number';
-                                }
-                                if (v.trim().length < 8) {
-                                  return 'Account number too short';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 28),
-
-                            // ── Narration ────────────
-                            Text(
-                              'Narration (Optional)',
-                              style: TextStyle(
-                                fontFamily: 'Outfit',
-                                color: textColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _narrationController,
-                              maxLength: 100,
-                              style: TextStyle(
-                                  fontFamily: 'Outfit',
-                                  color: textColor,
-                                  fontSize: 16),
-                              decoration: buildUnderlineInputDecoration(
-                                context: context,
-                                label: '',
-                                hintText: 'e.g. pesalink to John Doe',
-                                prefixIcon: Icon(
-                                    Icons.description_outlined,
-                                    color: primaryBrandColor),
-                              ),
-                            ),
-                            const SizedBox(height: 48),
-
-                            // ── Submit ───────────────
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed:
-                                    _isSubmitting ? null : _submit,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryBrandColor,
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 16.h),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(12),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Text(
-                                  'Withdraw',
-                                  style: TextStyle(
-                                    fontFamily: 'Outfit',
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+            child: Icon(Icons.arrow_back,
+                color: textColor, size: 20),
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Withdraw to Bank Account',
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            color: textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 18.sp,
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: _loadingBanks && _banks.isEmpty
+            ? const Center(
+                child: CircularProgressIndicator(
+                    color: primaryBrandColor))
+            : SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(24.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ── Amount ──────────────
+                      Text(
+                        'Amount (KES)',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          color: textColor,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-            ),
-          ),
-          // Loading overlay while submitting
-          if (_isSubmitting)
-            const ModalBarrier(
-                dismissible: false, color: Colors.black38),
-          if (_isSubmitting)
-            const Center(
-              child: CircularProgressIndicator(color: primaryBrandColor),
-            ),
-        ],
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _amountController,
+                        keyboardType:
+                            const TextInputType.numberWithOptions(
+                                decimal: true),
+                        style: TextStyle(
+                            fontFamily: 'Outfit',
+                            color: textColor,
+                            fontSize: 16),
+                        decoration: buildUnderlineInputDecoration(
+                          context: context,
+                          label: '',
+                          hintText: '0.00',
+                          prefixIcon: Text(
+                            '  KES',
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              color: primaryBrandColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) {
+                            return 'Please enter an amount';
+                          }
+                          final d = double.tryParse(v);
+                          if (d == null || d <= 0) {
+                            return 'Please enter a valid amount';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 28),
+
+                      // ── Bank Picker ──────────
+                      Text(
+                        'Select Bank',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          color: textColor,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                          onTap: _showBankPicker,
+                          child: Container(
+                            padding: EdgeInsets.only(bottom: 12.h),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: isDark
+                                      ? Colors.white24
+                                      : Colors.grey[400]!,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.account_balance_outlined,
+                                    color: primaryBrandColor, size: 22),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _selectedBank?.bankName ??
+                                        'Tap to select a bank',
+                                    style: TextStyle(
+                                      fontFamily: 'Outfit',
+                                      color: _selectedBank != null
+                                          ? textColor
+                                          : subTextColor,
+                                      fontSize: 15.sp,
+                                    ),
+                                  ),
+                                ),
+                                Icon(Icons.keyboard_arrow_down,
+                                    color: subTextColor),
+                              ],
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 28),
+
+                      // ── Account Number ───────
+                      Text(
+                        'Account Number',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          color: textColor,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _accountController,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(
+                            fontFamily: 'Outfit',
+                            color: textColor,
+                            fontSize: 16),
+                        decoration: buildUnderlineInputDecoration(
+                          context: context,
+                          label: '',
+                          hintText: 'e.g. 00106534176150',
+                          prefixIcon: Icon(
+                              Icons.credit_card_outlined,
+                              color: primaryBrandColor),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) {
+                            return 'Please enter the account number';
+                          }
+                          if (v.trim().length < 8) {
+                            return 'Account number too short';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 28),
+
+                      // ── Narration ────────────
+                      Text(
+                        'Narration (Optional)',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          color: textColor,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _narrationController,
+                        maxLength: 100,
+                        style: TextStyle(
+                            fontFamily: 'Outfit',
+                            color: textColor,
+                            fontSize: 16),
+                        decoration: buildUnderlineInputDecoration(
+                          context: context,
+                          label: '',
+                          hintText: 'e.g. pesalink to John Doe',
+                          prefixIcon: Icon(
+                              Icons.description_outlined,
+                              color: primaryBrandColor),
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+
+                      // ── Submit ───────────────
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryBrandColor,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 16.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Withdraw',
+                            style: TextStyle(
+                              fontFamily: 'Outfit',
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
       ),
     );
   }

@@ -327,4 +327,5 @@ class LogTags {
   static const String camera = 'CAMERA';
   static const String storage = 'STORAGE';
   static const String validation = 'VALIDATION';
+  static const String socket = 'SOCKET';
 }

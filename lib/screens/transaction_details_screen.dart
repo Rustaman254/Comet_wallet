@@ -10,21 +10,39 @@ import 'webview_screen.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
   final Transaction transaction;
+  final bool fromTransaction;
 
-  const TransactionDetailsScreen({super.key, required this.transaction});
+  const TransactionDetailsScreen({
+    super.key,
+    required this.transaction,
+    this.fromTransaction = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     
-    return Scaffold(
+    return PopScope(
+      canPop: !fromTransaction,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && fromTransaction) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+      },
+      child: Scaffold(
       backgroundColor: isDark ? darkBackground : Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (fromTransaction) {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            } else {
+              Navigator.pop(context);
+            }
+          },
         ),
         title: Text(
           'Transaction Details',
@@ -51,6 +69,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 

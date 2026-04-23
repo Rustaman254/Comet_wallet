@@ -51,7 +51,7 @@ class Wallet {
       case 'GBP':
         return 'GBP';
       case 'KES':
-        return 'KSH';
+        return 'KES';
       case 'UGX':
         return 'UGX';
       case 'TZS':

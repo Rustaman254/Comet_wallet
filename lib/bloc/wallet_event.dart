@@ -160,3 +160,26 @@ class TrackTransactionStatus extends WalletEvent {
   @override
   List<Object?> get props => [transactionId];
 }
+
+class OnSocketTransactionUpdated extends WalletEvent {
+  final Map<String, dynamic> payload;
+
+  const OnSocketTransactionUpdated({
+    required this.payload,
+  });
+
+  @override
+  List<Object?> get props => [payload];
+}
+
+class OnSocketBalanceUpdated extends WalletEvent {
+  final Map<String, dynamic> payload;
+
+  const OnSocketBalanceUpdated({
+    required this.payload,
+  });
+
+  @override
+  List<Object?> get props => [payload];
+}
+

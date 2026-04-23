@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/transaction.dart';
 import '../services/wallet_service.dart';
 import '../services/logger_service.dart';
 import '../services/token_service.dart';
+import '../services/socket_service.dart';
 import '../utils/currency_utils.dart';
 import 'wallet_event.dart';
 import 'wallet_state.dart';
@@ -31,10 +33,38 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     on<TillPayment>(_onTillPayment);
     on<BankTransfer>(_onBankTransfer);
     on<TrackTransactionStatus>(_onTrackTransactionStatus);
+    on<OnSocketTransactionUpdated>(_onSocketTransactionUpdated);
+    on<OnSocketBalanceUpdated>(_onSocketBalanceUpdated);
+    
+    // Initialize Socket
+    _initSocket();
     
     // Initial fetch
     add(const FetchSupportedCurrencies());
   }
+
+  StreamSubscription? _socketSubscription;
+
+  void _initSocket() {
+    SocketService().connect();
+    _socketSubscription = SocketService().eventStream.listen((event) {
+      if (event['type'] == 'transaction.updated') {
+        add(OnSocketTransactionUpdated(payload: event['payload'] ?? {}));
+      } else if (event['type'] == 'wallet.balance.updated') {
+        add(OnSocketBalanceUpdated(payload: event['payload'] ?? {}));
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _socketSubscription?.cancel();
+    _refreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    return super.close();
+  }
+
+
 
   Future<void> _onFetchSupportedCurrencies(
     FetchSupportedCurrencies event,
@@ -77,6 +107,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
         if (hasToken) {
           add(const FetchWalletDataFromServer());
           add(const StartAutoRefresh());
+          SocketService().connect();
         }
       });
     } else if (state == AppLifecycleState.paused) {
@@ -143,6 +174,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     if (shouldShowLoading) {
       emit(const WalletLoading());
     }
+
+    // Ensure socket is connected when we fetch fresh data
+    SocketService().connect();
 
     try {
       AppLogger.debug(
@@ -306,7 +340,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       case 'GBP':
         return 'GBP';
       case 'KES':
-        return 'KSH';
+        return 'KES';
       case 'UGX':
         return 'USh';
       case 'TZS':
@@ -978,15 +1012,27 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     int retryCount = 0;
 
     while (retryCount < maxRetries) {
+      AppLogger.debug(LogTags.payment, 'Polling transaction status…', data: {
+        'transaction_id': event.transactionId,
+        'retry': retryCount + 1,
+      });
       final transaction = await WalletService.getTransactionStatus(event.transactionId);
       
       if (transaction != null) {
         final status = transaction.status.toLowerCase();
-        if (status == 'completed' || status == 'success' || status == 'failed') {
+        AppLogger.debug(LogTags.payment, 'Transaction found in list', data: {
+          'id': transaction.transactionId,
+          'status': status,
+        });
+
+        if (status == 'completed' || status == 'success' || status == 'complete' || status == 'failed') {
+          // Normalize status
+          final normalizedStatus = (status == 'complete') ? 'completed' : status;
+          
           emit(TransactionStatusUpdate(
             transactionId: event.transactionId,
-            status: transaction.status,
-            message: 'Transaction $status',
+            status: normalizedStatus,
+            message: 'Transaction $normalizedStatus',
           ));
           
           // Refresh data to get final balances
@@ -1006,10 +1052,38 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     ));
   }
 
-  @override
-  Future<void> close() {
-    WidgetsBinding.instance.removeObserver(this);
-    _refreshTimer?.cancel();
-    return super.close();
+  void _onSocketTransactionUpdated(
+    OnSocketTransactionUpdated event,
+    Emitter<WalletState> emit,
+  ) {
+    final payload = event.payload;
+    final transactionId = payload['transaction_id']?.toString() ?? payload['id']?.toString();
+    final status = payload['status']?.toString();
+
+    if (transactionId == null || status == null) return;
+
+    final lowerStatus = status.toLowerCase();
+    final normalizedStatus = (lowerStatus == 'complete') ? 'completed' : lowerStatus;
+
+    AppLogger.debug(LogTags.payment, 'Processing socket transaction update', data: payload);
+
+    // Emit status update for the UI/Overlays to react
+    emit(TransactionStatusUpdate(
+      transactionId: transactionId,
+      status: normalizedStatus,
+      message: 'Transaction $normalizedStatus',
+    ));
+
+    // Refresh everything to ensure UI is in sync
+    add(const FetchWalletDataFromServer());
+  }
+
+  void _onSocketBalanceUpdated(
+    OnSocketBalanceUpdated event,
+    Emitter<WalletState> emit,
+  ) {
+    AppLogger.debug(LogTags.payment, 'Processing socket balance update', data: event.payload);
+    // When balance updates, just fetch fresh data to ensure all cards are correct
+    add(const FetchWalletDataFromServer());
   }
 }

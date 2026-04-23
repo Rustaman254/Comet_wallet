@@ -134,7 +134,8 @@ class _SwapScreenState extends State<SwapScreen> {
   /// Always returns the latest rate fetched from the API.
   double _lookupRate(String from, String to) {
     if (from == to) return 1.0;
-    return _currentRate;
+    // Round to 2 decimal places as requested
+    return double.parse(_currentRate.toStringAsFixed(2));
   }
 
   void _fetchExchangeRate() {
@@ -447,6 +448,7 @@ class _SwapScreenState extends State<SwapScreen> {
         builder: (context, state) {
           final isLoading = state is WalletSwapLoading;
           final fromBalance = _getBalanceForCurrency(_fromCurrency, state);
+          final toBalance = _getBalanceForCurrency(_toCurrency, state);
           final isDark = Theme.of(context).brightness == Brightness.dark;
           final swapCardColor = isDark ? const Color(0xFF28333F) : getCardColor(context);
 
@@ -530,7 +532,7 @@ class _SwapScreenState extends State<SwapScreen> {
                             _buildSwapCard(
                               isFrom: false,
                               currency: _toCurrency,
-                              balance: 0, // Not needed for "To" card usually
+                              balance: toBalance,
                               controller: TextEditingController(
                                 text: _calculateEstimatedAmount().toStringAsFixed(2),
                               ),
@@ -601,7 +603,7 @@ class _SwapScreenState extends State<SwapScreen> {
                               : _currentRate > 0 || _fromCurrency == _toCurrency
                                 ? Flexible(
                                     child: Text(
-                                      '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(4)} $_toCurrency',
+                                      '1 $_fromCurrency = ${_lookupRate(_fromCurrency, _toCurrency).toStringAsFixed(2)} $_toCurrency',
                                       style: TextStyle(
                                         fontFamily: 'Outfit',
                                         fontSize: 14.sp,

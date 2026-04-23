@@ -81,9 +81,41 @@ class Transaction {
       ownership: json['ownership'],
       user: json['user'] != null ? TransactionUser.fromJson(json['user']) : null,
       explorerLink: json['explorerLink'],
-      transactionId: json['transactionId'] ?? '',
+      transactionId: json['transactionId']?.toString() ?? json['transaction_id']?.toString() ?? '',
       createdAt: parsedDate,
       currency: json['currency'] ?? 'KES',
+    );
+  }
+
+  Transaction copyWith({
+    int? id,
+    int? userID,
+    double? amount,
+    String? phoneNumber,
+    String? status,
+    String? transactionType,
+    int? ownershipID,
+    dynamic ownership,
+    TransactionUser? user,
+    String? explorerLink,
+    String? transactionId,
+    DateTime? createdAt,
+    String? currency,
+  }) {
+    return Transaction(
+      id: id ?? this.id,
+      userID: userID ?? this.userID,
+      amount: amount ?? this.amount,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      status: status ?? this.status,
+      transactionType: transactionType ?? this.transactionType,
+      ownershipID: ownershipID ?? this.ownershipID,
+      ownership: ownership ?? this.ownership,
+      user: user ?? this.user,
+      explorerLink: explorerLink ?? this.explorerLink,
+      transactionId: transactionId ?? this.transactionId,
+      createdAt: createdAt ?? this.createdAt,
+      currency: currency ?? this.currency,
     );
   }
 }

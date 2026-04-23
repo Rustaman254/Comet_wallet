@@ -2,6 +2,10 @@ import '../flavors.dart';
 
 class ApiConstants {
   static String get baseUrl => F.baseUrl;
+  static String get wsUrl {
+    final base = baseUrl.replaceFirst('http', 'ws');
+    return '$base/ws';
+  }
   static String get loginEndpoint => '$baseUrl/users/login';
   static String get registerEndpoint => '$baseUrl/users/create';
   static String get userProfileEndpoint => '$baseUrl/users/profile';

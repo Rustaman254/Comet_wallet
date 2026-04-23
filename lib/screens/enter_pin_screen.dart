@@ -16,6 +16,9 @@ import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
 import '../bloc/wallet_state.dart';
 import 'sign_in_screen.dart';
+import 'transaction_details_screen.dart';
+import '../models/transaction.dart';
+import '../widgets/transaction_result_overlay.dart';
 
 class EnterPinScreen extends StatefulWidget {
   final String recipientName;
@@ -42,9 +45,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   String _pin = '';
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
-  bool _isVerifying = false; // for loader dialog state
+  bool _isVerifying = false;
   String? _processingTransactionId;
-  String _loaderText = 'Verifying PIN...';
+  TransactionOverlayController? _overlayController;
   
   // Biometric state
   bool _biometricsAvailable = false;
@@ -124,135 +127,93 @@ class _EnterPinScreenState extends State<EnterPinScreen>
     }
   }
 
-  Future<void> _showLoaderDialog() async {
-    setState(() {
-      _isVerifying = true;
-    });
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black.withValues(alpha: 0.6),
-      builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Center(
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-             constraints: BoxConstraints(
-                minWidth: 150.w,
-                maxWidth: 280.w,
-              ),
-              padding: EdgeInsets.all(24.r),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[900] : Colors.white,
-                borderRadius: BorderRadius.circular(16.r),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator(color: primaryBrandColor),
-                  SizedBox(height: 16.h),
-                    Text(
-                    _loaderText,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Outfit',
-                      color: isDark ? Colors.white : Colors.black,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+  void _showOverlay({String message = 'Processing Transaction…'}) {
+    setState(() => _isVerifying = true);
+    _overlayController = TransactionOverlayController.show(
+      context,
+      initialMessage: message,
     );
   }
 
-  Future<void> _hideLoaderDialog() async {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    }
-    if (mounted) {
-      setState(() {
-        _isVerifying = false;
-      });
+  void _dismissOverlay() {
+    _overlayController?.dismiss();
+    _overlayController = null;
+    if (mounted) setState(() => _isVerifying = false);
+  }
+
+  void _navigateToTransactionDetails(Transaction transaction) {
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => TransactionDetailsScreen(
+          transaction: transaction,
+          fromTransaction: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleTransactionResponse(Map<String, dynamic> response) async {
+    final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
+
+    if (transactionId != null) {
+      _overlayController?.showLoading(message: 'Processing Transaction…');
+      setState(() => _processingTransactionId = transactionId.toString());
+      context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: transactionId.toString()));
+    } else {
+      // No transaction ID returned — show inline success
+      VibrationService.lightImpact();
+      _overlayController?.showSuccess(
+        title: 'Transaction Successful',
+        subtitle: '${widget.currency} ${widget.amount} withdrawn to ${widget.recipientName}',
+        onAutoDismiss: () {
+          if (mounted) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
+      );
     }
   }
 
   Future<void> _verifyPin() async {
-    await _showLoaderDialog();
+    _showOverlay(message: 'Processing Transaction…');
 
     try {
       // 1. Verify PIN via API
       final isVerified = await AuthService.verifyPin(_pin);
-      
+
       if (!isVerified) {
-        await _hideLoaderDialog();
+        _dismissOverlay();
         if (mounted) {
           VibrationService.errorVibrate();
           _shakeController.forward(from: 0.0).then((_) {
-            if (mounted) {
-              setState(() {
-                _pin = '';
-              });
-            }
+            if (mounted) setState(() => _pin = '');
           });
-          ToastService().showError(
-            context,
-            'Wrong PIN.',
-          );
+          ToastService().showError(context, 'Wrong PIN.');
         }
         return;
       }
 
       // 2. PIN Verified, proceed with transaction
+      _overlayController?.showLoading(message: 'Processing Transaction…');
+
       Map<String, dynamic> response;
       if (widget.onVerify != null) {
         response = await widget.onVerify!(_pin);
       } else {
-        final amount =
-            double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
+        final amount = double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
         response = await WalletService.sendMoney(
           recipientPhone: widget.recipientName,
           amount: amount,
           currency: widget.currency,
           description: widget.description,
+          pin: _pin,
         );
       }
 
-      await _hideLoaderDialog();
-
-      if (mounted) {
-        VibrationService.lightImpact();
-        
-        final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
-        
-        if (transactionId != null) {
-          setState(() {
-            _processingTransactionId = transactionId;
-            _loaderText = 'Processing Transaction...';
-          });
-          
-          context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: transactionId));
-          // We don't hide the loader yet, the BlocListener will handle it
-        } else {
-           await _hideLoaderDialog();
-           _showSuccessDialog('N/A');
-        }
-      }
+      if (mounted) await _handleTransactionResponse(response);
     } on TokenExpiredException catch (_) {
-      await _hideLoaderDialog();
+      _dismissOverlay();
       if (!mounted) return;
       await TokenService.logout();
       if (mounted && context.mounted) {
@@ -263,25 +224,21 @@ class _EnterPinScreenState extends State<EnterPinScreen>
         );
       }
     } catch (e) {
-      await _hideLoaderDialog();
       if (!mounted) return;
-
       final errorMsg = e.toString();
 
-      // Detect network errors (SocketException, host lookup failures, etc.)
       final isNetworkError = e is SocketException ||
           e is http.ClientException ||
           errorMsg.contains('SocketException') ||
           errorMsg.contains('Failed host lookup') ||
           errorMsg.contains('Connection refused');
 
-      // Handle session expiration or network errors
       if (isNetworkError ||
           errorMsg.contains('401') ||
           errorMsg.contains('expired') ||
           errorMsg.contains('unauthorized')) {
-        ToastService()
-            .showError(context, 'Session expired. Please login again.');
+        _dismissOverlay();
+        ToastService().showError(context, 'Session expired. Please login again.');
         await TokenService.logout();
         if (mounted) {
           Navigator.of(context).pushAndRemoveUntil(
@@ -290,48 +247,44 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           );
         }
       } else {
-        // Show user-friendly error dialog for all other errors
-        VibrationService.errorVibrate();
-        setState(() {
-          _pin = '';
-        });
-        _shakeController.forward(from: 0.0);
-        
-        if (mounted) {
-          final friendlyMessage = _parseErrorMessage(errorMsg);
-          _showFailureDialog(friendlyMessage);
-        }
+        final friendlyMessage = _parseErrorMessage(errorMsg);
+        _overlayController?.showFailure(
+          message: friendlyMessage,
+          onRetry: () {
+            setState(() => _pin = '');
+          },
+          onCancel: () {
+            if (mounted) Navigator.of(context).pop();
+          },
+        );
       }
     }
   }
 
   Future<void> _onBiometric() async {
     if (!_biometricsAvailable || _isVerifying) return;
-    
+
     try {
       final authenticated = await BiometricService.authenticate(
         localizedReason: 'Authenticate to authorize this payment',
         useErrorDialogs: true,
         stickyAuth: true,
       ).timeout(
-        const Duration(seconds: 30), 
+        const Duration(seconds: 30),
         onTimeout: () => false,
       );
-      
+
       if (!mounted) return;
 
       if (authenticated) {
-        // Biometric authentication successful, proceed with payment
-        await _showLoaderDialog();
-        
+        _showOverlay(message: 'Processing Transaction…');
+
         try {
-          // Process the transaction
           Map<String, dynamic> response;
           if (widget.onVerify != null) {
             response = await widget.onVerify!(_pin);
           } else {
-            final amount =
-                double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
+            final amount = double.tryParse(widget.amount.replaceAll(',', '')) ?? 0.0;
             response = await WalletService.sendMoney(
               recipientPhone: widget.recipientName,
               amount: amount,
@@ -340,26 +293,9 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             );
           }
 
-          await _hideLoaderDialog();
-
-          if (mounted) {
-            VibrationService.lightImpact();
-            final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
-            
-            if (transactionId != null) {
-              setState(() {
-                _processingTransactionId = transactionId;
-                _loaderText = 'Processing Transaction...';
-              });
-              
-              context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: transactionId));
-            } else {
-               await _hideLoaderDialog();
-               _showSuccessDialog('N/A');
-            }
-          }
+          if (mounted) await _handleTransactionResponse(response);
         } on TokenExpiredException catch (_) {
-          await _hideLoaderDialog();
+          _dismissOverlay();
           if (!mounted) return;
           await TokenService.logout();
           if (mounted && context.mounted) {
@@ -370,25 +306,21 @@ class _EnterPinScreenState extends State<EnterPinScreen>
             );
           }
         } catch (e) {
-          await _hideLoaderDialog();
           if (!mounted) return;
-
           final errorMsg = e.toString();
 
-          // Detect network errors
           final isNetworkError = e is SocketException ||
               e is http.ClientException ||
               errorMsg.contains('SocketException') ||
               errorMsg.contains('Failed host lookup') ||
               errorMsg.contains('Connection refused');
-          
-          // Handle session expiration or network errors
+
           if (isNetworkError ||
               errorMsg.contains('401') ||
               errorMsg.contains('expired') ||
               errorMsg.contains('unauthorized')) {
-            ToastService()
-                .showError(context, 'Session expired. Please login again.');
+            _dismissOverlay();
+            ToastService().showError(context, 'Session expired. Please login again.');
             await TokenService.logout();
             if (mounted) {
               Navigator.of(context).pushAndRemoveUntil(
@@ -397,223 +329,53 @@ class _EnterPinScreenState extends State<EnterPinScreen>
               );
             }
           } else {
-            VibrationService.errorVibrate();
-            if (mounted) {
-              final friendlyMessage = _parseErrorMessage(errorMsg);
-              _showFailureDialog(friendlyMessage);
-            }
+            final friendlyMessage = _parseErrorMessage(errorMsg);
+            _overlayController?.showFailure(
+              message: friendlyMessage,
+              onRetry: () {
+                setState(() => _pin = '');
+              },
+              onCancel: () {
+                if (mounted) Navigator.of(context).pop();
+              },
+            );
           }
         }
       } else {
-        // Biometric authentication failed or cancelled
         VibrationService.errorVibrate();
       }
     } catch (e) {
       debugPrint('Biometric error: $e');
-      if (mounted) {
-        VibrationService.errorVibrate();
-      }
+      if (mounted) VibrationService.errorVibrate();
     }
   }
 
-  void _showFailureDialog(String errorMessage) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80.r,
-              height: 80.r,
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 50.r,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'Transaction Failed',
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                color: Colors.white,
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              errorMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                color: Colors.white70,
-                fontSize: 14.sp,
-              ),
-            ),
-            SizedBox(height: 30.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                child: Text(
-                  'Try Again',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _parseErrorMessage(String error) {
-    // Remove "Exception:" prefix
     String cleaned = error.replaceAll('Exception:', '').trim();
-    
-    // Handle common error patterns
-    if (cleaned.toLowerCase().contains('socketexception') || 
+
+    if (cleaned.toLowerCase().contains('socketexception') ||
         cleaned.toLowerCase().contains('failed host lookup') ||
         cleaned.toLowerCase().contains('network')) {
       return 'Network connection error. Please check your internet connection and try again.';
     }
-    
-    if (cleaned.toLowerCase().contains('insufficient')) {
-      return cleaned;
-    }
-    
+    if (cleaned.toLowerCase().contains('insufficient')) return cleaned;
     if (cleaned.toLowerCase().contains('timeout')) {
       return 'Request timed out. Please try again.';
     }
-    
-    if (cleaned.toLowerCase().contains('not found') || 
+    if (cleaned.toLowerCase().contains('not found') ||
         cleaned.toLowerCase().contains('404')) {
       return 'Recipient not found. Please verify the phone number.';
     }
-    
-    if (cleaned.toLowerCase().contains('unauthorized') || 
+    if (cleaned.toLowerCase().contains('unauthorized') ||
         cleaned.toLowerCase().contains('401')) {
       return 'Session expired. Please login again.';
     }
-    
-    // If we have a clean message without technical jargon, use it
-    if (!cleaned.contains('error:') && 
-        !cleaned.contains('Error:') && 
+    if (!cleaned.contains('error:') &&
+        !cleaned.contains('Error:') &&
         cleaned.length < 100) {
       return cleaned;
     }
-    
-    // Default fallback
     return 'Transaction failed. Please try again or contact support.';
-  }
-
-  void _showSuccessDialog(String transactionId) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: Colors.black,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 80.r,
-              height: 80.r,
-              decoration: BoxDecoration(
-                color: primaryBrandColor.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check_circle,
-                color: primaryBrandColor,
-                size: 50.r,
-              ),
-            ),
-            SizedBox(height: 20.h),
-            Text(
-              'Payment Successful!',
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                color: Colors.white,
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10.h),
-            Text(
-              '${widget.currency} ${widget.amount}',
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                color: primaryBrandColor,
-                fontSize: 24.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 5.h),
-            Text(
-              'sent to ${widget.recipientName}',
-              style: TextStyle(
-                fontFamily: 'Outfit',
-                color: Colors.white70,
-                fontSize: 14.sp,
-              ),
-            ),
-            SizedBox(height: 30.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryBrandColor,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                child: Text(
-                  'Done',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildDashPin() {
@@ -768,12 +530,52 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   Widget build(BuildContext context) {
     return BlocListener<WalletBloc, WalletState>(
       listener: (context, state) {
-        if (state is TransactionStatusUpdate && state.transactionId == _processingTransactionId) {
-          _hideLoaderDialog();
-          if (state.status.toLowerCase() == 'completed' || state.status.toLowerCase() == 'success') {
-            _showSuccessDialog(state.transactionId);
+        if (state is TransactionStatusUpdate &&
+            state.transactionId == _processingTransactionId) {
+          final status = state.status.toLowerCase();
+          if (status == 'completed' || status == 'success' || status == 'complete') {
+            WalletService.getTransactionStatus(state.transactionId)
+                .then((transaction) {
+              if (!mounted) return;
+              if (transaction != null) {
+                _overlayController?.showSuccess(
+                  title: 'Transaction Successful',
+                  subtitle:
+                      '${widget.currency} ${widget.amount} withdrawn to ${widget.recipientName}',
+                  onAutoDismiss: () => _navigateToTransactionDetails(transaction),
+                );
+              } else {
+                _overlayController?.showSuccess(
+                  title: 'Transaction Successful',
+                  subtitle:
+                      '${widget.currency} ${widget.amount} withdrawn to ${widget.recipientName}',
+                  onAutoDismiss: () {
+                    if (mounted) {
+                      Navigator.of(context)
+                          .popUntil((route) => route.isFirst);
+                    }
+                  },
+                );
+              }
+            });
+          } else if (status == 'timeout') {
+            _overlayController?.showFailure(
+              message: 'Request timed out. ${state.message}',
+              onRetry: () => _verifyPin(),
+              onCancel: () {
+                if (mounted) Navigator.of(context).pop();
+              },
+            );
           } else {
-            _showFailureDialog(state.message);
+            _overlayController?.showFailure(
+              message: state.message.isNotEmpty ? state.message : 'Transaction failed. Please try again.',
+              onRetry: () {
+                setState(() => _pin = '');
+              },
+              onCancel: () {
+                if (mounted) Navigator.of(context).pop();
+              },
+            );
           }
         }
       },
