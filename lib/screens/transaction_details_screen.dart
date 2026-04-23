@@ -66,6 +66,10 @@ class TransactionDetailsScreen extends StatelessWidget {
               SizedBox(height: 32.h),
               _buildExplorerButton(context),
             ],
+            if (fromTransaction) ...[
+              SizedBox(height: 24.h),
+              _buildDoneButton(context),
+            ],
           ],
         ),
       ),
@@ -293,6 +297,32 @@ class TransactionDetailsScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(12.r),
           ),
           elevation: 0,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDoneButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryBrandColor,
+          side: const BorderSide(color: primaryBrandColor),
+          padding: EdgeInsets.symmetric(vertical: 16.h),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+        ),
+        child: const Text(
+          'Done',
+          style: TextStyle(
+            fontFamily: 'Outfit',
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
