@@ -228,14 +228,18 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
           currency: _mobileCurrency,
         ));
 
-        final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
+        final transactionId = response['transaction_id'] ?? 
+                             response['gateway_transaction_id'] ?? 
+                             response['transactionId'] ?? 
+                             response['id'];
 
         if (transactionId != null) {
+          final idStr = transactionId.toString();
           _overlayController?.showLoading(message: 'Finalizing…');
-          WalletService.getTransactionStatus(transactionId.toString()).then((transaction) {
+          WalletService.getTransactionStatus(idStr).then((transaction) {
             if (!mounted) return;
             _overlayController?.showSuccess(
-              title: 'Mobile Transfer Successful!',
+              title: 'Withdrawal Successful',
               subtitle: 'Sent $_mobileCurrency ${FormatUtils.formatAmount(amount)} to $phone',
               onAutoDismiss: () {
                 if (transaction != null) {

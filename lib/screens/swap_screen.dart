@@ -259,7 +259,11 @@ class _SwapScreenState extends State<SwapScreen> {
                 ),
               ),
               SizedBox(height: 8.h),
-              ...state.balances.entries.map((entry) {
+              ...state.balances.entries
+                  .where((entry) => 
+                      entry.key == state.fromCurrency || 
+                      entry.key == state.toCurrency)
+                  .map((entry) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 4.h),
                   child: Row(
