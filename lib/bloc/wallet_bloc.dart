@@ -48,10 +48,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
   void _initSocket() {
     SocketService().connect();
     _socketSubscription = SocketService().eventStream.listen((event) {
-      if (event['type'] == 'transaction.updated') {
-        add(OnSocketTransactionUpdated(payload: event['payload'] ?? {}));
-      } else if (event['type'] == 'wallet.balance.updated') {
-        add(OnSocketBalanceUpdated(payload: event['payload'] ?? {}));
+      final type = event['type']?.toString();
+      final payload = event['payload'] ?? event['data'] ?? {};
+      
+      if (type == 'transaction.updated') {
+        add(OnSocketTransactionUpdated(payload: payload));
+      } else if (type == 'wallet.balance.updated' || 
+                 type == 'balance.updated') {
+        // USDA balance is NOT updated via WebSockets, only Fiat.
+        // We still add the event, and the handler will distinguish by currency.
+        add(OnSocketBalanceUpdated(payload: payload));
       }
     });
   }
@@ -684,18 +690,28 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
       );
 
       if (result['status'] == 'success') {
-        // Extract actual balances from the API response exactly as returned
+        // Extract actual balances from the API response
         final double balanceUsda = double.tryParse(result['balance_usda']?.toString() ?? '0') ?? 0.0;
         final Map<String, double> balancesMap = {};
         
+        // Initialize with existing balances from state to ensure completeness
+        for (final b in balances) {
+          final curr = b['currency']?.toString();
+          final amt = double.tryParse(b['amount']?.toString() ?? b['balance']?.toString() ?? '0.0') ?? 0.0;
+          if (curr != null) {
+            balancesMap[curr] = amt;
+          }
+        }
+
+        // Update with fresh balances from the API response
         if (result['balances'] is Map) {
           (result['balances'] as Map).forEach((key, value) {
             balancesMap[key.toString()] = double.tryParse(value.toString()) ?? 0.0;
           });
         }
         
-        // Also include USDA in the balances map if it's not there
-        if (!balancesMap.containsKey('USDA')) {
+        // Also ensure USDA is updated specifically if returned at top level
+        if (result.containsKey('balance_usda')) {
           balancesMap['USDA'] = balanceUsda;
         }
 
@@ -710,7 +726,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
           explorerLink: result['explorer_link'],
         ));
         
-        // Fetch fresh data from server to sync all other states
+        // Fetch fresh data from server to sync all other states (history, etc.)
         add(const FetchWalletDataFromServer());
       } else {
         emit(WalletError(message: result['message'] ?? 'Swap failed'));
@@ -1082,8 +1098,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     OnSocketBalanceUpdated event,
     Emitter<WalletState> emit,
   ) {
-    AppLogger.debug(LogTags.payment, 'Processing socket balance update', data: event.payload);
-    // When balance updates, just fetch fresh data to ensure all cards are correct
+    final payload = event.payload;
+    AppLogger.debug(LogTags.payment, 'Processing socket balance update', data: payload);
+    
+    // Optimistically update the state if payload has specific currency balance
+    final currency = payload['currency']?.toString();
+    final newBalance = payload['amount'] ?? payload['balance'] ?? payload['new_balance'];
+    
+    // Only update fiat balances in real-time. USDA is handled via API/Polling.
+    if (currency != null && currency != 'USDA' && newBalance != null) {
+      final amount = double.tryParse(newBalance.toString()) ?? 0.0;
+      add(UpdateBalance(currency: currency, amount: amount));
+    }
+    
+    // Always refresh all data from server as fallback and for USDA
     add(const FetchWalletDataFromServer());
   }
 }

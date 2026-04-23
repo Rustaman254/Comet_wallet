@@ -158,6 +158,17 @@ class _SwapScreenState extends State<SwapScreen> {
       balances = state.balances;
     } else if (state is WalletSwapLoading) {
       balances = state.balances;
+    } else if (state is WalletSwapSuccess) {
+      // WalletSwapSuccess uses a Map<String, double>
+      final amount = state.balances[currency];
+      if (amount != null) return amount;
+      
+      // If not in the success state map, try the cached balances
+      final balance = _lastKnownBalances.firstWhere(
+        (b) => b['currency'] == currency,
+        orElse: () => {'amount': '0.0'},
+      );
+      return double.tryParse(balance['amount']?.toString() ?? '0.0') ?? 0.0;
     }
 
     // Cache balances whenever we have valid data
