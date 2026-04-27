@@ -7,6 +7,7 @@ import '../constants/colors.dart';
 import '../widgets/usda_logo.dart';
 import '../utils/format_utils.dart';
 import 'webview_screen.dart';
+import 'main_wrapper.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
   final Transaction transaction;
@@ -26,7 +27,10 @@ class TransactionDetailsScreen extends StatelessWidget {
       canPop: !fromTransaction,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && fromTransaction) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const MainWrapper(initialIndex: 0)),
+            (route) => false,
+          );
         }
       },
       child: Scaffold(
@@ -38,7 +42,10 @@ class TransactionDetailsScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
           onPressed: () {
             if (fromTransaction) {
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const MainWrapper(initialIndex: 0)),
+                (route) => false,
+              );
             } else {
               Navigator.pop(context);
             }
@@ -307,7 +314,10 @@ class TransactionDetailsScreen extends StatelessWidget {
       width: double.infinity,
       child: OutlinedButton(
         onPressed: () {
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const MainWrapper(initialIndex: 0)),
+            (route) => false,
+          );
         },
         style: OutlinedButton.styleFrom(
           foregroundColor: primaryBrandColor,
