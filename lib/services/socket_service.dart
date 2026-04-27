@@ -21,8 +21,10 @@ class SocketService {
   final int _maxReconnectDelay = 30; // Max 30 seconds
   
   final _eventController = StreamController<Map<String, dynamic>>.broadcast();
+  final _connectionController = StreamController<bool>.broadcast();
 
   Stream<Map<String, dynamic>> get eventStream => _eventController.stream;
+  Stream<bool> get connectionStatusStream => _connectionController.stream;
   bool get isConnected => _isConnected;
 
   Future<void> connect() async {
@@ -58,6 +60,7 @@ class SocketService {
         onDone: () {
           AppLogger.debug(LogTags.payment, 'WebSocket connection closed');
           _isConnected = false;
+          _connectionController.add(false);
           _handleDisconnect();
         },
       );
@@ -79,6 +82,7 @@ class SocketService {
       if (message['type'] == 'ws.connected') {
         AppLogger.success(LogTags.payment, 'WebSocket handshake successful');
         _isConnected = true;
+        _connectionController.add(true);
         _reconnectAttempts = 0; // Reset attempts on successful handshake
       }
       
@@ -124,8 +128,22 @@ class SocketService {
     AppLogger.debug(LogTags.payment, 'WebSocket disconnected manually');
   }
 
+  void sendMessage(Map<String, dynamic> message) {
+    if (_isConnected && _channel != null) {
+      try {
+        _channel!.sink.add(jsonEncode(message));
+        AppLogger.debug(LogTags.payment, 'WebSocket message sent: ${message['type'] ?? 'unknown'}');
+      } catch (e) {
+        AppLogger.error(LogTags.payment, 'Error sending WebSocket message: $e');
+      }
+    } else {
+      AppLogger.warning(LogTags.payment, 'Cannot send WebSocket message: Not connected');
+    }
+  }
+
   void dispose() {
     disconnect();
     _eventController.close();
+    _connectionController.close();
   }
 }

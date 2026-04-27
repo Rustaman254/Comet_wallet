@@ -259,7 +259,11 @@ class _SwapScreenState extends State<SwapScreen> {
                 ),
               ),
               SizedBox(height: 8.h),
-              ...state.balances.entries.map((entry) {
+              ...state.balances.entries
+                  .where((entry) => 
+                      entry.key == state.fromCurrency || 
+                      entry.key == state.toCurrency)
+                  .map((entry) {
                 return Padding(
                   padding: EdgeInsets.symmetric(vertical: 4.h),
                   child: Row(
@@ -793,14 +797,37 @@ class _SwapScreenState extends State<SwapScreen> {
                 ),
               ),
               Flexible(
-                child: Text(
-                  'Bal: ${balance.toStringAsFixed(2)} $currency',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 14.sp,
-                    color: getSecondaryTextColor(context),
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isFrom)
+                      GestureDetector(
+                        onTap: () {
+                          controller.text = balance.toStringAsFixed(2);
+                        },
+                        child: Text(
+                          'Max',
+                          style: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: primaryBrandColor,
+                          ),
+                        ),
+                      ),
+                    if (isFrom) SizedBox(width: 8.w),
+                    Flexible(
+                      child: Text(
+                        'Bal: ${balance.toStringAsFixed(2)} $currency',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 14.sp,
+                          color: getSecondaryTextColor(context),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

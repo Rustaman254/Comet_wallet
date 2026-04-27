@@ -154,12 +154,16 @@ class _EnterPinScreenState extends State<EnterPinScreen>
   }
 
   Future<void> _handleTransactionResponse(Map<String, dynamic> response) async {
-    final transactionId = response['transaction_id'] ?? response['gateway_transaction_id'];
+    final transactionId = response['transaction_id'] ?? 
+                         response['gateway_transaction_id'] ?? 
+                         response['transactionId'] ?? 
+                         response['id'];
 
     if (transactionId != null) {
+      final idStr = transactionId.toString();
       _overlayController?.showLoading(message: 'Processing Transaction…');
-      setState(() => _processingTransactionId = transactionId.toString());
-      context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: transactionId.toString()));
+      setState(() => _processingTransactionId = idStr);
+      context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: idStr));
     } else {
       // No transaction ID returned — show inline success
       VibrationService.lightImpact();
@@ -233,8 +237,13 @@ class _EnterPinScreenState extends State<EnterPinScreen>
           errorMsg.contains('Failed host lookup') ||
           errorMsg.contains('Connection refused');
 
-      if (isNetworkError ||
-          errorMsg.contains('401') ||
+      if (isNetworkError) {
+        _dismissOverlay();
+        ToastService().showError(context, 'Connection error. Please check your internet.');
+        return;
+      }
+
+      if (errorMsg.contains('401') ||
           errorMsg.contains('expired') ||
           errorMsg.contains('unauthorized')) {
         _dismissOverlay();

@@ -283,16 +283,11 @@ class _VerifyPinScreenState extends State<VerifyPinScreen>
           e.toString().contains('Connection refused');
 
       if (isNetworkError) {
-        // Treat as session expiry — logout and redirect to login
-        await TokenService.logout();
+        // Just show error and allow retry — DO NOT LOGOUT
         if (mounted && context.mounted) {
           ToastService().showError(
             context,
-            'Session expired. Please login again.',
-          );
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const SignInScreen()),
-            (route) => false,
+            'Connection error. Please check your internet.',
           );
         }
         return;

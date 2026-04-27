@@ -44,17 +44,30 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
   }
 
   StreamSubscription? _socketSubscription;
+  StreamSubscription? _connectionSubscription;
 
   void _initSocket() {
     SocketService().connect();
+    
+    // Listen for connection state changes to adjust polling
+    _connectionSubscription = SocketService().connectionStatusStream.listen((isConnected) {
+      AppLogger.debug(LogTags.payment, 'WebSocket connectivity changed: ${isConnected ? 'Connected' : 'Disconnected'}');
+      // Restart auto-refresh to apply new frequency based on connection status
+      add(const StartAutoRefresh());
+    });
+
     _socketSubscription = SocketService().eventStream.listen((event) {
       final type = event['type']?.toString();
       final payload = event['payload'] ?? event['data'] ?? {};
       
-      if (type == 'transaction.updated') {
+      if (type == 'ws.connected') {
+        // Request initial balances over WebSocket when connected
+        SocketService().sendMessage({'type': 'get_balances'});
+      } else if (type == 'transaction.updated') {
         add(OnSocketTransactionUpdated(payload: payload));
       } else if (type == 'wallet.balance.updated' || 
-                 type == 'balance.updated') {
+                 type == 'balance.updated' ||
+                 type == 'wallet.balances') {
         // USDA balance is NOT updated via WebSockets, only Fiat.
         // We still add the event, and the handler will distinguish by currency.
         add(OnSocketBalanceUpdated(payload: payload));
@@ -65,6 +78,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
   @override
   Future<void> close() {
     _socketSubscription?.cancel();
+    _connectionSubscription?.cancel();
     _refreshTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     return super.close();
@@ -609,14 +623,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     );
 
     _refreshTimer?.cancel();
+    
+    // Determine polling frequency based on WebSocket status
+    // 60 seconds if connected (just for USDA/Transactions), 20 seconds if fallback needed
+    final isSocketConnected = SocketService().isConnected;
+    final pollInterval = isSocketConnected ? 60 : 20;
+
+    AppLogger.debug(
+      LogTags.payment,
+      'Starting auto-refresh timer (Interval: ${pollInterval}s, WebSocket: ${isSocketConnected ? 'Connected' : 'Fallback Mode'})',
+    );
+
     _refreshTimer = Timer.periodic(
-      const Duration(seconds: 30),
+      Duration(seconds: pollInterval),
       (_) async {
         final hasToken = await TokenService.isAuthenticated();
         if (hasToken) {
           AppLogger.debug(
             LogTags.payment,
-            'Auto-refresh triggered',
+            'Auto-refresh triggered (${isSocketConnected ? 'Socket Mode' : 'Fallback Mode'})',
           );
           add(const FetchWalletDataFromServer());
         } else {
@@ -1101,17 +1126,47 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> with WidgetsBindingObser
     final payload = event.payload;
     AppLogger.debug(LogTags.payment, 'Processing socket balance update', data: payload);
     
-    // Optimistically update the state if payload has specific currency balance
+    bool hasFiatUpdate = false;
+    bool hasUSDAUpdate = false;
+
+    // 1. Check for multiple balances (e.g., from get_balances response)
+    final balances = payload['balances'];
+    if (balances != null && balances is Map) {
+      balances.forEach((curr, bal) {
+        final currency = curr.toString();
+        final amount = double.tryParse(bal.toString()) ?? 0.0;
+        
+        if (currency != 'USDA') {
+          add(UpdateBalance(currency: currency, amount: amount));
+          hasFiatUpdate = true;
+        } else {
+          hasUSDAUpdate = true;
+        }
+      });
+    }
+
+    // 2. Check for single balance update
     final currency = payload['currency']?.toString();
     final newBalance = payload['amount'] ?? payload['balance'] ?? payload['new_balance'];
     
-    // Only update fiat balances in real-time. USDA is handled via API/Polling.
-    if (currency != null && currency != 'USDA' && newBalance != null) {
+    if (currency != null && newBalance != null) {
       final amount = double.tryParse(newBalance.toString()) ?? 0.0;
-      add(UpdateBalance(currency: currency, amount: amount));
+      if (currency != 'USDA') {
+        add(UpdateBalance(currency: currency, amount: amount));
+        hasFiatUpdate = true;
+      } else {
+        hasUSDAUpdate = true;
+      }
     }
     
-    // Always refresh all data from server as fallback and for USDA
-    add(const FetchWalletDataFromServer());
+    // Always refresh all data from server ONLY if USDA changed or if no fiat update found
+    // (USDA and Transactions still need HTTP as they aren't fully socket-driven yet)
+    if (hasUSDAUpdate || !hasFiatUpdate) {
+      add(const FetchWalletDataFromServer());
+    } else {
+      // If ONLY fiat changed, we already optimistically updated the balances.
+      // We might still want to refresh transactions occasionally, but not every balance tick.
+      AppLogger.debug(LogTags.payment, 'Fiat balances updated via WebSocket, skipped HTTP refresh');
+    }
   }
 }

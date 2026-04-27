@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +34,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
   bool _isLoading = false;
   String? _userPhoneNumber;
   String? _cardanoAddress;
+  Timer? _redirectTimer;
 
   final List<Map<String, String>> _countryCodes = [
     {'code': '+254', 'country': 'Kenya'},
@@ -164,6 +166,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  _redirectTimer?.cancel();
                   final transactionId = response['transaction_id'];
                   if (transactionId != null) {
                     Navigator.pop(context); // Close sheet
@@ -173,7 +176,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TransactionDetailsScreen(transaction: transaction),
+                              builder: (context) => TransactionDetailsScreen(transaction: transaction, fromTransaction: true),
                             ),
                           );
                         } else {
@@ -200,6 +203,7 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () {
+                  _redirectTimer?.cancel();
                   Navigator.pop(context);
                   if (response['status'] == 'success' || response['status'] == 'completed' || response['status'] == 'complete') {
                     Navigator.pop(context, true);
@@ -218,7 +222,34 @@ class _WalletTopupScreenState extends State<WalletTopupScreen> {
           ],
         ),
       ),
-    );
+    ).then((_) {
+      _redirectTimer?.cancel();
+    });
+
+    // Auto-redirect after 3 seconds if it's a success and we have a transaction ID
+    if (response['transaction_id'] != null) {
+      _redirectTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted && Navigator.of(context).canPop()) {
+          final transactionId = response['transaction_id'];
+          // Use the current context safely
+          Navigator.pop(context); // Close sheet
+          WalletService.getTransactionStatus(transactionId).then((transaction) {
+            if (mounted) {
+              if (transaction != null) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TransactionDetailsScreen(transaction: transaction, fromTransaction: true),
+                  ),
+                );
+              } else {
+                Navigator.pop(context, true); // Fallback to home
+              }
+            }
+          });
+        }
+      });
+    }
   }
 
   Widget _buildDetailRow(String label, String value) {

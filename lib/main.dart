@@ -19,6 +19,8 @@ import 'services/session_service.dart';
 import 'bloc/wallet_bloc.dart';
 import 'bloc/wallet_event.dart';
 import 'screens/splash_screen.dart';
+import 'bloc/connectivity/connectivity_bloc.dart';
+import 'widgets/no_internet_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,10 +62,17 @@ class MyApp extends StatelessWidget {
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
-            return BlocProvider(
-              create: (context) => WalletBloc()
-                ..add(const FetchWalletDataFromServer())
-                ..add(const StartAutoRefresh()),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => WalletBloc()
+                    ..add(const FetchWalletDataFromServer())
+                    ..add(const StartAutoRefresh()),
+                ),
+                BlocProvider(
+                  create: (context) => ConnectivityBloc(),
+                ),
+              ],
               child: Listener(
                 onPointerDown: (_) => SessionService.recordActivity(),
                 onPointerMove: (_) => SessionService.recordActivity(),
@@ -143,6 +152,14 @@ class MyApp extends StatelessWidget {
             ),
           ),
           home: const SplashScreen(),
+          builder: (context, child) {
+            return Stack(
+              children: [
+                if (child != null) child,
+                const NoInternetOverlay(),
+              ],
+            );
+          },
                 ),
               ),
             );
@@ -152,6 +169,8 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
 
 class OnboardingWrapper extends StatefulWidget {
   const OnboardingWrapper({super.key});
