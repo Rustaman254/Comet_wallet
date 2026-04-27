@@ -797,14 +797,37 @@ class _SwapScreenState extends State<SwapScreen> {
                 ),
               ),
               Flexible(
-                child: Text(
-                  'Bal: ${balance.toStringAsFixed(2)} $currency',
-                  style: TextStyle(
-                    fontFamily: 'Outfit',
-                    fontSize: 14.sp,
-                    color: getSecondaryTextColor(context),
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isFrom)
+                      GestureDetector(
+                        onTap: () {
+                          controller.text = balance.toStringAsFixed(2);
+                        },
+                        child: Text(
+                          'Max',
+                          style: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                            color: primaryBrandColor,
+                          ),
+                        ),
+                      ),
+                    if (isFrom) SizedBox(width: 8.w),
+                    Flexible(
+                      child: Text(
+                        'Bal: ${balance.toStringAsFixed(2)} $currency',
+                        style: TextStyle(
+                          fontFamily: 'Outfit',
+                          fontSize: 14.sp,
+                          color: getSecondaryTextColor(context),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
