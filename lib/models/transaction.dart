@@ -63,6 +63,8 @@ class Transaction {
         parsedDate = DateTime.parse(json['CreatedAt']);
       } else if (json['created_at'] != null) {
         parsedDate = DateTime.parse(json['created_at']);
+      } else if (json['created at'] != null) {
+        parsedDate = DateTime.parse(json['created at']);
       } else {
         parsedDate = DateTime.now();
       }

@@ -21,6 +21,7 @@ import 'bloc/wallet_event.dart';
 import 'screens/splash_screen.dart';
 import 'bloc/connectivity/connectivity_bloc.dart';
 import 'widgets/no_internet_overlay.dart';
+import 'bloc/ticketing/ticketing_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,6 +72,9 @@ class MyApp extends StatelessWidget {
                 ),
                 BlocProvider(
                   create: (context) => ConnectivityBloc(),
+                ),
+                BlocProvider(
+                  create: (context) => TicketingBloc(),
                 ),
               ],
               child: Listener(

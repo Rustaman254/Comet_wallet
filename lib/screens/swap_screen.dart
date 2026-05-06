@@ -712,13 +712,6 @@ class _SwapScreenState extends State<SwapScreen> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                           isDense: true,
-                          suffixText: currency,
-                          suffixStyle: TextStyle(
-                            fontFamily: 'Outfit',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w500,
-                            color: getSecondaryTextColor(context),
-                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) return 'Required';
@@ -743,7 +736,7 @@ class _SwapScreenState extends State<SwapScreen> {
                         },
                       )
                       : Text(
-                        '${controller.text.isEmpty || controller.text == '0.00' ? '0' : controller.text} $currency',
+                        controller.text.isEmpty || controller.text == '0.00' ? '0' : controller.text,
                         style: TextStyle(
                           fontFamily: 'Outfit',
                           fontSize: 32.sp,

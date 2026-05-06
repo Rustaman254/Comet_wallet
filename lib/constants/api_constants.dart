@@ -62,6 +62,16 @@ class ApiConstants {
   static String get esimProductsEndpoint => '$baseUrl/esim/products';
   static String getEsimProductDetailsEndpoint(int id) => '$baseUrl/esim/products/$id';
   static String get esimOrderRequestEndpoint => '$baseUrl/esim/orders/request';
-  static String get esimOrderCompleteEndpoint => '$baseUrl/esim/orders/complete';
+  static String get esimOrderCompleteEndpoint => '$baseUrl/orders/complete';
   static String getOwnershipDeleteEndpoint(int id) => '$baseUrl/ownership/delete/$id';
+
+  // Ticketing endpoints
+  static String get createTicketEndpoint => '$baseUrl/tickets/create';
+  static String get createGuestTicketEndpoint => '$baseUrl/tickets/create-guest';
+  static String get myTicketsEndpoint => '$baseUrl/tickets/my-tickets';
+  static String getTicketDetailsEndpoint(String ticketId) => '$baseUrl/tickets/ticket/$ticketId';
+  
+  // Admin Ticketing endpoints
+  static String get adminTicketsEndpoint => '$baseUrl/tickets/admin/tickets';
+  static String getAdminTicketDetailsEndpoint(String ticketId) => '$baseUrl/tickets/admin/tickets/$ticketId';
 }

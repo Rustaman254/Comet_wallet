@@ -27,8 +27,9 @@ class F {
       case Flavor.sandbox:
         return 'https://sandbox.fusionfi.io/api/v1';
       case Flavor.production:
-      case Flavor.cometWallet:
         return 'https://api.fusionfi.io/api/v1';
+      case Flavor.cometWallet:
+        return 'https://api.yeshara.network';
       default:
         return 'https://api.fusionfi.io/api/v1';
     }
@@ -40,8 +41,9 @@ class F {
       case Flavor.sandbox:
         return 'https://sandbox.fusionfi.io';
       case Flavor.production:
+        return 'https://api.fusionfi.io/api/v1';
       case Flavor.cometWallet:
-        return 'https://api.fusionfi.io';
+        return 'https://api.yeshara.network';
       default:
         return 'https://api.fusionfi.io';
     }

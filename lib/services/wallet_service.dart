@@ -562,7 +562,7 @@ class WalletService {
 
         AppLogger.success(
           LogTags.payment,
-          'Money transfer initiated successfully',
+          'Money transfer request sent successfully',
           data: {
             'recipient_phone': recipientPhone,
             'amount': amount,
@@ -784,7 +784,7 @@ class WalletService {
 
       final requestBody = {
         'recipient_address': recipientAddress,
-        'amount_usda_raw': amount,
+        'amount_usda': amount,
       };
 
       AppLogger.logAPIRequest(

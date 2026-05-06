@@ -236,28 +236,11 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
         if (transactionId != null) {
           final idStr = transactionId.toString();
           _overlayController?.showLoading(message: 'Finalizing…');
-          WalletService.getTransactionStatus(idStr).then((transaction) {
-            if (!mounted) return;
-            _overlayController?.showSuccess(
-              title: 'Withdrawal Successful',
-              subtitle: 'Sent $_mobileCurrency ${FormatUtils.formatAmount(amount)} to $phone',
-              onAutoDismiss: () {
-                if (transaction != null) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (_) => TransactionDetailsScreen(
-                        transaction: transaction,
-                        fromTransaction: true,
-                      ),
-                    ),
-                    (route) => route.isFirst,
-                  );
-                } else {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
-              },
-            );
-          });
+          
+          // Start tracking status via Bloc
+          context.read<WalletBloc>().add(TrackTransactionStatus(transactionId: idStr));
+          
+          // We no longer manually poll here. The BlocListener will handle it.
         } else {
           _overlayController?.showSuccess(
             title: 'Mobile Transfer Successful!',
@@ -268,8 +251,13 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = e.toString();
+        if (errorMessage.startsWith('Exception: ')) {
+          errorMessage = errorMessage.substring(11);
+        }
+        
         _overlayController?.showFailure(
-          message: 'Mobile transfer failed. Please try again later.',
+          message: errorMessage,
           onRetry: null,
           onCancel: () => _overlayController?.dismiss(),
         );
@@ -381,83 +369,106 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
-          child: BlocBuilder<WalletBloc, WalletState>(
-          builder: (context, state) {
-            final balances = state is WalletLoaded ? state.balances : 
-                           (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
-            
-            return Column(
-              children: [
-                const SizedBox(height: 20),
-                // Fixed Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                          size: 24,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Withdraw Money', // Generic title
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontFamily: 'Outfit',
-                            color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+          child: BlocListener<WalletBloc, WalletState>(
+            listener: (context, state) {
+              if (state is TransactionStatusUpdate) {
+                final status = state.status.toLowerCase();
+                if (status == 'completed' || status == 'success' || status == 'complete') {
+                  _overlayController?.showSuccess(
+                    title: 'Withdrawal Successful',
+                    subtitle: state.message,
+                    onAutoDismiss: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                  );
+                } else if (status == 'failed' || status == 'timeout') {
+                  _overlayController?.showFailure(
+                    message: state.message,
+                    onRetry: null,
+                    onCancel: () => _overlayController?.dismiss(),
+                  );
+                }
+              }
+            },
+            child: BlocBuilder<WalletBloc, WalletState>(
+              builder: (context, state) {
+                final balances = state is WalletLoaded ? state.balances : 
+                               (state is WalletBalanceUpdated ? state.balances : <Map<String, dynamic>>[]);
+                
+                return Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Fixed Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                              size: 24,
+                            ),
                           ),
+                          Expanded(
+                            child: Text(
+                              'Withdraw Money', // Generic title
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontFamily: 'Outfit',
+                                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 40),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    // TabBar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Container(
+                        height: 45.h,
+                        decoration: const BoxDecoration(
+                          color: Colors.transparent, // Removed background color
+                        ),
+                        child: TabBar(
+                          indicatorColor: primaryBrandColor, // Primary color for indicator
+                          indicatorWeight: 2,
+                          labelColor: primaryBrandColor, // Primary color for active text
+                          unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
+                          labelStyle: TextStyle(
+                            fontFamily: 'Outfit',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          tabs: const [
+                            Tab(text: 'Wallet'),
+                            Tab(text: 'USDA (Cardano)'),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 40),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // TabBar
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Container(
-                    height: 45.h,
-                    decoration: const BoxDecoration(
-                      color: Colors.transparent, // Removed background color
                     ),
-                    child: TabBar(
-                      indicatorColor: primaryBrandColor, // Primary color for indicator
-                      indicatorWeight: 2,
-                      labelColor: primaryBrandColor, // Primary color for active text
-                      unselectedLabelColor: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.black54,
-                      labelStyle: TextStyle(
-                        fontFamily: 'Outfit',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          _buildSendToEmailTab(balances),
+                          _buildTransferUSDATab(balances),
+                        ],
                       ),
-                      tabs: const [
-                        Tab(text: 'Wallet'),
-                        Tab(text: 'USDA (Cardano)'),
-                      ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _buildSendToEmailTab(balances),
-                      _buildTransferUSDATab(balances),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
-    ));
+    );
   }
 
   // ... (existing _buildSendToEmailTab implementation)

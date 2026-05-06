@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:heroicons/heroicons.dart';
-import '../constants/colors.dart';
 import '../services/vibration_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/token_service.dart';
+import '../constants/colors.dart';
+import 'ticketing/create_ticket_screen.dart';
+import 'ticketing/my_tickets_screen.dart';
+import 'package:heroicons/heroicons.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -98,6 +101,55 @@ class ContactUsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
+                'Support Tickets',
+                style: TextStyle(
+                  fontFamily: 'Outfit',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : lightPrimaryText,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildContactCard(
+                context,
+                'Raise a Ticket',
+                'Report an issue or request help',
+                HeroIcons.ticket,
+                primaryBrandColor,
+                () async {
+                  final isAuthenticated = await TokenService.isAuthenticated();
+                  if (context.mounted) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CreateTicketScreen(isGuest: !isAuthenticated),
+                      ),
+                    );
+                  }
+                },
+                isDark,
+              ),
+              const SizedBox(height: 16),
+              FutureBuilder<bool>(
+                future: TokenService.isAuthenticated(),
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    return _buildContactCard(
+                      context,
+                      'My Tickets',
+                      'View your support requests',
+                      HeroIcons.listBullet,
+                      secondaryBrandColor,
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const MyTicketsScreen()),
+                      ),
+                      isDark,
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              const SizedBox(height: 32),
+              Text(
                 'Follow Us',
                 style: TextStyle(
                   fontFamily: 'Outfit',
@@ -112,20 +164,26 @@ class ContactUsScreen extends StatelessWidget {
                 children: [
                   _buildSocialIcon(
                     context,
-                    HeroIcons.codeBracketSquare, // Using as placeholder
-                    () => _launchUrl('https://twitter.com/fusionfi'),
+                    'https://www.tiktok.com/@fusionfi?is_from_webapp=1&sender_device=pc',
+                    Icons.music_note, // TikTok placeholder
                     isDark,
                   ),
                   _buildSocialIcon(
                     context,
-                    HeroIcons.bookmarkSquare, // Using as placeholder
-                    () => _launchUrl('https://facebook.com/fusionfi'),
+                    'https://x.com/fusionfi_info?s=21',
+                    Icons.close, // X (Twitter) placeholder
                     isDark,
                   ),
                   _buildSocialIcon(
                     context,
-                    HeroIcons.videoCamera, // Using as placeholder
-                    () => _launchUrl('https://instagram.com/fusionfi'),
+                    'https://www.instagram.com/fusionfi_oficial?igsh=dDYybmxncXFkb2Fj',
+                    Icons.camera_alt_outlined,
+                    isDark,
+                  ),
+                  _buildSocialIcon(
+                    context,
+                    'https://www.threads.net/@fusionfi_oficial', // Using .net as it's the standard Threads domain
+                    Icons.alternate_email, // Threads placeholder
                     isDark,
                   ),
                 ],
@@ -220,12 +278,12 @@ class ContactUsScreen extends StatelessWidget {
 
   Widget _buildSocialIcon(
     BuildContext context,
-    HeroIcons icon,
-    VoidCallback onTap,
+    String url,
+    IconData icon,
     bool isDark,
   ) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _launchUrl(url),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -236,7 +294,7 @@ class ContactUsScreen extends StatelessWidget {
             width: 1,
           ),
         ),
-        child: HeroIcon(
+        child: Icon(
           icon,
           color: isDark ? Colors.white70 : lightSecondaryText,
           size: 24,
